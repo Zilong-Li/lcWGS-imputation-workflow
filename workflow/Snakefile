@@ -1,4 +1,29 @@
-# Main entrypoint of the workflow. 
-# Please follow the best practices: 
+# Main entrypoint of the workflow.
+# Please follow the best practices:
 # https://snakemake.readthedocs.io/en/stable/snakefiles/best_practices.html,
-# in particular regarding the standardized folder structure mentioned there. 
+# in particular regarding the standardized folder structure mentioned there.
+
+from snakemake.utils import min_version
+
+##### set minimum snakemake version #####
+min_version("6.4.1")
+
+
+configfile: "config/config.yaml"
+
+
+#### load rules ########
+
+
+include: "rules/common.smk"
+include: "rules/refpanels.smk"
+include: "rules/downsample.smk"
+include: "rules/quilt.smk"
+# include: "rules/glimpse.smk"
+
+
+rule all:
+    input:
+        expand(rules.bamlist.output, chrom=["21"], depth=config['downsample']),
+        # expand(rules.subset_refpanel.output, chrom=["21"]),
+        expand(rules.quilt.output, chrom=["21"], depth=config['downsample']),
