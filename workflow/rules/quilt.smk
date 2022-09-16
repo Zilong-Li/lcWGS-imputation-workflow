@@ -1,17 +1,25 @@
-def get_quilt_output(wildcards):
+def get_quilt_output_regular(wildcards):
     regions = get_regions_list_per_chrom(wildcards.chrom, config["quilt"]["chunksize"])
-    res = []
-    for start, end in regions:
-        res.append(
-            f"results/quilt/{wildcards.chrom}/quilt.{wildcards.depth}x.regular.{wildcards.chrom}.{start}.{end}.vcf.gz"
-        )
-        res.append(
-            f"results/quilt/{wildcards.chrom}/quilt.{wildcards.depth}x.mspbwt.{wildcards.chrom}.{start}.{end}.vcf.gz"
-        )
-        res.append(
-            f"results/quilt/{wildcards.chrom}/quilt.{wildcards.depth}x.zilong.{wildcards.chrom}.{start}.{end}.vcf.gz"
-        )
-    return res
+    return [
+        f"results/quilt/{wildcards.chrom}/quilt.{wildcards.depth}x.regular.{wildcards.chrom}.{start}.{end}.vcf.gz"
+        for start, end in regions
+    ]
+
+
+def get_quilt_output_mspbwt(wildcards):
+    regions = get_regions_list_per_chrom(wildcards.chrom, config["quilt"]["chunksize"])
+    return [
+        f"results/quilt/{wildcards.chrom}/quilt.{wildcards.depth}x.mspbwt.{wildcards.chrom}.{start}.{end}.vcf.gz"
+        for start, end in regions
+    ]
+
+
+def get_quilt_output_zilong(wildcards):
+    regions = get_regions_list_per_chrom(wildcards.chrom, config["quilt"]["chunksize"])
+    return [
+        f"results/quilt/{wildcards.chrom}/quilt.{wildcards.depth}x.zilong.{wildcards.chrom}.{start}.{end}.vcf.gz"
+        for start, end in regions
+    ]
 
 
 rule quilt_prepare:
@@ -49,8 +57,10 @@ rule quilt_run_regular:
         bams=rules.bamlist.output,
         rdata=rules.quilt_prepare.output,
     output:
-        os.path.join(
-            "results/quilt/{chrom}/quilt.{depth}x.regular.{chrom}.{start}.{end}.vcf.gz"
+        temp(
+            os.path.join(
+                "results/quilt/{chrom}/quilt.{depth}x.regular.{chrom}.{start}.{end}.vcf.gz"
+            )
         ),
     threads: 1
     shell:
@@ -72,6 +82,23 @@ rule quilt_run_regular:
         """
 
 
+rule quilt_ligate_regular:
+    input:
+        get_quilt_output_regular,
+    output:
+        vcf=os.path.join("results/quilt/{chrom}/quilt.{depth}x.regular.{chrom}.vcf.gz"),
+        lst=temp(
+            os.path.join(
+                "results/quilt/{chrom}/quilt.{depth}x.regular.{chrom}.vcf.list"
+            )
+        ),
+    shell:
+        """
+        echo {input} | tr ' ' '\n' > {output.lst}
+        bcftools concat --file-lst {output.lst} --naive --output-type b --threads 4 -o {output.vcf}
+        """
+
+
 rule quilt_run_mspbwt:
     input:
         vcf=rules.subset_refpanel.output.vcf,
@@ -80,8 +107,10 @@ rule quilt_run_mspbwt:
         bams=rules.bamlist.output,
         rdata=rules.quilt_prepare.output,
     output:
-        os.path.join(
-            "results/quilt/{chrom}/quilt.{depth}x.mspbwt.{chrom}.{start}.{end}.vcf.gz"
+        temp(
+            os.path.join(
+                "results/quilt/{chrom}/quilt.{depth}x.mspbwt.{chrom}.{start}.{end}.vcf.gz"
+            )
         ),
     threads: 1
     shell:
@@ -103,6 +132,23 @@ rule quilt_run_mspbwt:
         """
 
 
+rule quilt_ligate_mspbwt:
+    input:
+        get_quilt_output_mspbwt,
+    output:
+        vcf=os.path.join("results/quilt/{chrom}/quilt.{depth}x.mspbwt.{chrom}.vcf.gz"),
+        lst=temp(
+            os.path.join(
+                "results/quilt/{chrom}/quilt.{depth}x.mspbwt.{chrom}.vcf.list"
+            )
+        ),
+    shell:
+        """
+        echo {input} | tr ' ' '\n' > {output.lst}
+        bcftools concat --file-lst {output.lst} --naive --output-type b --threads 4 -o {output.vcf}
+        """
+
+
 rule quilt_run_zilong:
     input:
         vcf=rules.subset_refpanel.output.vcf,
@@ -111,8 +157,10 @@ rule quilt_run_zilong:
         bams=rules.bamlist.output,
         rdata=rules.quilt_prepare.output,
     output:
-        os.path.join(
-            "results/quilt/{chrom}/quilt.{depth}x.zilong.{chrom}.{start}.{end}.vcf.gz"
+        temp(
+            os.path.join(
+                "results/quilt/{chrom}/quilt.{depth}x.zilong.{chrom}.{start}.{end}.vcf.gz"
+            )
         ),
     threads: 1
     shell:
@@ -136,10 +184,18 @@ rule quilt_run_zilong:
         """
 
 
-rule quilt:
+rule quilt_ligate_zilong:
     input:
-        get_quilt_output,
+        get_quilt_output_zilong,
     output:
-        os.path.join("results/quilt/{chrom}/results.{depth}x_{chrom}.lst"),
+        vcf=os.path.join("results/quilt/{chrom}/quilt.{depth}x.zilong.{chrom}.vcf.gz"),
+        lst=temp(
+            os.path.join(
+                "results/quilt/{chrom}/quilt.{depth}x.zilong.{chrom}.vcf.list"
+            )
+        ),
     shell:
-        """ echo {input} | tr ' ' '\n' > {output} """
+        """
+        echo {input} | tr ' ' '\n' > {output.lst}
+        bcftools concat --file-lst {output.lst} --naive --output-type b --threads 4 -o {output.vcf}
+        """

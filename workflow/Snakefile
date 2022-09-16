@@ -19,11 +19,20 @@ include: "rules/common.smk"
 include: "rules/refpanels.smk"
 include: "rules/downsample.smk"
 include: "rules/quilt.smk"
+
+
 # include: "rules/glimpse.smk"
 
 
 rule all:
     input:
-        expand(rules.bamlist.output, chrom=["21"], depth=config['downsample']),
-        # expand(rules.subset_refpanel.output, chrom=["21"]),
-        expand(rules.quilt.output, chrom=["21"], depth=config['downsample']),
+        expand(rules.bamlist.output, chrom=["21"], depth=config["downsample"]),
+        expand(
+            rules.quilt_ligate_regular.output, chrom=["21"], depth=config["downsample"]
+        ),
+        expand(
+            rules.quilt_ligate_mspbwt.output, chrom=["21"], depth=config["downsample"]
+        ),
+        expand(
+            rules.quilt_ligate_zilong.output, chrom=["21"], depth=config["downsample"]
+        ),
