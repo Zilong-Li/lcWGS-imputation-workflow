@@ -34,7 +34,7 @@ def get_regions_list_per_chrom(chrom, chunksize):
 
 def get_samples_list_comma(wildcards):
     samples_all = (
-        os.popen(os.path.join("bcftools query -l " + REFPANEL[wildcards.chrom]["vcf"]))
+        os.popen(f"bcftools query -l { REFPANEL[wildcards.chrom]['vcf'] }")
         .read()
         .split("\n")
     )
