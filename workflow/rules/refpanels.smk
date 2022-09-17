@@ -8,15 +8,18 @@ rule subset_refpanel:
         leg=os.path.join(OUTDIR_PANEL, "{chrom}.size{size}.legend.gz"),
         sites=os.path.join(OUTDIR_PANEL, "{chrom}.size{size}.sites.vcf.gz"),
     params:
-        outdir=lambda wildcards, output: os.path.dirname(output[0]),
+        prefix=lambda wildcards, output: os.path.splitext(output[0])[0],
         vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
         samples=get_samples_list_comma,
     log:
         os.path.join(OUTDIR_PANEL, "{chrom}.subrefs{size}.llog"),
     conda:
         "../envs/pandas.yaml"
-    threads: 1
     shell:
         """
-        ./workflow/scripts/prep-refs.sh {wildcards.chrom} {params.vcf} {params.outdir} {params.samples} &> {log}
+        (
+            bcftools view -v snps -m2 -M2 -s {params.samples} --threads 4 {params.vcf}| bcftools norm - -d snps -Ob -o {output.vcf} --threads 4 && bcftools index -f {output.vcf}
+            bcftools convert --haplegendsample {params.prefix} {output.vcf}
+            bcftools view -G {output.vcf} -Oz -o {output.sites} && tabix -f {output.sites}
+        ) & > {log}
         """
