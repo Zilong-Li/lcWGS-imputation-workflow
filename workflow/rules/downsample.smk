@@ -26,6 +26,8 @@ rule bamlist:
         expand(rules.downsample_bam.output, sample=SAMPLES.keys(), allow_missing=True),
     output:
         os.path.join(OUTDIR_DOWNSAMPLE, "{depth}x_{chrom}.bamlist"),
+    log:
+        os.path.join(OUTDIR_DOWNSAMPLE, "{depth}x_{chrom}.bamlist.llog"),
     conda:
         "../envs/pandas.yaml"
     shell:

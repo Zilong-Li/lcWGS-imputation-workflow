@@ -1,27 +1,3 @@
-def get_quilt_output_regular(wildcards):
-    regions = get_regions_list_per_chrom(wildcards.chrom, config["quilt"]["chunksize"])
-    return [
-        f"results/quilt/{wildcards.chrom}/quilt.{wildcards.depth}x.regular.{wildcards.chrom}.{start}.{end}.vcf.gz"
-        for start, end in regions
-    ]
-
-
-def get_quilt_output_mspbwt(wildcards):
-    regions = get_regions_list_per_chrom(wildcards.chrom, config["quilt"]["chunksize"])
-    return [
-        f"results/quilt/{wildcards.chrom}/quilt.{wildcards.depth}x.mspbwt.{wildcards.chrom}.{start}.{end}.vcf.gz"
-        for start, end in regions
-    ]
-
-
-def get_quilt_output_zilong(wildcards):
-    regions = get_regions_list_per_chrom(wildcards.chrom, config["quilt"]["chunksize"])
-    return [
-        f"results/quilt/{wildcards.chrom}/quilt.{wildcards.depth}x.zilong.{wildcards.chrom}.{start}.{end}.vcf.gz"
-        for start, end in regions
-    ]
-
-
 rule quilt_prepare:
     input:
         vcf=rules.subset_refpanel.output.vcf,

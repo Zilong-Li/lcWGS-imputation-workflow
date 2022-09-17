@@ -1,13 +1,6 @@
 OUTDIR_PANEL = "results/subrefs"
 
 
-def get_samples_list_comma(exclude=True):
-    if exclude:
-        return "^" + ",".join(SAMPLES.keys())
-    else:
-        return ",".join(SAMPLES.keys())
-
-
 rule subset_refpanel:
     output:
         vcf=os.path.join(OUTDIR_PANEL, "{chrom}.bcf"),
@@ -15,7 +8,7 @@ rule subset_refpanel:
         leg=os.path.join(OUTDIR_PANEL, "{chrom}.legend.gz"),
         sites=os.path.join(OUTDIR_PANEL, "{chrom}.sites.vcf.gz"),
     params:
-        outdir=OUTDIR_PANEL,
+        outdir=lambda input: os.path.splitext(input[0])[0],
         vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
         samples=get_samples_list_comma(),
     log:

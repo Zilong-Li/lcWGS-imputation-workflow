@@ -29,3 +29,34 @@ def get_regions_list_per_chrom(chrom, chunksize):
         pe = e if pe > e else pe
         regions.append([ps, pe])
     return regions
+
+
+def get_samples_list_comma(exclude=True):
+    if exclude:
+        return "^" + ",".join(SAMPLES.keys())
+    else:
+        return ",".join(SAMPLES.keys())
+
+
+def get_quilt_output_regular(wildcards):
+    regions = get_regions_list_per_chrom(wildcards.chrom, config["quilt"]["chunksize"])
+    return [
+        f"results/quilt/{wildcards.chrom}/quilt.{wildcards.depth}x.regular.{wildcards.chrom}.{start}.{end}.vcf.gz"
+        for start, end in regions
+    ]
+
+
+def get_quilt_output_mspbwt(wildcards):
+    regions = get_regions_list_per_chrom(wildcards.chrom, config["quilt"]["chunksize"])
+    return [
+        f"results/quilt/{wildcards.chrom}/quilt.{wildcards.depth}x.mspbwt.{wildcards.chrom}.{start}.{end}.vcf.gz"
+        for start, end in regions
+    ]
+
+
+def get_quilt_output_zilong(wildcards):
+    regions = get_regions_list_per_chrom(wildcards.chrom, config["quilt"]["chunksize"])
+    return [
+        f"results/quilt/{wildcards.chrom}/quilt.{wildcards.depth}x.zilong.{wildcards.chrom}.{start}.{end}.vcf.gz"
+        for start, end in regions
+    ]
