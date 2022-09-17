@@ -8,6 +8,7 @@ rule quilt_prepare:
     params:
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
+        outdir=lambda wildcards, output: os.path.dirname(output[0])[:-5],
     log:
         "results/quilt/panelsize{size}/{chrom}/RData/QUILT_prepared_reference.{chrom}.{start}.{end}.RData.llog",
     conda:
@@ -16,9 +17,9 @@ rule quilt_prepare:
     shell:
         """
         /usr/bin/time -v /gpfs3/users/davies/xxd908/local/pkgs/QUILT/QUILT_prepare_reference.R \
-            --reference_vcf_file=results/subrefs/{wildcards.chrom}.bcf \
-            --reference_haplotype_file=results/subrefs/{wildcards.chrom}.hap.gz \
-            --reference_legend_file=results/subrefs/{wildcards.chrom}.legend.gz \
+            --reference_vcf_file={input.vcf} \
+            --reference_haplotype_file={input.hap} \
+            --reference_legend_file={input.leg} \
             --chr={wildcards.chrom} \
             --regionStart={wildcards.start} \
             --regionEnd={wildcards.end} \
@@ -26,7 +27,7 @@ rule quilt_prepare:
             --nGen={params.nGen} \
             --use_pbwt_index=TRUE \
             --use_mspbwt=TRUE \
-            --outputdir=results/quilt/{wildcards.chrom} &> {log}
+            --outputdir={params.outdir} &> {log}
         """
 
 
@@ -54,9 +55,9 @@ rule quilt_run_regular:
     shell:
         """
         /usr/bin/time -v /gpfs3/users/davies/xxd908/local/pkgs/QUILT/QUILT.R \
-            --reference_vcf_file=results/subrefs/{wildcards.chrom}.bcf \
-            --reference_haplotype_file=results/subrefs/{wildcards.chrom}.hap.gz \
-            --reference_legend_file=results/subrefs/{wildcards.chrom}.legend.gz \
+            --reference_vcf_file={input.vcf} \
+            --reference_haplotype_file={input.hap} \
+            --reference_legend_file={input.leg} \
             --prepared_reference_filename={input.rdata} \
             --bamlist={input.bams} \
             --chr={wildcards.chrom} \
@@ -114,9 +115,9 @@ rule quilt_run_mspbwt:
     shell:
         """
         /usr/bin/time -v /gpfs3/users/davies/xxd908/local/pkgs/QUILT/QUILT.R \
-            --reference_vcf_file=results/subrefs/{wildcards.chrom}.bcf \
-            --reference_haplotype_file=results/subrefs/{wildcards.chrom}.hap.gz \
-            --reference_legend_file=results/subrefs/{wildcards.chrom}.legend.gz \
+            --reference_vcf_file={input.vcf} \
+            --reference_haplotype_file={input.hap} \
+            --reference_legend_file={input.leg} \
             --prepared_reference_filename={input.rdata} \
             --bamlist={input.bams} \
             --chr={wildcards.chrom} \
@@ -176,9 +177,9 @@ rule quilt_run_zilong:
     shell:
         """
         /usr/bin/time -v /gpfs3/users/davies/xxd908/local/pkgs/QUILT/QUILT.R \
-            --reference_vcf_file=results/subrefs/{wildcards.chrom}.bcf \
-            --reference_haplotype_file=results/subrefs/{wildcards.chrom}.hap.gz \
-            --reference_legend_file=results/subrefs/{wildcards.chrom}.legend.gz \
+            --reference_vcf_file={input.vcf} \
+            --reference_haplotype_file={input.hap} \
+            --reference_legend_file={input.leg} \
             --prepared_reference_filename={input.rdata} \
             --bamlist={input.bams} \
             --chr={wildcards.chrom} \

@@ -17,9 +17,9 @@ rule subset_refpanel:
         "../envs/pandas.yaml"
     shell:
         """
-        (
-            bcftools view -v snps -m2 -M2 -s {params.samples} --threads 4 {params.vcf}| bcftools norm - -d snps -Ob -o {output.vcf} --threads 4 && bcftools index -f {output.vcf}
-            bcftools convert --haplegendsample {params.prefix} {output.vcf}
-            bcftools view -G {output.vcf} -Oz -o {output.sites} && tabix -f {output.sites}
-        ) & > {log}
+        ( \
+            bcftools view -v snps -m2 -M2 -s {params.samples} --threads 4 {params.vcf}| bcftools norm - -d snps -Ob -o {output.vcf} --threads 4 && bcftools index -f {output.vcf} && \
+            bcftools convert --haplegendsample {params.prefix} {output.vcf} && \
+            bcftools view -G {output.vcf} -Oz -o {output.sites} && tabix -f {output.sites} \
+        )  2> {log}
         """
