@@ -10,9 +10,7 @@ rule glimpse_prepare:
     input:
         vcf=os.path.join("results/subrefs/{chrom}.bcf"),
     output:
-        os.path.join(
-            "results/glimpse/{chrom}.chunks.txt"
-        ),
+        os.path.join("results/glimpse/{chrom}.chunks.txt"),
     shell:
         """
         GLIMPSE_chunk \

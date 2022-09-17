@@ -31,6 +31,8 @@ rule quilt_prepare:
         "results/quilt/{chrom}/RData/QUILT_prepared_reference.{chrom}.{start}.{end}.RData",
     log:
         "results/quilt/{chrom}/RData/QUILT_prepared_reference.{chrom}.{start}.{end}.RData.llog",
+    conda:
+        "../envs/pandas.yaml"
     threads: 1
     shell:
         """
@@ -64,6 +66,8 @@ rule quilt_run_regular:
         os.path.join(
             "results/quilt/{chrom}/quilt.{depth}x.regular.{chrom}.{start}.{end}.vcf.gz.llog"
         ),
+    conda:
+        "../envs/pandas.yaml"
     threads: 1
     shell:
         """
@@ -92,6 +96,8 @@ rule quilt_ligate_regular:
         lst=temp("results/quilt/{chrom}/quilt.{depth}x.regular.{chrom}.vcf.list"),
     log:
         "results/quilt/{chrom}/quilt.{depth}x.regular.{chrom}.bcf.gz.llog",
+    conda:
+        "../envs/pandas.yaml"
     shell:
         """
         ( \
@@ -113,6 +119,8 @@ rule quilt_run_mspbwt:
         temp("results/quilt/{chrom}/quilt.{depth}x.mspbwt.{chrom}.{start}.{end}.vcf.gz"),
     log:
         "results/quilt/{chrom}/quilt.{depth}x.mspbwt.{chrom}.{start}.{end}.vcf.gz.llog",
+    conda:
+        "../envs/pandas.yaml"
     threads: 1
     shell:
         """
@@ -141,6 +149,8 @@ rule quilt_ligate_mspbwt:
         lst=temp("results/quilt/{chrom}/quilt.{depth}x.mspbwt.{chrom}.vcf.list"),
     log:
         "results/quilt/{chrom}/quilt.{depth}x.mspbwt.{chrom}.bcf.gz.llog",
+    conda:
+        "../envs/pandas.yaml"
     shell:
         """
         ( \
@@ -162,6 +172,8 @@ rule quilt_run_zilong:
         temp("results/quilt/{chrom}/quilt.{depth}x.zilong.{chrom}.{start}.{end}.vcf.gz"),
     log:
         "results/quilt/{chrom}/quilt.{depth}x.zilong.{chrom}.{start}.{end}.vcf.gz.llog",
+    conda:
+        "../envs/pandas.yaml"
     threads: 1
     shell:
         """
@@ -192,6 +204,8 @@ rule quilt_ligate_zilong:
         lst=temp("results/quilt/{chrom}/quilt.{depth}x.zilong.{chrom}.vcf.list"),
     log:
         "results/quilt/{chrom}/quilt.{depth}x.zilong.{chrom}.bcf.gz.llog",
+    conda:
+        "../envs/pandas.yaml"
     shell:
         """
         ( \

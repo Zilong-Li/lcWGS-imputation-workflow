@@ -19,6 +19,8 @@ rule subset_refpanel:
         vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
     log:
         os.path.join(OUTDIR_PANEL, "{chrom}.subrefs.llog"),
+    conda:
+        "../envs/pandas.yaml"
     threads: 1
     shell:
         """

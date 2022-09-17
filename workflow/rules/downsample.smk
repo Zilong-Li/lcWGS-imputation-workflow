@@ -1,12 +1,6 @@
 OUTDIR_DOWNSAMPLE = "results/downsample"
 
 
-def get_bams_per_depth_chrom(wildcards):
-    return expand(
-        rules.downsample_bam.output, sample=SAMPLES.keys(), allow_missing=True
-    )
-
-
 rule downsample_bam:
     output:
         os.path.join(OUTDIR_DOWNSAMPLE, "{sample}_{depth}x_{chrom}.bam"),
@@ -16,6 +10,8 @@ rule downsample_bam:
     log:
         os.path.join(OUTDIR_DOWNSAMPLE, "{sample}_{depth}x_{chrom}.bam.llog"),
     threads: 1
+    conda:
+        "../envs/pandas.yaml"
     shell:
         """
         (
@@ -27,7 +23,7 @@ rule downsample_bam:
 
 rule bamlist:
     input:
-        get_bams_per_depth_chrom,
+        expand(rules.downsample_bam.output, sample=SAMPLES.keys(), allow_missing=True),
     output:
         os.path.join(OUTDIR_DOWNSAMPLE, "{depth}x_{chrom}.bamlist"),
     shell:
