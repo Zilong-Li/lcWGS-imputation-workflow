@@ -1,4 +1,5 @@
 import os
+import random
 import pandas as pd
 
 # dict : {"NA12878": {"bam":ftp://ftp.sra.ebi.ac.uk/vol1/run/ERR323/ERR3239334/NA12878.final.cram, "depth": 99999}, ...}
@@ -31,17 +32,21 @@ def get_regions_list_per_chrom(chrom, chunksize):
     return regions
 
 
-def get_samples_list_comma(exclude=True):
-    if exclude:
-        return "^" + ",".join(SAMPLES.keys())
+def get_samples_list_comma(wildcards):
+    samples_all = os.popen("bcftools query -l " + REFPANEL[wildcards.chrom]["vcf"]).read().split('\n')
+    samples_target = SAMPLES.keys()
+    if wildcards.size == 0:
+        return "^" + ",".join(samples_target)
     else:
-        return ",".join(SAMPLES.keys())
+        [samples_all.remove(i) for i in samples_all]
+        samples_subset = random.sample(samples_all, int(wildcards.size))
+        return ",".join(samples_subset)
 
 
 def get_quilt_output_regular(wildcards):
     regions = get_regions_list_per_chrom(wildcards.chrom, config["quilt"]["chunksize"])
     return [
-        f"results/quilt/{wildcards.chrom}/quilt.{wildcards.depth}x.regular.{wildcards.chrom}.{start}.{end}.vcf.gz"
+        f"results/quilt/panelsize{wildcards.size}/{wildcards.chrom}/quilt.{wildcards.depth}x.regular.{wildcards.chrom}.{start}.{end}.vcf.gz"
         for start, end in regions
     ]
 
@@ -49,7 +54,7 @@ def get_quilt_output_regular(wildcards):
 def get_quilt_output_mspbwt(wildcards):
     regions = get_regions_list_per_chrom(wildcards.chrom, config["quilt"]["chunksize"])
     return [
-        f"results/quilt/{wildcards.chrom}/quilt.{wildcards.depth}x.mspbwt.{wildcards.chrom}.{start}.{end}.vcf.gz"
+        f"results/quilt/panelsize{wildcards.size}/{wildcards.chrom}/quilt.{wildcards.depth}x.mspbwt.{wildcards.chrom}.{start}.{end}.vcf.gz"
         for start, end in regions
     ]
 
@@ -57,6 +62,6 @@ def get_quilt_output_mspbwt(wildcards):
 def get_quilt_output_zilong(wildcards):
     regions = get_regions_list_per_chrom(wildcards.chrom, config["quilt"]["chunksize"])
     return [
-        f"results/quilt/{wildcards.chrom}/quilt.{wildcards.depth}x.zilong.{wildcards.chrom}.{start}.{end}.vcf.gz"
+        f"results/quilt/panelsize{wildcards.size}/{wildcards.chrom}/quilt.{wildcards.depth}x.zilong.{wildcards.chrom}.{start}.{end}.vcf.gz"
         for start, end in regions
     ]

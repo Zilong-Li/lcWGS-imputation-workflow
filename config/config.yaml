@@ -9,6 +9,9 @@ genome:
 
 downsample: [0.1, 0.25, 0.5, 1.0]
 
+# refsize: [0, 100, 200, 300, 400]
+refsize: [0]
+
 quilt:
   chunksize: 2000000
   nGen: 20
