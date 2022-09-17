@@ -8,7 +8,7 @@ rule subset_refpanel:
         leg=os.path.join(OUTDIR_PANEL, "{chrom}.size{size}.legend.gz"),
         sites=os.path.join(OUTDIR_PANEL, "{chrom}.size{size}.sites.vcf.gz"),
     params:
-        outdir=OUTDIR_PANEL,
+        outdir=lambda wildcards, output: os.path.splitext(output[0])[0],
         vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
         samples=get_samples_list_comma,
     log:

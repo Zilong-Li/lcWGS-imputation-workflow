@@ -75,7 +75,9 @@ rule quilt_ligate_regular:
         get_quilt_output_regular,
     output:
         vcf="results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.regular.{chrom}.bcf.gz",
-        lst=temp("results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.regular.{chrom}.vcf.list"),
+        lst=temp(
+            "results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.regular.{chrom}.vcf.list"
+        ),
     log:
         "results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.regular.{chrom}.bcf.gz.llog",
     conda:
@@ -98,7 +100,9 @@ rule quilt_run_mspbwt:
         bams=rules.bamlist.output,
         rdata=rules.quilt_prepare.output,
     output:
-        temp("results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.mspbwt.{chrom}.{start}.{end}.vcf.gz"),
+        temp(
+            "results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.mspbwt.{chrom}.{start}.{end}.vcf.gz"
+        ),
     params:
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
@@ -131,7 +135,9 @@ rule quilt_ligate_mspbwt:
         get_quilt_output_mspbwt,
     output:
         vcf="results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.mspbwt.{chrom}.bcf.gz",
-        lst=temp("results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.mspbwt.{chrom}.vcf.list"),
+        lst=temp(
+            "results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.mspbwt.{chrom}.vcf.list"
+        ),
     log:
         "results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.mspbwt.{chrom}.bcf.gz.llog",
     conda:
@@ -154,7 +160,9 @@ rule quilt_run_zilong:
         bams=rules.bamlist.output,
         rdata=rules.quilt_prepare.output,
     output:
-        temp("results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.zilong.{chrom}.{start}.{end}.vcf.gz"),
+        temp(
+            "results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.zilong.{chrom}.{start}.{end}.vcf.gz"
+        ),
     params:
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
@@ -191,7 +199,9 @@ rule quilt_ligate_zilong:
         get_quilt_output_zilong,
     output:
         vcf="results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.zilong.{chrom}.bcf.gz",
-        lst=temp("results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.zilong.{chrom}.vcf.list"),
+        lst=temp(
+            "results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.zilong.{chrom}.vcf.list"
+        ),
     log:
         "results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.zilong.{chrom}.bcf.gz.llog",
     conda:
