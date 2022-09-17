@@ -29,6 +29,9 @@ rule quilt_prepare:
         leg=rules.subset_refpanel.output.leg,
     output:
         "results/quilt/{chrom}/RData/QUILT_prepared_reference.{chrom}.{start}.{end}.RData",
+    params:
+        nGen=config["quilt"]["nGen"],
+        buffer=config["quilt"]["buffer"],
     log:
         "results/quilt/{chrom}/RData/QUILT_prepared_reference.{chrom}.{start}.{end}.RData.llog",
     conda:
@@ -43,8 +46,8 @@ rule quilt_prepare:
             --chr={wildcards.chrom} \
             --regionStart={wildcards.start} \
             --regionEnd={wildcards.end} \
-            --buffer={config[quilt][buffer]} \
-            --nGen={config[quilt][nGen]} \
+            --buffer={params.buffer} \
+            --nGen={params.nGen} \
             --use_pbwt_index=TRUE \
             --use_mspbwt=TRUE \
             --outputdir=results/quilt/{wildcards.chrom} &> {log}
@@ -62,6 +65,9 @@ rule quilt_run_regular:
         temp(
             "results/quilt/{chrom}/quilt.{depth}x.regular.{chrom}.{start}.{end}.vcf.gz"
         ),
+    params:
+        nGen=config["quilt"]["nGen"],
+        buffer=config["quilt"]["buffer"],
     log:
         os.path.join(
             "results/quilt/{chrom}/quilt.{depth}x.regular.{chrom}.{start}.{end}.vcf.gz.llog"
@@ -80,8 +86,8 @@ rule quilt_run_regular:
             --chr={wildcards.chrom} \
             --regionStart={wildcards.start} \
             --regionEnd={wildcards.end} \
-            --buffer={config[quilt][buffer]} \
-            --nGen={config[quilt][nGen]} \
+            --buffer={params.buffer} \
+            --nGen={params.nGen} \
             --zilong=FALSE \
             --use_mspbwt=FALSE \
             --output_filename={output} &> {log}
@@ -117,6 +123,9 @@ rule quilt_run_mspbwt:
         rdata=rules.quilt_prepare.output,
     output:
         temp("results/quilt/{chrom}/quilt.{depth}x.mspbwt.{chrom}.{start}.{end}.vcf.gz"),
+    params:
+        nGen=config["quilt"]["nGen"],
+        buffer=config["quilt"]["buffer"],
     log:
         "results/quilt/{chrom}/quilt.{depth}x.mspbwt.{chrom}.{start}.{end}.vcf.gz.llog",
     conda:
@@ -133,8 +142,8 @@ rule quilt_run_mspbwt:
             --chr={wildcards.chrom} \
             --regionStart={wildcards.start} \
             --regionEnd={wildcards.end} \
-            --buffer={config[quilt][buffer]} \
-            --nGen={config[quilt][nGen]} \
+            --buffer={params.buffer} \
+            --nGen={params.nGen} \
             --zilong=FALSE \
             --use_mspbwt=TRUE \
             --output_filename={output} &> {log}
@@ -170,6 +179,11 @@ rule quilt_run_zilong:
         rdata=rules.quilt_prepare.output,
     output:
         temp("results/quilt/{chrom}/quilt.{depth}x.zilong.{chrom}.{start}.{end}.vcf.gz"),
+    params:
+        nGen=config["quilt"]["nGen"],
+        buffer=config["quilt"]["buffer"],
+        pbwtL=config["quilt"]["pbwtL"],
+        pbwtS=config["quilt"]["pbwtS"],
     log:
         "results/quilt/{chrom}/quilt.{depth}x.zilong.{chrom}.{start}.{end}.vcf.gz.llog",
     conda:
@@ -186,10 +200,10 @@ rule quilt_run_zilong:
             --chr={wildcards.chrom} \
             --regionStart={wildcards.start} \
             --regionEnd={wildcards.end} \
-            --buffer={config[quilt][buffer]} \
-            --nGen={config[quilt][nGen]} \
-            --pbwtL={config[quilt][pbwtL]} \
-            --pbwtS={config[quilt][pbwtS]} \
+            --buffer={params.buffer} \
+            --nGen={params.nGen} \
+            --pbwtL={params.pbwtL} \
+            --pbwtS={params.pbwtS} \
             --zilong=TRUE \
             --use_mspbwt=FALSE \
             --output_filename={output} &> {log}

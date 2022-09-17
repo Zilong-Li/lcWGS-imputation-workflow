@@ -15,8 +15,9 @@ rule subset_refpanel:
         leg=os.path.join(OUTDIR_PANEL, "{chrom}.legend.gz"),
         sites=os.path.join(OUTDIR_PANEL, "{chrom}.sites.vcf.gz"),
     params:
-        samples=get_samples_list_comma(),
+        outdir=OUTDIR_PANEL,
         vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
+        samples=get_samples_list_comma(),
     log:
         os.path.join(OUTDIR_PANEL, "{chrom}.subrefs.llog"),
     conda:
@@ -24,5 +25,5 @@ rule subset_refpanel:
     threads: 1
     shell:
         """
-        ./workflow/scripts/prep-refs.sh {wildcards.chrom} {params.vcf} {OUTDIR_PANEL} {params.samples} &> {log}
+        ./workflow/scripts/prep-refs.sh {wildcards.chrom} {params.vcf} {params.outdir} {params.samples} &> {log}
         """
