@@ -47,8 +47,7 @@ rule all:
             size=config["refsize"],
         ),
         expand(
-            rules.summary_speed.output,
+            rules.plot_speed.output,
             chrom=config["chroms"],
-            depth=config["downsample"],
             size=config["refsize"],
         ),
