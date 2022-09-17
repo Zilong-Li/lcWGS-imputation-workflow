@@ -7,8 +7,12 @@ rule summary_speed:
         mspbwt=collect_quilt_log_mspbwt,
         zilong=collect_quilt_log_zilong,
     output:
-        os.path.join(OUTDIR_PANEL, "panelsize{size}.down{depth}x.{chrom}.txt"),
+        regular=os.path.join(OUTDIR_REPORT, "quilt.regular.panelsize{size}.down{depth}x.{chrom}.txt"),
+        mspbwt=os.path.join(OUTDIR_REPORT, "quilt.mspbwt.panelsize{size}.down{depth}x.{chrom}.txt"),
+        zilong=os.path.join(OUTDIR_REPORT, "quilt.zilong.panelsize{size}.down{depth}x.{chrom}.txt"),
     shell:
         """
-        echo {input} > {output}
+        echo {input.regular} | tr ' ' '\\n' > {output.regular}
+        echo {input.mspbwt} | tr ' ' '\\n' > {output.mspbwt}
+        echo {input.zilong} | tr ' ' '\\n' > {output.zilong}
         """
