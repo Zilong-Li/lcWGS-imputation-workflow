@@ -1,0 +1,21 @@
+
+samples: config/samples.tsv
+
+genome:
+  fasta: /gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/fasta/Ovis_aries.Oar_v3.1.dna.toplevel.fa
+  species: sheep
+  build: Oar_v3.1
+  refpanel: config/refpanel.tsv
+
+downsample: [0.1, 0.25, 0.5, 1.0]
+
+quilt:
+  chunksize: 2000000
+  nGen: 20
+  buffer: 500000
+  pbwtL: 2
+  pbwtS: 8
+
+glimpse:
+  chunksize: 2000000
+

@@ -28,9 +28,9 @@ rule quilt_prepare:
         hap=rules.subset_refpanel.output.hap,
         leg=rules.subset_refpanel.output.leg,
     output:
-        os.path.join(
-            "results/quilt/{chrom}/RData/QUILT_prepared_reference.{chrom}.{start}.{end}.RData"
-        ),
+        "results/quilt/{chrom}/RData/QUILT_prepared_reference.{chrom}.{start}.{end}.RData",
+    log:
+        "results/quilt/{chrom}/RData/QUILT_prepared_reference.{chrom}.{start}.{end}.RData.llog",
     threads: 1
     shell:
         """
@@ -45,7 +45,7 @@ rule quilt_prepare:
             --nGen={config[quilt][nGen]} \
             --use_pbwt_index=TRUE \
             --use_mspbwt=TRUE \
-            --outputdir=results/quilt/ &> {output}.llog
+            --outputdir=results/quilt/{wildcards.chrom} &> {log}
         """
 
 
@@ -58,9 +58,11 @@ rule quilt_run_regular:
         rdata=rules.quilt_prepare.output,
     output:
         temp(
-            os.path.join(
-                "results/quilt/{chrom}/quilt.{depth}x.regular.{chrom}.{start}.{end}.vcf.gz"
-            )
+            "results/quilt/{chrom}/quilt.{depth}x.regular.{chrom}.{start}.{end}.vcf.gz"
+        ),
+    log:
+        os.path.join(
+            "results/quilt/{chrom}/quilt.{depth}x.regular.{chrom}.{start}.{end}.vcf.gz.llog"
         ),
     threads: 1
     shell:
@@ -78,7 +80,7 @@ rule quilt_run_regular:
             --nGen={config[quilt][nGen]} \
             --zilong=FALSE \
             --use_mspbwt=FALSE \
-            --output_filename={output} &> {output}.llog
+            --output_filename={output} &> {log}
         """
 
 
@@ -86,16 +88,17 @@ rule quilt_ligate_regular:
     input:
         get_quilt_output_regular,
     output:
-        vcf=os.path.join("results/quilt/{chrom}/quilt.{depth}x.regular.{chrom}.vcf.gz"),
-        lst=temp(
-            os.path.join(
-                "results/quilt/{chrom}/quilt.{depth}x.regular.{chrom}.vcf.list"
-            )
-        ),
+        vcf="results/quilt/{chrom}/quilt.{depth}x.regular.{chrom}.bcf.gz",
+        lst=temp("results/quilt/{chrom}/quilt.{depth}x.regular.{chrom}.vcf.list"),
+    log:
+        "results/quilt/{chrom}/quilt.{depth}x.regular.{chrom}.bcf.gz.llog",
     shell:
         """
-        echo {input} | tr ' ' '\n' > {output.lst}
-        bcftools concat --file-lst {output.lst} --naive --output-type b --threads 4 -o {output.vcf}
+        ( \
+           echo {input} | tr ' ' '\n' > {output.lst} && \
+           bcftools concat --file-list {output.lst} --output-type b --threads 4 -o {output.vcf} && \
+           bcftools index -f {output.vcf} \
+        ) &> {log}
         """
 
 
@@ -107,11 +110,9 @@ rule quilt_run_mspbwt:
         bams=rules.bamlist.output,
         rdata=rules.quilt_prepare.output,
     output:
-        temp(
-            os.path.join(
-                "results/quilt/{chrom}/quilt.{depth}x.mspbwt.{chrom}.{start}.{end}.vcf.gz"
-            )
-        ),
+        temp("results/quilt/{chrom}/quilt.{depth}x.mspbwt.{chrom}.{start}.{end}.vcf.gz"),
+    log:
+        "results/quilt/{chrom}/quilt.{depth}x.mspbwt.{chrom}.{start}.{end}.vcf.gz.llog",
     threads: 1
     shell:
         """
@@ -128,7 +129,7 @@ rule quilt_run_mspbwt:
             --nGen={config[quilt][nGen]} \
             --zilong=FALSE \
             --use_mspbwt=TRUE \
-            --output_filename={output} &> {output}.llog
+            --output_filename={output} &> {log}
         """
 
 
@@ -136,16 +137,17 @@ rule quilt_ligate_mspbwt:
     input:
         get_quilt_output_mspbwt,
     output:
-        vcf=os.path.join("results/quilt/{chrom}/quilt.{depth}x.mspbwt.{chrom}.vcf.gz"),
-        lst=temp(
-            os.path.join(
-                "results/quilt/{chrom}/quilt.{depth}x.mspbwt.{chrom}.vcf.list"
-            )
-        ),
+        vcf="results/quilt/{chrom}/quilt.{depth}x.mspbwt.{chrom}.bcf.gz",
+        lst=temp("results/quilt/{chrom}/quilt.{depth}x.mspbwt.{chrom}.vcf.list"),
+    log:
+        "results/quilt/{chrom}/quilt.{depth}x.mspbwt.{chrom}.bcf.gz.llog",
     shell:
         """
-        echo {input} | tr ' ' '\n' > {output.lst}
-        bcftools concat --file-lst {output.lst} --naive --output-type b --threads 4 -o {output.vcf}
+        ( \
+           echo {input} | tr ' ' '\n' > {output.lst} && \
+           bcftools concat --file-list {output.lst} --output-type b --threads 4 -o {output.vcf} && \
+           bcftools index -f {output.vcf} \
+        ) &> {log}
         """
 
 
@@ -157,11 +159,9 @@ rule quilt_run_zilong:
         bams=rules.bamlist.output,
         rdata=rules.quilt_prepare.output,
     output:
-        temp(
-            os.path.join(
-                "results/quilt/{chrom}/quilt.{depth}x.zilong.{chrom}.{start}.{end}.vcf.gz"
-            )
-        ),
+        temp("results/quilt/{chrom}/quilt.{depth}x.zilong.{chrom}.{start}.{end}.vcf.gz"),
+    log:
+        "results/quilt/{chrom}/quilt.{depth}x.zilong.{chrom}.{start}.{end}.vcf.gz.llog",
     threads: 1
     shell:
         """
@@ -180,7 +180,7 @@ rule quilt_run_zilong:
             --pbwtS={config[quilt][pbwtS]} \
             --zilong=TRUE \
             --use_mspbwt=FALSE \
-            --output_filename={output} &> {output}.llog
+            --output_filename={output} &> {log}
         """
 
 
@@ -188,14 +188,15 @@ rule quilt_ligate_zilong:
     input:
         get_quilt_output_zilong,
     output:
-        vcf=os.path.join("results/quilt/{chrom}/quilt.{depth}x.zilong.{chrom}.vcf.gz"),
-        lst=temp(
-            os.path.join(
-                "results/quilt/{chrom}/quilt.{depth}x.zilong.{chrom}.vcf.list"
-            )
-        ),
+        vcf="results/quilt/{chrom}/quilt.{depth}x.zilong.{chrom}.bcf.gz",
+        lst=temp("results/quilt/{chrom}/quilt.{depth}x.zilong.{chrom}.vcf.list"),
+    log:
+        "results/quilt/{chrom}/quilt.{depth}x.zilong.{chrom}.bcf.gz.llog",
     shell:
         """
-        echo {input} | tr ' ' '\n' > {output.lst}
-        bcftools concat --file-lst {output.lst} --naive --output-type b --threads 4 -o {output.vcf}
+        ( \
+           echo {input} | tr ' ' '\n' > {output.lst} && \
+           bcftools concat --file-list {output.lst} --output-type b --threads 4 -o {output.vcf} && \
+           bcftools index -f {output.vcf} \
+        ) &> {log}
         """

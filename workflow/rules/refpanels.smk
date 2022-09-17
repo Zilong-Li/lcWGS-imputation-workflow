@@ -8,10 +8,6 @@ def get_samples_list_comma(exclude=True):
         return ",".join(SAMPLES.keys())
 
 
-def get_ref_vcf(wildcards):
-    return REFPANEL[wildcards.chrom]["vcf"]
-
-
 rule subset_refpanel:
     output:
         vcf=os.path.join(OUTDIR_PANEL, "{chrom}.bcf"),
@@ -21,8 +17,10 @@ rule subset_refpanel:
     params:
         samples=get_samples_list_comma(),
         vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
+    log:
+        os.path.join(OUTDIR_PANEL, "{chrom}.subrefs.llog"),
     threads: 1
     shell:
         """
-        ./workflow/scripts/prep-refs.sh {wildcards.chrom} {params.vcf} {OUTDIR_PANEL} {params.samples}
+        ./workflow/scripts/prep-refs.sh {wildcards.chrom} {params.vcf} {OUTDIR_PANEL} {params.samples} &> {log}
         """
