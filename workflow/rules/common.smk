@@ -33,17 +33,18 @@ def get_regions_list_per_chrom(chrom, chunksize):
 
 
 def get_samples_list_comma(wildcards):
-    samples_all = (
-        os.popen(f"bcftools query -l { REFPANEL[wildcards.chrom]['vcf'] }")
-        .read()
-        .split("\n")
-    )
     samples_target = SAMPLES.keys()
-    if wildcards.size == 0:
+    size = int(wildcards.size)
+    if size == 0:
         return "^" + ",".join(samples_target)
     else:
+        samples_all = (
+            os.popen(f"bcftools query -l { REFPANEL[wildcards.chrom]['vcf'] }")
+            .read()
+            .split("\n")
+        )
         [samples_all.remove(i) for i in samples_all]
-        samples_subset = random.sample(samples_all, int(wildcards.size))
+        samples_subset = random.sample(samples_all, size)
         return ",".join(samples_subset)
 
 
