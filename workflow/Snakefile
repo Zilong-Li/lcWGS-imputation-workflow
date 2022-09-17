@@ -19,6 +19,7 @@ include: "rules/common.smk"
 include: "rules/refpanels.smk"
 include: "rules/downsample.smk"
 include: "rules/quilt.smk"
+include: "rules/speed.smk"
 
 
 # include: "rules/glimpse.smk"
@@ -26,22 +27,28 @@ include: "rules/quilt.smk"
 
 rule all:
     input:
-        expand(rules.bamlist.output, chrom=["21"], depth=config["downsample"]),
+        expand(rules.bamlist.output, chrom=config["chroms"], depth=config["downsample"]),
         expand(
             rules.quilt_ligate_regular.output,
-            chrom=["21"],
+            chrom=config["chroms"],
             depth=config["downsample"],
             size=config["refsize"],
         ),
         expand(
             rules.quilt_ligate_mspbwt.output,
-            chrom=["21"],
+            chrom=config["chroms"],
             depth=config["downsample"],
             size=config["refsize"],
         ),
         expand(
             rules.quilt_ligate_zilong.output,
-            chrom=["21"],
+            chrom=config["chroms"],
+            depth=config["downsample"],
+            size=config["refsize"],
+        ),
+        expand(
+            rules.summary_speed.output,
+            chrom=config["chroms"],
             depth=config["downsample"],
             size=config["refsize"],
         ),

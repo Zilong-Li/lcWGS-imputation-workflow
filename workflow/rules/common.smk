@@ -24,12 +24,14 @@ def get_regions_list_per_chrom(chrom, chunksize):
     n = int((e - s) / chunksize) + 1
     if (n - 1) * chunksize == e - s:
         n = n - 1
+    starts, ends = [], []
     for i in range(n):
         ps = chunksize * i + s
         pe = chunksize * (i + 1) + s - 1
         pe = e if pe > e else pe
-        regions.append([ps, pe])
-    return regions
+        starts.append(ps)
+        ends.append(pe)
+    return starts, ends
 
 
 def get_samples_list_comma(wildcards):
@@ -49,24 +51,54 @@ def get_samples_list_comma(wildcards):
 
 
 def get_quilt_output_regular(wildcards):
-    regions = get_regions_list_per_chrom(wildcards.chrom, config["quilt"]["chunksize"])
-    return [
-        f"results/quilt/panelsize{wildcards.size}/{wildcards.chrom}/quilt.{wildcards.depth}x.regular.{wildcards.chrom}.{start}.{end}.vcf.gz"
-        for start, end in regions
-    ]
+    starts, ends = get_regions_list_per_chrom(
+        wildcards.chrom, config["quilt"]["chunksize"]
+    )
+    return expand(
+        rules.quilt_run_regular.output, zip, start=starts, end=ends, allow_missing=True
+    )
 
 
 def get_quilt_output_mspbwt(wildcards):
-    regions = get_regions_list_per_chrom(wildcards.chrom, config["quilt"]["chunksize"])
-    return [
-        f"results/quilt/panelsize{wildcards.size}/{wildcards.chrom}/quilt.{wildcards.depth}x.mspbwt.{wildcards.chrom}.{start}.{end}.vcf.gz"
-        for start, end in regions
-    ]
+    starts, ends = get_regions_list_per_chrom(
+        wildcards.chrom, config["quilt"]["chunksize"]
+    )
+    return expand(
+        rules.quilt_run_mspbwt.output, zip, start=starts, end=ends, allow_missing=True
+    )
 
 
 def get_quilt_output_zilong(wildcards):
-    regions = get_regions_list_per_chrom(wildcards.chrom, config["quilt"]["chunksize"])
-    return [
-        f"results/quilt/panelsize{wildcards.size}/{wildcards.chrom}/quilt.{wildcards.depth}x.zilong.{wildcards.chrom}.{start}.{end}.vcf.gz"
-        for start, end in regions
-    ]
+    starts, ends = get_regions_list_per_chrom(
+        wildcards.chrom, config["quilt"]["chunksize"]
+    )
+    return expand(
+        rules.quilt_run_zilong.output, zip, start=starts, end=ends, allow_missing=True
+    )
+
+
+def collect_quilt_log_regular(wildcards):
+    starts, ends = get_regions_list_per_chrom(
+        wildcards.chrom, config["quilt"]["chunksize"]
+    )
+    return expand(
+        rules.quilt_run_regular.log, zip, start=starts, end=ends, allow_missing=True
+    )
+
+
+def collect_quilt_log_mspbwt(wildcards):
+    starts, ends = get_regions_list_per_chrom(
+        wildcards.chrom, config["quilt"]["chunksize"]
+    )
+    return expand(
+        rules.quilt_run_mspbwt.log, zip, start=starts, end=ends, allow_missing=True
+    )
+
+
+def collect_quilt_log_zilong(wildcards):
+    starts, ends = get_regions_list_per_chrom(
+        wildcards.chrom, config["quilt"]["chunksize"]
+    )
+    return expand(
+        rules.quilt_run_zilong.log, zip, start=starts, end=ends, allow_missing=True
+    )
