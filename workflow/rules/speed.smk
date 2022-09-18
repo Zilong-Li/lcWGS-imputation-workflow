@@ -7,35 +7,50 @@ rule summary_speed:
         mspbwt=collect_quilt_log_mspbwt,
         zilong=collect_quilt_log_zilong,
     output:
-        os.path.join(OUTDIR_REPORT, "quilt.panelsize{size}.down{depth}x.{chrom}.txt"),
-    params:
-        awk1="{split($NF,a,\":\"); s+=a[1]*60+a[2];} END{print s/NR}",
-        awk2="{s+=$NF}END{print s/NR}",
+        regular=os.path.join(
+            OUTDIR_REPORT, "quilt.regular.panelsize{size}.down{depth}x.{chrom}.txt"
+        ),
+        mspbwt=os.path.join(
+            OUTDIR_REPORT, "quilt.mspbwt.panelsize{size}.down{depth}x.{chrom}.txt"
+        ),
+        zilong=os.path.join(
+            OUTDIR_REPORT, "quilt.zilong.panelsize{size}.down{depth}x.{chrom}.txt"
+        ),
     log:
-        os.path.join(OUTDIR_REPORT, "quilt.panelsize{size}.down{depth}x.{chrom}.txt.log"),
+        os.path.join(
+            OUTDIR_REPORT, "quilt.panelsize{size}.down{depth}x.{chrom}.txt.log"
+        ),
     conda:
         "../envs/quilt.yaml"
     shell:
         """
-        time1=$(echo {input.regular} | tr ' ' '\\n' | xargs grep Elap | awk '{params.awk1}')
-        ram1=$(echo {input.regular} | tr ' ' '\\n' | xargs grep Maximum | awk '{params.awk2}')
-        time2=$(echo {input.mspbwt} | tr ' ' '\\n' | xargs grep Elap | awk '{params.awk1}')
-        ram2=$(echo {input.mspbwt} | tr ' ' '\\n' | xargs grep Maximum | awk '{params.awk2}')
-        time3=$(echo {input.zilong} | tr ' ' '\\n' | xargs grep Elap | awk '{params.awk1}')
-        ram3=$(echo {input.zilong} | tr ' ' '\\n' | xargs grep Maximum | awk '{params.awk2}')
-        echo $time1 $ram1 > {output}
-        echo $time2 $ram2 >> {output}
-        echo $time3 $ram3 >> {output}
+        echo {input.regular} | tr ' ' '\\n' | xargs grep -E 'Elaps|Maximum' | awk '{{print $NF}}' | sed 'N;s/\\n/ /' > {output.regular}
+        echo {input.mspbwt} | tr ' ' '\\n' | xargs grep -E 'Elaps|Maximum' | awk '{{print $NF}}' | sed 'N;s/\\n/ /' > {output.mspbwt}
+        echo {input.zilong} | tr ' ' '\\n' | xargs grep -E 'Elaps|Maximum' | awk '{{print $NF}}' | sed 'N;s/\\n/ /' > {output.zilong}
         """
 
 
 rule plot_speed:
     input:
-        expand(rules.summary_speed.output, depth=config["downsample"], allow_missing=True),
+        regular=expand(
+            rules.summary_speed.output.regular,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+        mspbwt=expand(
+            rules.summary_speed.output.mspbwt,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+        zilong=expand(
+            rules.summary_speed.output.zilong,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
     output:
-        os.path.join(OUTDIR_REPORT, "quilt.panelsize{size}.{chrom}.pdf"),
+        os.path.join(OUTDIR_REPORT, "quilt.speed.panelsize{size}.{chrom}.pdf"),
     log:
-        os.path.join(OUTDIR_REPORT, "quilt.panelsize{size}.{chrom}.pdf.llog"),
+        os.path.join(OUTDIR_REPORT, "quilt.speed.panelsize{size}.{chrom}.pdf.llog"),
     conda:
         "../envs/quilt.yaml"
     script:
