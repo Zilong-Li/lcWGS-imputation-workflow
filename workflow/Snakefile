@@ -20,6 +20,7 @@ include: "rules/refpanels.smk"
 include: "rules/downsample.smk"
 include: "rules/quilt.smk"
 include: "rules/speed.smk"
+include: "rules/accuracy.smk"
 
 
 # include: "rules/glimpse.smk"
@@ -48,6 +49,11 @@ rule all:
         ),
         expand(
             rules.plot_speed.output,
+            chrom=config["chroms"],
+            size=config["refsize"],
+        ),
+        expand(
+            rules.plot_accuracy.output,
             chrom=config["chroms"],
             size=config["refsize"],
         ),
