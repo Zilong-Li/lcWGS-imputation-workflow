@@ -23,4 +23,8 @@ quilt:
 
 glimpse:
   chunksize: 2000000
-
+  buffer: 500000
+  bq: 20
+  mq: 20
+  burnin: 10
+  main: 15

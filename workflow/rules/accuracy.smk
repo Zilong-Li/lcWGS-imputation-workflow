@@ -1,5 +1,5 @@
-
 OUTDIR_REPORT = "results/reports"
+
 
 rule collect_imputed_gts:
     input:
@@ -25,7 +25,7 @@ rule collect_imputed_gts:
         ),
     params:
         samples=",".join(SAMPLES.keys()),
-        truth=lambda wildcards: REFPANEL[wildcards.chrom]['truth'],
+        truth=lambda wildcards: REFPANEL[wildcards.chrom]["truth"],
         ql1="%CHROM:%POS:%REF:%ALT\\t%AF\\t[\\t%GT]\\n",
         ql2="%CHROM:%POS:%REF:%ALT\\t[\\t%GT\\t%DS]\\n",
     conda:
@@ -37,6 +37,7 @@ rule collect_imputed_gts:
         bcftools query -f '{params.ql2}' -s {params.samples} {input.mspbwt} | sed -E 's/\/|\|/\\t/g' > {output.mspbwt}
         bcftools query -f '{params.ql2}' -s {params.samples} {input.zilong} | sed -E 's/\/|\|/\\t/g' > {output.zilong}
         """
+
 
 rule plot_accuracy:
     input:

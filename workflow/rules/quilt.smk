@@ -6,6 +6,7 @@ rule quilt_prepare_regular:
     output:
         "results/quilt/panelsize{size}/{chrom}/prep_regular/RData/QUILT_prepared_reference.{chrom}.{start}.{end}.RData",
     params:
+        N="quilt_prepare_regular",
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
         outdir=lambda wildcards, output: os.path.dirname(output[0])[:-5],
@@ -16,7 +17,7 @@ rule quilt_prepare_regular:
     threads: 1
     shell:
         """
-        /usr/bin/time -v /gpfs3/users/davies/xxd908/local/pkgs/QUILT/QUILT_prepare_reference.R \
+        /usr/bin/time -v QUILT_prepare_reference.R \
             --reference_vcf_file={input.vcf} \
             --reference_haplotype_file={input.hap} \
             --reference_legend_file={input.leg} \
@@ -49,7 +50,7 @@ rule quilt_prepare_mspbwt:
     threads: 1
     shell:
         """
-        /usr/bin/time -v /gpfs3/users/davies/xxd908/local/pkgs/QUILT/QUILT_prepare_reference.R \
+        /usr/bin/time -v QUILT_prepare_reference.R \
             --reference_vcf_file={input.vcf} \
             --reference_haplotype_file={input.hap} \
             --reference_legend_file={input.leg} \
@@ -82,7 +83,7 @@ rule quilt_prepare_zilong:
     threads: 1
     shell:
         """
-        /usr/bin/time -v /gpfs3/users/davies/xxd908/local/pkgs/QUILT/QUILT_prepare_reference.R \
+        /usr/bin/time -v QUILT_prepare_reference.R \
             --reference_vcf_file={input.vcf} \
             --reference_haplotype_file={input.hap} \
             --reference_legend_file={input.leg} \
@@ -120,7 +121,7 @@ rule quilt_run_regular:
     threads: 1
     shell:
         """
-        /usr/bin/time -v /gpfs3/users/davies/xxd908/local/pkgs/QUILT/QUILT.R \
+        /usr/bin/time -v QUILT.R \
             --reference_vcf_file={input.vcf} \
             --reference_haplotype_file={input.hap} \
             --reference_legend_file={input.leg} \
@@ -180,7 +181,7 @@ rule quilt_run_mspbwt:
     threads: 1
     shell:
         """
-        /usr/bin/time -v /gpfs3/users/davies/xxd908/local/pkgs/QUILT/QUILT.R \
+        /usr/bin/time -v QUILT.R \
             --reference_vcf_file={input.vcf} \
             --reference_haplotype_file={input.hap} \
             --reference_legend_file={input.leg} \
@@ -242,7 +243,7 @@ rule quilt_run_zilong:
     threads: 1
     shell:
         """
-        /usr/bin/time -v /gpfs3/users/davies/xxd908/local/pkgs/QUILT/QUILT.R \
+        /usr/bin/time -v QUILT.R \
             --reference_vcf_file={input.vcf} \
             --reference_haplotype_file={input.hap} \
             --reference_legend_file={input.leg} \

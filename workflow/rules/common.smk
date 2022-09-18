@@ -45,7 +45,7 @@ def get_samples_list_comma(wildcards):
             .read()
             .split("\n")
         )
-        [samples_all.remove(i) for i in samples_all]
+        [samples_all.remove(i) for i in samples_target]
         samples_subset = random.sample(samples_all, size)
         return ",".join(samples_subset)
 
@@ -75,6 +75,26 @@ def get_quilt_output_zilong(wildcards):
     return expand(
         rules.quilt_run_zilong.output, zip, start=starts, end=ends, allow_missing=True
     )
+
+
+def get_glimpse_chunks(wildcards):
+    chunks = (
+        os.popen(
+            f"GLIMPSE_chunk --input {REFPANEL[wildcards.chrom]['vcf']} --reference {REFPANEL[wildcards.chrom]['vcf']} --region {wildcards.chrom} --window-size {config['glimpse']['chunksize']} --buffer-size {config['glimpse']['buffer']} --output {REFPANEL[wildcards.chrom]['vcf']}.chunks && cat {REFPANEL[wildcards.chrom]['vcf']}.chunks"
+        )
+        .read()
+        .split("\n")
+    )
+    d = dict()
+    for chunk in chunks:
+        tmp = chunk.split("\t")
+        d[tmp[0]] = {"irg": tmp[2], "org": tmp[3]}
+    return d
+
+
+def get_glimpse_outputs(wildcards):
+    d = get_glimpse_chunks(wildcards)
+    return expand(rules.glimpse_phase.output, chunkid=d.keys(), allow_missing=True)
 
 
 def collect_quilt_log_regular(wildcards):
