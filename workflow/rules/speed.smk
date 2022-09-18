@@ -14,7 +14,7 @@ rule summary_speed:
     log:
         os.path.join(OUTDIR_REPORT, "quilt.panelsize{size}.down{depth}x.{chrom}.txt.log"),
     conda:
-        "../envs/pandas.yaml"
+        "../envs/quilt.yaml"
     shell:
         """
         time1=$(echo {input.regular} | tr ' ' '\\n' | xargs grep Elap | awk '{params.awk1}')
@@ -37,6 +37,6 @@ rule plot_speed:
     log:
         os.path.join(OUTDIR_REPORT, "quilt.panelsize{size}.{chrom}.pdf.llog"),
     conda:
-        "../envs/pandas.yaml"
+        "../envs/quilt.yaml"
     script:
         "../scripts/plot_speed.R"
