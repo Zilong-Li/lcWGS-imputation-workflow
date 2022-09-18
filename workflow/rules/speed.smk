@@ -54,4 +54,4 @@ rule plot_speed:
     conda:
         "../envs/quilt.yaml"
     script:
-        "../scripts/plot_speed.R"
+        "../scripts/speed_ram.R"

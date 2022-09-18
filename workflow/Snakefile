@@ -30,24 +30,6 @@ rule all:
     input:
         expand(rules.bamlist.output, chrom=config["chroms"], depth=config["downsample"]),
         expand(
-            rules.quilt_ligate_regular.output,
-            chrom=config["chroms"],
-            depth=config["downsample"],
-            size=config["refsize"],
-        ),
-        expand(
-            rules.quilt_ligate_mspbwt.output,
-            chrom=config["chroms"],
-            depth=config["downsample"],
-            size=config["refsize"],
-        ),
-        expand(
-            rules.quilt_ligate_zilong.output,
-            chrom=config["chroms"],
-            depth=config["downsample"],
-            size=config["refsize"],
-        ),
-        expand(
             rules.plot_speed.output,
             chrom=config["chroms"],
             size=config["refsize"],
@@ -57,3 +39,21 @@ rule all:
             chrom=config["chroms"],
             size=config["refsize"],
         ),
+        # expand(
+        #     rules.quilt_ligate_regular.output,
+        #     chrom=config["chroms"],
+        #     depth=config["downsample"],
+        #     size=config["refsize"],
+        # ),
+        # expand(
+        #     rules.quilt_ligate_mspbwt.output,
+        #     chrom=config["chroms"],
+        #     depth=config["downsample"],
+        #     size=config["refsize"],
+        # ),
+        # expand(
+        #     rules.quilt_ligate_zilong.output,
+        #     chrom=config["chroms"],
+        #     depth=config["downsample"],
+        #     size=config["refsize"],
+        # ),

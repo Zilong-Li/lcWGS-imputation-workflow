@@ -1,16 +1,10 @@
-def get_quilt_prepare_output(wildcards):
-    regions = get_regions_list_per_chrom(wildcards.chrom, config["quilt"]["chunksize"])
-    return [
-        f"results/quilt/RData/QUILT_prepared_reference.{wildcards.chrom}.{start}.{end}.RData"
-        for start, end in regions
-    ]
-
+OUTDIR_GLIMPSE = "results/glimpse/"
 
 rule glimpse_prepare:
     input:
-        vcf=os.path.join("results/subrefs/{chrom}.bcf"),
+        vcf=rules.subset_refpanel.output.vcf,
     output:
-        os.path.join("results/glimpse/{chrom}.chunks.txt"),
+        OUTDIR_GLIMPSE + "panelsize{size}/{chrom}/prep/.{chrom}.{start}.{end}.RData",
     shell:
         """
         GLIMPSE_chunk \
