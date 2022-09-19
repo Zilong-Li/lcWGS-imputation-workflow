@@ -11,6 +11,9 @@ min_version("6.4.1")
 
 configfile: "config/config.yaml"
 
+#### report ######
+
+report: "report/workflow.rst"
 
 #### load rules ########
 

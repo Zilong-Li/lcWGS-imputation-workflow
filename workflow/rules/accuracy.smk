@@ -8,19 +8,26 @@ rule collect_truth_gts:
             allow_missing=True,
         ),
     output:
-        os.path.join(OUTDIR_SUMMARY, "truth.gts.{chrom}.txt"),
+        gt=os.path.join(OUTDIR_SUMMARY, "truth.gts.{chrom}.txt"),
+        af=os.path.join(OUTDIR_SUMMARY, "af.input.panel.{chrom}.txt"),
     log:
         os.path.join(OUTDIR_SUMMARY, "truth.gts.{chrom}.log"),
     params:
         N="collect_truth_gts",
         samples=",".join(SAMPLES.keys()),
         truth=lambda wildcards: REFPANEL[wildcards.chrom]["truth"],
-        ql1="%CHROM:%POS:%REF:%ALT\\t%AF\\t[\\t%GT]\\n",
+        ref=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
+        ql0="%CHROM:%POS:%REF:%ALT\\n",
+        ql1="%CHROM:%POS:%REF:%ALT\\t%AF\\n",
+        ql2="%CHROM:%POS:%REF:%ALT\\t[\\t%GT]\\n",
+        awk="NR==FNR{a[$1]=1;} NR!=FNR{if(a[$1]) print $2;}",
     conda:
         "../envs/quilt.yaml"
     shell:
         """
-        bcftools +fill-tags {params.truth} -- -t AF |  bcftools view -s {params.samples} -T {input.sites[0]} | bcftools query -f '{params.ql1}' | sed -E 's/\/|\|/\\t/g' > {output}
+        bcftools +fill-tags {params.ref} -- -t AF |  bcftools query -f '{params.ql1}' > {output.af}.tmp
+        awk '{params.awk}' <(bcftools query -f '{params.ql0}' {input.sites[0]}) {output.af}.tmp >{output.af}
+        bcftools view -s {params.samples} -T {input.sites[0]} {params.truth} | bcftools query -f '{params.ql2}' | sed -E 's/\/|\|/\\t/g' > {output.gt}
         """
 
 
@@ -84,7 +91,8 @@ rule collect_glimpse_imputed_gts:
 
 rule plot_quilt_accuracy:
     input:
-        truth=rules.collect_truth_gts.output,
+        truth=rules.collect_truth_gts.output.gt,
+        af=rules.collect_truth_gts.output.af,
         regular=expand(
             rules.collect_quilt_imputed_gts.output.regular,
             depth=config["downsample"],
@@ -114,7 +122,8 @@ rule plot_quilt_accuracy:
 
 rule plot_all_accuracy:
     input:
-        truth=rules.collect_truth_gts.output,
+        truth=rules.collect_truth_gts.output.gt,
+        af=rules.collect_truth_gts.output.af,
         glimpse=expand(
             rules.collect_glimpse_imputed_gts.output,
             depth=config["downsample"],
@@ -136,7 +145,10 @@ rule plot_all_accuracy:
             allow_missing=True,
         ),
     output:
-        os.path.join(OUTDIR_SUMMARY, "all.accuracy.panelsize{size}.{chrom}.pdf"),
+        report(
+            os.path.join(OUTDIR_SUMMARY, "all.accuracy.panelsize{size}.{chrom}.pdf"),
+            caption="report/accuracy.rst",
+        ),
     log:
         os.path.join(OUTDIR_SUMMARY, "all.accuracy.panelsize{size}.{chrom}.pdf.llog"),
     params:

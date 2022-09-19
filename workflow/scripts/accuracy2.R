@@ -43,10 +43,9 @@ acc_r2_by_af <- function(d0, d1, d2, d3, d4, af, breaks) {
 
 deps <- as.numeric(snakemake@config[["downsample"]])
 
-df.truth <- read.table(snakemake@input[["truth"]][[1]])
-af <- as.numeric(df.truth[,2])
+df.truth <- read.table(snakemake@input[["truth"]])
+af <- as.numeric(read.table(snakemake@input[["af"]])[,1])
 af <- ifelse(af>0.5, 1-af, af)
-df.truth <- df.truth[,-2] # remove af column now
 
 dl.regular <- lapply(snakemake@input[["regular"]], read.table)
 dl.mspbwt <- lapply(snakemake@input[["mspbwt"]], read.table)
@@ -54,6 +53,7 @@ dl.zilong <- lapply(snakemake@input[["zilong"]], read.table)
 dl.glimpse <- lapply(snakemake@input[["glimpse"]], read.table)
 
 bins <- sort(unique(c(
+    c(0, 0.01 / 100, 0.02 / 100, 0.05 / 100),
     c(0, 0.01 / 10, 0.02 / 10, 0.05 / 10),
     c(0, 0.01 / 1, 0.02 / 1, 0.05 / 1),
     seq(0.1, 0.5, length.out = 5)
@@ -82,14 +82,15 @@ plot(1, col = "transparent", xlim = c(0, 0.5), ylim = c(0, 1.0), ylab = "Aggrega
 nd <- length(deps)
 for(i in 1:nd) {
     d <- accuracy_by_af[[i]]
+    x <- log10(as.numeric(d$bin))
     y <- unlist(ifelse(sapply(d$regular, is.null), NA, d$regular))
-    lines(as.numeric(d$bin), y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[1])
+    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[1])
     y <- unlist(ifelse(sapply(d$mspbwt, is.null), NA, d$mspbwt))
-    lines(as.numeric(d$bin), y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[2])
+    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[2])
     y <- unlist(ifelse(sapply(d$zilong, is.null), NA, d$zilong))
-    lines(as.numeric(d$bin), y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[3])
+    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[3])
     y <- unlist(ifelse(sapply(d$glimpse, is.null), NA, d$glimpse))
-    lines(as.numeric(d$bin), y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[4])
+    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[4])
 }
 legend("bottomright", legend=paste0(deps, "x"), lwd = (1:nd) * 2.5 / nd, bty = "n")
 

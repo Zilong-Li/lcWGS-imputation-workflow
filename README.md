@@ -9,6 +9,8 @@ This workflow is for imputation using low coverage whole genome sequencing data 
 
 - QUILT v1.0.3
 - GLIMPSE v1.1.1
+- samtools
+- bcftools
 
 
 ## Usage
