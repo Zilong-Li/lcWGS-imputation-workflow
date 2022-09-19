@@ -39,12 +39,14 @@ rule glimpse_phase:
         refvcf=rules.subset_refpanel.output.vcf,
         glvcf=rules.glimpse_prepare_glvcf.output.vcf,
     output:
-        temp(os.path.join(
-            OUTDIR_GLIMPSE,
-            "panelsize{size}",
-            "{chrom}",
-            "down{depth}x.{chrom}.chunks{chunkid}.bcf",
-        )),
+        temp(
+            os.path.join(
+                OUTDIR_GLIMPSE,
+                "panelsize{size}",
+                "{chrom}",
+                "down{depth}x.{chrom}.chunks{chunkid}.bcf",
+            )
+        ),
     log:
         os.path.join(
             OUTDIR_GLIMPSE,

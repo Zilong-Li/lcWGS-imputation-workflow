@@ -42,22 +42,6 @@ def get_regions_list_per_chrom(chrom, chunksize):
     return starts, ends
 
 
-def get_samples_list_comma(wildcards):
-    samples_target = SAMPLES.keys()
-    size = int(wildcards.size)
-    if size == 0:
-        return "^" + ",".join(samples_target)
-    else:
-        samples_all = (
-            os.popen(f"bcftools query -l { REFPANEL[wildcards.chrom]['vcf'] }")
-            .read()
-            .split("\n")[:-1]
-        )
-        [samples_all.remove(i) for i in samples_target]
-        samples_subset = random.sample(samples_all, size)
-        return ",".join(samples_subset)
-
-
 def get_quilt_output_regular(wildcards):
     starts, ends = get_regions_list_per_chrom(
         wildcards.chrom, config["quilt"]["chunksize"]
@@ -142,6 +126,7 @@ def collect_quilt_log_zilong(wildcards):
     return expand(
         rules.quilt_run_zilong.log, zip, start=starts, end=ends, allow_missing=True
     )
+
 
 def collect_glimpse_log(wildcards):
     d = get_glimpse_chunks(wildcards)

@@ -7,16 +7,20 @@ rule collect_speed_log:
         glimpse=collect_glimpse_log,
     output:
         glimpse=os.path.join(
-            OUTDIR_SUMMARY, "speed.glimpse.regular.panelsize{size}.down{depth}x.{chrom}.txt"
+            OUTDIR_SUMMARY,
+            "speed.glimpse.regular.panelsize{size}.down{depth}x.{chrom}.txt",
         ),
         regular=os.path.join(
-            OUTDIR_SUMMARY, "speed.quilt.regular.panelsize{size}.down{depth}x.{chrom}.txt"
+            OUTDIR_SUMMARY,
+            "speed.quilt.regular.panelsize{size}.down{depth}x.{chrom}.txt",
         ),
         mspbwt=os.path.join(
-            OUTDIR_SUMMARY, "speed.quilt.mspbwt.panelsize{size}.down{depth}x.{chrom}.txt"
+            OUTDIR_SUMMARY,
+            "speed.quilt.mspbwt.panelsize{size}.down{depth}x.{chrom}.txt",
         ),
         zilong=os.path.join(
-            OUTDIR_SUMMARY, "speed.quilt.zilong.panelsize{size}.down{depth}x.{chrom}.txt"
+            OUTDIR_SUMMARY,
+            "speed.quilt.zilong.panelsize{size}.down{depth}x.{chrom}.txt",
         ),
     log:
         os.path.join(
