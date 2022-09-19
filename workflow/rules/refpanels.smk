@@ -13,6 +13,7 @@ rule subset_sample_list:
             .split("\n")[:-1]
         )
         [samples_all.remove(i) for i in samples_target]
+        size = int(wildcards.size)
         samples_subset = samples_all if size == 0 else random.sample(samples_all, size)
         with open(output.samples, "w") as outfile:
             print("\n".join(samples_subset), file=outfile)
