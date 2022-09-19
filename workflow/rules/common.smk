@@ -87,6 +87,8 @@ def get_quilt_output_zilong(wildcards):
 
 def get_glimpse_chunks(wildcards):
     """ugly but it's good to use GLIMPSE_chunk split the chromosome first"""
+    if not os.path.exists(OUTDIR_SUMMARY):
+        os.makedirs(OUTDIR_SUMMARY)
     fn = os.path.join(OUTDIR_SUMMARY, f"{wildcards.chrom}.glimpse.chunks")
     if os.path.isfile(fn):
         chunks = os.popen(f"cat {fn} ").read().split("\n")
@@ -105,6 +107,16 @@ def get_glimpse_chunks(wildcards):
         tmp = chunk.split("\t")
         d[tmp[0]] = {"irg": tmp[2], "org": tmp[3]}
     return d
+
+
+def get_glimpse_chunki_irg(wildcards):
+    d = get_glimpse_chunks(wildcards)
+    return d[wildcards.chunkid]["irg"]
+
+
+def get_glimpse_chunki_org(wildcards):
+    d = get_glimpse_chunks(wildcards)
+    return d[wildcards.chunkid]["org"]
 
 
 def get_glimpse_phase_outputs(wildcards):

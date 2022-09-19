@@ -3,7 +3,16 @@
 rule glimpse_prepare_glvcf:
     input:
         bams=rules.bamlist.output,
-        sites=rules.subset_refpanel.output.sites,
+        sites=lambda wildcards: expand(
+            rules.subset_refpanel.output.sites,
+            size=config["refsize"],
+            allow_missing=True,
+        ),
+        tsv=lambda wildcards: expand(
+            rules.subset_refpanel.output.tsv,
+            size=config["refsize"],
+            allow_missing=True,
+        ),
     output:
         vcf=os.path.join(OUTDIR_GLIMPSE, "glvcf", "{chrom}", "down{depth}x.{chrom}.bcf"),
         csi=os.path.join(
@@ -18,8 +27,10 @@ rule glimpse_prepare_glvcf:
         mq=config["glimpse"]["mq"],
     shell:
         """
-        bcftools mpileup -Ou -q {params.bq} -Q {params.mq} -f {params.fasta} -I -E -a 'FORMAT/DP' -T {input.sites} -b {input.bams} | \
-        bcftools call -Aim -C alleles -T {input.sites} -Oz -o {output.vcf} && bcftools index -f {output.vcf} &> {log}
+        (
+        bcftools mpileup -q {params.bq} -Q {params.mq} -f {params.fasta} -I -E -A -a 'FORMAT/DP' -r {wildcards.chrom} -T {input.sites[0]} -b {input.bams} -Ou \
+        | bcftools call -Aim -C alleles -T {input.tsv[0]} -Ob -o {output.vcf} && bcftools index -f {output.vcf} \
+        ) &> {log}
         """
 
 
@@ -40,19 +51,27 @@ rule glimpse_phase:
             "{chrom}",
             "down{depth}x.{chrom}.chunks{chunkid}.bcf.csi",
         ),
+    log:
+        os.path.join(
+            OUTDIR_GLIMPSE,
+            "panelsize{size}",
+            "{chrom}",
+            "down{depth}x.{chrom}.chunks{chunkid}.bcf.llog",
+        ),
     params:
-        get_glimpse_chunks,
         N="glimpse_phase",
+        irg=get_glimpse_chunki_irg,
+        org=get_glimpse_chunki_org,
     shell:
         """
         (
             /usr/bin/time -v GLIMPSE_phase \
             --input {input.glvcf} \
             --reference {input.refvcf} \
-            --input-region {params[{wildcards.chunkid}]['irg']} \
-            --output-region {params[{wildcards.chunkid}]['org']} \
-            --output {output.vcf}
-            bcftools index -f {output.csi}
+            --input-region {params.irg} \
+            --output-region {params.org} \
+            --output {output.vcf} && \
+            bcftools index -f {output.vcf} \
         ) &> {log}
         """
 
