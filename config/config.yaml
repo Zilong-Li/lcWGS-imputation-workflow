@@ -7,7 +7,7 @@ genome:
   build: Oar_v3.1
   refpanel: config/refpanel.tsv
 
-downsample: [0.1, 0.25, 0.5, 1.0]
+downsample: [0.1, 0.25, 0.5, 1.0, 2.0]
 
 # refsize: [0, 100, 200, 300, 400]
 refsize: [0]
