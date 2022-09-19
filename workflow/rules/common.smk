@@ -142,3 +142,7 @@ def collect_quilt_log_zilong(wildcards):
     return expand(
         rules.quilt_run_zilong.log, zip, start=starts, end=ends, allow_missing=True
     )
+
+def collect_glimpse_log(wildcards):
+    d = get_glimpse_chunks(wildcards)
+    return expand(rules.glimpse_phase.log, chunkid=d.keys(), allow_missing=True)

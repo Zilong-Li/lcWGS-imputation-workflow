@@ -68,12 +68,14 @@ accuracy_by_af <- lapply(1:length(deps), function(i) {
     acc_r2_by_af(df.truth, dl.regular[[i]], dl.mspbwt[[i]], dl.zilong[[i]], dl.glimpse[[i]], af, bins)
 })
 
+mycols <- c("black", "orange", "red", "blue" )
+
 pdf(snakemake@output[[1]], w=12, h=6)
 par(mfrow = c(1, 2))
-plot(deps, accuracy[1,], type = "b", lwd=1.5, pch = 1, ylab = "Aggregated R2 for the chromosome", xlab = "Samples sequencing depth", ylim=c(0.4, 1.0))
-lines(deps, accuracy[2,], type = "b", lwd=1.5, pch = 1, col = "orange")
-lines(deps, accuracy[3,], type = "b", lwd=1.5, pch = 1, col = "red")
-lines(deps, accuracy[4,], type = "b", lwd=1.5, pch = 1, col = "blue")
+plot(deps, accuracy[1,], type = "b", lwd=1.5, pch = 1, col = mycols[1], ylab = "Aggregated R2 for the chromosome", xlab = "Samples sequencing depth", ylim=c(0.4, 1.0))
+lines(deps, accuracy[2,], type = "b", lwd=1.5, pch = 1, col = mycols[2])
+lines(deps, accuracy[3,], type = "b", lwd=1.5, pch = 1, col = mycols[3])
+lines(deps, accuracy[4,], type = "b", lwd=1.5, pch = 1, col = mycols[4])
 legend("bottomright", legend=c("QUILT-regular", "QUILT-mspbwt", "QUILT-zilong", "GLIMPSE"), col=c("black", "orange", "red", "blue"), pch = 1, lwd = 1.5, cex = 1.1, xjust = 0, yjust = 1, bty = "n")
 
 plot(1, col = "transparent", xlim = c(0, 0.5), ylim = c(0, 1.0), ylab = "Aggregated R2 within each MAF bin",  xlab = "Minor Allele Frequency")
@@ -81,13 +83,13 @@ nd <- length(deps)
 for(i in 1:nd) {
     d <- accuracy_by_af[[i]]
     y <- unlist(ifelse(sapply(d$regular, is.null), NA, d$regular))
-    lines(as.numeric(d$bin), y, type = "b", lwd = i/nd * 2.5, pch = 1, col = "black")
+    lines(as.numeric(d$bin), y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[1])
     y <- unlist(ifelse(sapply(d$mspbwt, is.null), NA, d$mspbwt))
-    lines(as.numeric(d$bin), y, type = "b", lwd = i/nd * 2.5, pch = 1, col = "orange")
+    lines(as.numeric(d$bin), y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[2])
     y <- unlist(ifelse(sapply(d$zilong, is.null), NA, d$zilong))
-    lines(as.numeric(d$bin), y, type = "b", lwd = i/nd * 2.5, pch = 1, col = "red")
+    lines(as.numeric(d$bin), y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[3])
     y <- unlist(ifelse(sapply(d$glimpse, is.null), NA, d$glimpse))
-    lines(as.numeric(d$bin), y, type = "b", lwd = i/nd * 2.5, pch = 1, col = "blue")
+    lines(as.numeric(d$bin), y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[4])
 }
 legend("bottomright", legend=paste0(deps, "x"), lwd = (1:nd) * 2.5 / nd, bty = "n")
 
