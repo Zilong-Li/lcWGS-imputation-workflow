@@ -4,6 +4,7 @@ rule downsample_bam:
     output:
         os.path.join(OUTDIR_DOWNSAMPLE, "{sample}_{depth}x_{chrom}.bam"),
     params:
+        N="downsample_bam",
         depth=lambda wildcards: SAMPLES[wildcards.sample]["depth"],
         bam=lambda wildcards: SAMPLES[wildcards.sample]["bam"],
     log:
@@ -27,6 +28,8 @@ rule bamlist:
         os.path.join(OUTDIR_DOWNSAMPLE, "{depth}x_{chrom}.bamlist"),
     log:
         os.path.join(OUTDIR_DOWNSAMPLE, "{depth}x_{chrom}.bamlist.llog"),
+    params:
+        N="bamlist",
     conda:
         "../envs/pandas.yaml"
     shell:

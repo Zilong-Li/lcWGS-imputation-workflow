@@ -22,6 +22,8 @@ rule collect_speed_log:
         os.path.join(
             OUTDIR_SUMMARY, "speed.quilt.panelsize{size}.down{depth}x.{chrom}.txt.log"
         ),
+    params:
+        N="collect_speed_log",
     conda:
         "../envs/quilt.yaml"
     shell:
@@ -59,6 +61,8 @@ rule plot_speed:
         os.path.join(OUTDIR_SUMMARY, "speed.panelsize{size}.{chrom}.pdf"),
     log:
         os.path.join(OUTDIR_SUMMARY, "speed.panelsize{size}.{chrom}.pdf.llog"),
+    params:
+        N="plot_speed",
     conda:
         "../envs/quilt.yaml"
     script:

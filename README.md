@@ -5,6 +5,11 @@
 
 This workflow is for imputation using low coverage whole genome sequencing data with *QUILT*. And it can also performs benchmarking for both *QUILT* and *GLIMPSE* given different scenarios.
 
+## Dependencies
+
+- QUILT v1.0.3
+- GLIMPSE v1.1.1
+
 
 ## Usage
 

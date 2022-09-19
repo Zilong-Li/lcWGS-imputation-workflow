@@ -11,6 +11,7 @@ rule collect_truth_gts:
             "truth.gts.{chrom}.panelsize{size}.down{depth}x.{chrom}.log",
         ),
     params:
+        N="collect_truth_gts",
         samples=",".join(SAMPLES.keys()),
         truth=lambda wildcards: REFPANEL[wildcards.chrom]["truth"],
         ql1="%CHROM:%POS:%REF:%ALT\\t%AF\\t[\\t%GT]\\n",
@@ -43,6 +44,7 @@ rule collect_quilt_imputed_gts:
             OUTDIR_SUMMARY, "quilt.gts.panelsize{size}.down{depth}x.{chrom}.llog"
         ),
     params:
+        N="collect_quilt_imputed_gts",
         samples=",".join(SAMPLES.keys()),
         ql2="%CHROM:%POS:%REF:%ALT\\t[\\t%GT\\t%DS]\\n",
     conda:
@@ -68,6 +70,7 @@ rule collect_glimpse_imputed_gts:
             OUTDIR_SUMMARY, "glimpse.gts.panelsize{size}.down{depth}x.{chrom}.llog"
         ),
     params:
+        N="collect_glimpse_imputed_gts",
         samples=",".join(SAMPLES.keys()),
         ql2="%CHROM:%POS:%REF:%ALT\\t[\\t%GT\\t%DS]\\n",
     conda:

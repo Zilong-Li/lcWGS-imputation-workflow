@@ -92,7 +92,7 @@ def get_glimpse_chunks(wildcards):
     fn = os.path.join(OUTDIR_SUMMARY, f"{wildcards.chrom}.glimpse.chunks")
     if not os.path.isfile(fn):
         os.system(
-            f"GLIMPSE_chunk --input {REFPANEL[wildcards.chrom]['vcf']} --reference {REFPANEL[wildcards.chrom]['vcf']} --region {wildcards.chrom} --window-size {config['glimpse']['chunksize']} --buffer-size {config['glimpse']['buffer']} --output {fn} "
+            f"GLIMPSE_chunk --input {REFPANEL[wildcards.chrom]['vcf']} --region {wildcards.chrom} --window-size {config['glimpse']['chunksize']} --buffer-size {config['glimpse']['buffer']} --output {fn} "
         )
     d = dict()
     with open(fn) as f:
@@ -114,7 +114,7 @@ def get_glimpse_chunki_org(wildcards):
 
 def get_glimpse_phase_outputs(wildcards):
     d = get_glimpse_chunks(wildcards)
-    return expand(rules.glimpse_phase.output.vcf, chunkid=d.keys(), allow_missing=True)
+    return expand(rules.glimpse_phase.output, chunkid=d.keys(), allow_missing=True)
 
 
 def collect_quilt_log_regular(wildcards):
