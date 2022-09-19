@@ -1,15 +1,9 @@
 
 rule collect_truth_gts:
     output:
-        os.path.join(
-            OUTDIR_SUMMARY,
-            "truth.gts.{chrom}.panelsize{size}.down{depth}x.{chrom}.txt",
-        ),
+        os.path.join(OUTDIR_SUMMARY, "truth.gts.{chrom}.txt"),
     log:
-        os.path.join(
-            OUTDIR_SUMMARY,
-            "truth.gts.{chrom}.panelsize{size}.down{depth}x.{chrom}.log",
-        ),
+        os.path.join(OUTDIR_SUMMARY, "truth.gts.{chrom}.log"),
     params:
         N="collect_truth_gts",
         samples=",".join(SAMPLES.keys()),
@@ -83,11 +77,7 @@ rule collect_glimpse_imputed_gts:
 
 rule plot_quilt_accuracy:
     input:
-        truth=expand(
-            rules.collect_truth_gts.output,
-            depth=config["downsample"],
-            allow_missing=True,
-        ),
+        truth=rules.collect_truth_gts.output,
         regular=expand(
             rules.collect_quilt_imputed_gts.output.regular,
             depth=config["downsample"],
@@ -115,11 +105,7 @@ rule plot_quilt_accuracy:
 
 rule plot_all_accuracy:
     input:
-        truth=expand(
-            rules.collect_truth_gts.output,
-            depth=config["downsample"],
-            allow_missing=True,
-        ),
+        truth=rules.collect_truth_gts.output,
         glimpse=expand(
             rules.collect_glimpse_imputed_gts.output,
             depth=config["downsample"],
