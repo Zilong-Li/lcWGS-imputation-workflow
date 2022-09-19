@@ -1,5 +1,12 @@
 
 rule collect_truth_gts:
+    """would be better to use sites in subrefs"""
+    input:
+        sites=lambda wildcards: expand(
+            rules.subset_refpanel.output.sites,
+            size=config["refsize"],
+            allow_missing=True,
+        ),
     output:
         os.path.join(OUTDIR_SUMMARY, "truth.gts.{chrom}.txt"),
     log:
@@ -13,7 +20,7 @@ rule collect_truth_gts:
         "../envs/quilt.yaml"
     shell:
         """
-        bcftools +fill-tags {params.truth} -- -t AF |  bcftools view -s {params.samples} | bcftools query -f '{params.ql1}' | sed -E 's/\/|\|/\\t/g' > {output}
+        bcftools +fill-tags {params.truth} -- -t AF |  bcftools view -s {params.samples} -T {input.sites[0]} | bcftools query -f '{params.ql1}' | sed -E 's/\/|\|/\\t/g' > {output}
         """
 
 
@@ -93,6 +100,8 @@ rule plot_quilt_accuracy:
             depth=config["downsample"],
             allow_missing=True,
         ),
+    params:
+        N="plot_quilt_accuracy",
     output:
         os.path.join(OUTDIR_SUMMARY, "quilt.accuracy.panelsize{size}.{chrom}.pdf"),
     log:
@@ -130,6 +139,8 @@ rule plot_all_accuracy:
         os.path.join(OUTDIR_SUMMARY, "all.accuracy.panelsize{size}.{chrom}.pdf"),
     log:
         os.path.join(OUTDIR_SUMMARY, "all.accuracy.panelsize{size}.{chrom}.pdf.llog"),
+    params:
+        N="plot_all_accuracy",
     conda:
         "../envs/quilt.yaml"
     script:
