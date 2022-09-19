@@ -95,6 +95,6 @@ rule glimpse_ligate:
         N="glimpse_ligate",
     shell:
         """
-        echo {input} > {output.lst}
+        echo {input} | tr ' ' '\\n' > {output.lst}
         GLIMPSE_ligate --input {output.lst} --output {output.vcf} && bcftools index -f {output.vcf}
         """

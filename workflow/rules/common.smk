@@ -51,7 +51,7 @@ def get_samples_list_comma(wildcards):
         samples_all = (
             os.popen(f"bcftools query -l { REFPANEL[wildcards.chrom]['vcf'] }")
             .read()
-            .split("\n")
+            .split("\n")[:-1]
         )
         [samples_all.remove(i) for i in samples_target]
         samples_subset = random.sample(samples_all, size)
@@ -90,22 +90,15 @@ def get_glimpse_chunks(wildcards):
     if not os.path.exists(OUTDIR_SUMMARY):
         os.makedirs(OUTDIR_SUMMARY)
     fn = os.path.join(OUTDIR_SUMMARY, f"{wildcards.chrom}.glimpse.chunks")
-    if os.path.isfile(fn):
-        chunks = os.popen(f"cat {fn} ").read().split("\n")
-    else:
-        chunks = (
-            os.popen(
-                f"GLIMPSE_chunk --input {REFPANEL[wildcards.chrom]['vcf']} --reference {REFPANEL[wildcards.chrom]['vcf']} --region {wildcards.chrom} --window-size {config['glimpse']['chunksize']} --buffer-size {config['glimpse']['buffer']} --output {fn} && cat {fn} "
-            )
-            .read()
-            .split("\n")
+    if not os.path.isfile(fn):
+        os.system(
+            f"GLIMPSE_chunk --input {REFPANEL[wildcards.chrom]['vcf']} --reference {REFPANEL[wildcards.chrom]['vcf']} --region {wildcards.chrom} --window-size {config['glimpse']['chunksize']} --buffer-size {config['glimpse']['buffer']} --output {fn} "
         )
     d = dict()
-    for chunk in chunks:
-        if chunk == "":
-            continue
-        tmp = chunk.split("\t")
-        d[tmp[0]] = {"irg": tmp[2], "org": tmp[3]}
+    with open(fn) as f:
+        for row in f:
+            tmp = row.split("\t")
+            d[tmp[0]] = {"irg": tmp[2], "org": tmp[3]}
     return d
 
 
@@ -121,7 +114,7 @@ def get_glimpse_chunki_org(wildcards):
 
 def get_glimpse_phase_outputs(wildcards):
     d = get_glimpse_chunks(wildcards)
-    return expand(rules.glimpse_phase.output, chunkid=d.keys(), allow_missing=True)
+    return expand(rules.glimpse_phase.output.vcf, chunkid=d.keys(), allow_missing=True)
 
 
 def collect_quilt_log_regular(wildcards):
