@@ -4,14 +4,28 @@ rule quilt_prepare_regular:
         hap=rules.subset_refpanel.output.hap,
         leg=rules.subset_refpanel.output.leg,
     output:
-        "results/quilt/panelsize{size}/{chrom}/prep_regular/RData/QUILT_prepared_reference.{chrom}.{start}.{end}.RData",
+        os.path.join(
+            OUTDIR_QUILT,
+            "panelsize{size}",
+            "{chrom}",
+            "prep_regular",
+            "RData",
+            "QUILT_prepared_reference.{chrom}.{start}.{end}.RData",
+        ),
     params:
         N="quilt_prepare_regular",
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
         outdir=lambda wildcards, output: os.path.dirname(output[0])[:-5],
     log:
-        "results/quilt/panelsize{size}/{chrom}/prep_regular/RData/QUILT_prepared_reference.{chrom}.{start}.{end}.RData.llog",
+        os.path.join(
+            OUTDIR_QUILT,
+            "panelsize{size}",
+            "{chrom}",
+            "prep_regular",
+            "RData",
+            "QUILT_prepared_reference.{chrom}.{start}.{end}.RData.llog",
+        ),
     conda:
         "../envs/quilt.yaml"
     threads: 1
@@ -38,13 +52,28 @@ rule quilt_prepare_mspbwt:
         hap=rules.subset_refpanel.output.hap,
         leg=rules.subset_refpanel.output.leg,
     output:
-        "results/quilt/panelsize{size}/{chrom}/prep_mspbwt/RData/QUILT_prepared_reference.{chrom}.{start}.{end}.RData",
+        os.path.join(
+            OUTDIR_QUILT,
+            "panelsize{size}",
+            "{chrom}",
+            "prep_mspbwt",
+            "RData",
+            "QUILT_prepared_reference.{chrom}.{start}.{end}.RData",
+        ),
     params:
+        N="quilt_prepare_mspbwt",
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
         outdir=lambda wildcards, output: os.path.dirname(output[0])[:-5],
     log:
-        "results/quilt/panelsize{size}/{chrom}/prep_mspbwt/RData/QUILT_prepared_reference.{chrom}.{start}.{end}.RData.llog",
+        os.path.join(
+            OUTDIR_QUILT,
+            "panelsize{size}",
+            "{chrom}",
+            "prep_mspbwt",
+            "RData",
+            "QUILT_prepared_reference.{chrom}.{start}.{end}.RData.llog",
+        ),
     conda:
         "../envs/quilt.yaml"
     threads: 1
@@ -71,13 +100,28 @@ rule quilt_prepare_zilong:
         hap=rules.subset_refpanel.output.hap,
         leg=rules.subset_refpanel.output.leg,
     output:
-        "results/quilt/panelsize{size}/{chrom}/prep_zilong/RData/QUILT_prepared_reference.{chrom}.{start}.{end}.RData",
+        os.path.join(
+            OUTDIR_QUILT,
+            "panelsize{size}",
+            "{chrom}",
+            "prep_zilong",
+            "RData",
+            "QUILT_prepared_reference.{chrom}.{start}.{end}.RData",
+        ),
     params:
+        N="quilt_prepare_zilong",
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
         outdir=lambda wildcards, output: os.path.dirname(output[0])[:-5],
     log:
-        "results/quilt/panelsize{size}/{chrom}/prep_zilong/RData/QUILT_prepared_reference.{chrom}.{start}.{end}.RData.llog",
+        os.path.join(
+            OUTDIR_QUILT,
+            "panelsize{size}",
+            "{chrom}",
+            "prep_zilong",
+            "RData",
+            "QUILT_prepared_reference.{chrom}.{start}.{end}.RData.llog",
+        ),
     conda:
         "../envs/quilt.yaml"
     threads: 1
@@ -107,14 +151,23 @@ rule quilt_run_regular:
         rdata=rules.quilt_prepare_regular.output,
     output:
         temp(
-            "results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.regular.{chrom}.{start}.{end}.vcf.gz"
+            os.path.join(
+                OUTDIR_QUILT,
+                "panelsize{size}",
+                "{chrom}",
+                "quilt.down{depth}x.regular.{chrom}.{start}.{end}.vcf.gz",
+            )
         ),
     params:
+        N="quilt_run_regular",
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
     log:
         os.path.join(
-            "results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.regular.{chrom}.{start}.{end}.vcf.gz.llog"
+            OUTDIR_QUILT,
+            "panelsize{size}",
+            "{chrom}",
+            "quilt.down{depth}x.regular.{chrom}.{start}.{end}.vcf.gz.llog",
         ),
     conda:
         "../envs/quilt.yaml"
@@ -142,12 +195,29 @@ rule quilt_ligate_regular:
     input:
         get_quilt_output_regular,
     output:
-        vcf="results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.regular.{chrom}.bcf.gz",
+        vcf=os.path.join(
+            OUTDIR_QUILT,
+            "panelsize{size}",
+            "{chrom}",
+            "quilt.down{depth}x.regular.{chrom}.bcf.gz",
+        ),
         lst=temp(
-            "results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.regular.{chrom}.vcf.list"
+            os.path.join(
+                OUTDIR_QUILT,
+                "panelsize{size}",
+                "{chrom}",
+                "quilt.down{depth}x.regular.{chrom}.vcf.list",
+            )
         ),
     log:
-        "results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.regular.{chrom}.bcf.gz.llog",
+        os.path.join(
+            OUTDIR_QUILT,
+            "panelsize{size}",
+            "{chrom}",
+            "quilt.down{depth}x.regular.{chrom}.bcf.gz.llog",
+        ),
+    params:
+        N="quilt_ligate_regular",
     conda:
         "../envs/quilt.yaml"
     shell:
@@ -169,13 +239,24 @@ rule quilt_run_mspbwt:
         rdata=rules.quilt_prepare_mspbwt.output,
     output:
         temp(
-            "results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.mspbwt.{chrom}.{start}.{end}.vcf.gz"
+            os.path.join(
+                OUTDIR_QUILT,
+                "panelsize{size}",
+                "{chrom}",
+                "quilt.down{depth}x.mspbwt.{chrom}.{start}.{end}.vcf.gz",
+            )
         ),
     params:
+        N="quilt_run_mspbwt",
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
     log:
-        "results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.mspbwt.{chrom}.{start}.{end}.vcf.gz.llog",
+        os.path.join(
+            OUTDIR_QUILT,
+            "panelsize{size}",
+            "{chrom}",
+            "quilt.down{depth}x.mspbwt.{chrom}.{start}.{end}.vcf.gz.llog",
+        ),
     conda:
         "../envs/quilt.yaml"
     threads: 1
@@ -202,12 +283,29 @@ rule quilt_ligate_mspbwt:
     input:
         get_quilt_output_mspbwt,
     output:
-        vcf="results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.mspbwt.{chrom}.bcf.gz",
+        vcf=os.path.join(
+            OUTDIR_QUILT,
+            "panelsize{size}",
+            "{chrom}",
+            "quilt.down{depth}x.mspbwt.{chrom}.bcf.gz",
+        ),
         lst=temp(
-            "results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.mspbwt.{chrom}.vcf.list"
+            os.path.join(
+                OUTDIR_QUILT,
+                "panelsize{size}",
+                "{chrom}",
+                "quilt.down{depth}x.mspbwt.{chrom}.vcf.list",
+            )
         ),
     log:
-        "results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.mspbwt.{chrom}.bcf.gz.llog",
+        os.path.join(
+            OUTDIR_QUILT,
+            "panelsize{size}",
+            "{chrom}",
+            "quilt.down{depth}x.mspbwt.{chrom}.bcf.gz.llog",
+        ),
+    params:
+        N="quilt_ligate_mspbwt",
     conda:
         "../envs/quilt.yaml"
     shell:
@@ -229,15 +327,26 @@ rule quilt_run_zilong:
         rdata=rules.quilt_prepare_zilong.output,
     output:
         temp(
-            "results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.zilong.{chrom}.{start}.{end}.vcf.gz"
+            os.path.join(
+                OUTDIR_QUILT,
+                "panelsize{size}",
+                "{chrom}",
+                "quilt.down{depth}x.zilong.{chrom}.{start}.{end}.vcf.gz",
+            )
         ),
     params:
+        N="quilt_run_zilong",
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
         pbwtL=config["quilt"]["pbwtL"],
         pbwtS=config["quilt"]["pbwtS"],
     log:
-        "results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.zilong.{chrom}.{start}.{end}.vcf.gz.llog",
+        os.path.join(
+            OUTDIR_QUILT,
+            "panelsize{size}",
+            "{chrom}",
+            "quilt.down{depth}x.zilong.{chrom}.{start}.{end}.vcf.gz.llog",
+        ),
     conda:
         "../envs/quilt.yaml"
     threads: 1
@@ -266,12 +375,29 @@ rule quilt_ligate_zilong:
     input:
         get_quilt_output_zilong,
     output:
-        vcf="results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.zilong.{chrom}.bcf.gz",
+        vcf=os.path.join(
+            OUTDIR_QUILT,
+            "panelsize{size}",
+            "{chrom}",
+            "quilt.down{depth}x.zilong.{chrom}.bcf.gz",
+        ),
         lst=temp(
-            "results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.zilong.{chrom}.vcf.list"
+            os.path.join(
+                OUTDIR_QUILT,
+                "panelsize{size}",
+                "{chrom}",
+                "quilt.down{depth}x.zilong.{chrom}.vcf.list",
+            )
         ),
     log:
-        "results/quilt/panelsize{size}/{chrom}/quilt.{depth}x.zilong.{chrom}.bcf.gz.llog",
+        os.path.join(
+            OUTDIR_QUILT,
+            "panelsize{size}",
+            "{chrom}",
+            "quilt.down{depth}x.zilong.{chrom}.bcf.gz.llog",
+        ),
+    params:
+        N="quilt_ligate_zilong",
     conda:
         "../envs/quilt.yaml"
     shell:

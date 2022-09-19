@@ -1,4 +1,3 @@
-OUTDIR_PANEL = "results/subrefs"
 
 
 rule subset_refpanel:

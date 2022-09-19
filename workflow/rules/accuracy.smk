@@ -1,5 +1,3 @@
-OUTDIR_REPORT = "results/reports"
-
 
 rule collect_imputed_gts:
     input:
@@ -8,20 +6,22 @@ rule collect_imputed_gts:
         zilong=rules.quilt_ligate_zilong.output.vcf,
     output:
         truth=os.path.join(
-            OUTDIR_REPORT, "truth.gts.{chrom}.panelsize{size}.down{depth}x.{chrom}.txt"
+            OUTDIR_SUMMARY,
+            "truth.gts.{chrom}.panelsize{size}.down{depth}x.{chrom}.txt",
         ),
         regular=os.path.join(
-            OUTDIR_REPORT, "quilt.gts.regular.panelsize{size}.down{depth}x.{chrom}.txt"
+            OUTDIR_SUMMARY,
+            "quilt.gts.regular.panelsize{size}.down{depth}x.{chrom}.txt",
         ),
         mspbwt=os.path.join(
-            OUTDIR_REPORT, "quilt.gts.mspbwt.panelsize{size}.down{depth}x.{chrom}.txt"
+            OUTDIR_SUMMARY, "quilt.gts.mspbwt.panelsize{size}.down{depth}x.{chrom}.txt"
         ),
         zilong=os.path.join(
-            OUTDIR_REPORT, "quilt.gts.zilong.panelsize{size}.down{depth}x.{chrom}.txt"
+            OUTDIR_SUMMARY, "quilt.gts.zilong.panelsize{size}.down{depth}x.{chrom}.txt"
         ),
     log:
         os.path.join(
-            OUTDIR_REPORT, "accuracy.panelsize{size}.down{depth}x.{chrom}.llog"
+            OUTDIR_SUMMARY, "accuracy.panelsize{size}.down{depth}x.{chrom}.llog"
         ),
     params:
         samples=",".join(SAMPLES.keys()),
@@ -62,9 +62,9 @@ rule plot_accuracy:
             allow_missing=True,
         ),
     output:
-        os.path.join(OUTDIR_REPORT, "quilt.accuracy.panelsize{size}.{chrom}.pdf"),
+        os.path.join(OUTDIR_SUMMARY, "quilt.accuracy.panelsize{size}.{chrom}.pdf"),
     log:
-        os.path.join(OUTDIR_REPORT, "quilt.accuracy.panelsize{size}.{chrom}.pdf.llog"),
+        os.path.join(OUTDIR_SUMMARY, "quilt.accuracy.panelsize{size}.{chrom}.pdf.llog"),
     conda:
         "../envs/quilt.yaml"
     script:

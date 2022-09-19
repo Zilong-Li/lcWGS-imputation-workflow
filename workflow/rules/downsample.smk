@@ -1,4 +1,3 @@
-OUTDIR_DOWNSAMPLE = "results/downsample"
 
 
 rule downsample_bam:

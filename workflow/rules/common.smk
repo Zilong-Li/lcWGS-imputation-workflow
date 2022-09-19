@@ -16,6 +16,14 @@ REFPANEL = (
     .to_dict(orient="index")
 )
 
+OUTDIR = "results"
+OUTDIR_DOWNSAMPLE = os.path.join(OUTDIR, "downsample", "")
+OUTDIR_PANEL = os.path.join(OUTDIR, "subrefs", "")
+OUTDIR_QUILT = os.path.join(OUTDIR, "quilt", "")
+OUTDIR_GLIMPSE = os.path.join(OUTDIR, "glimpse", "")
+OUTDIR_SUMMARY = os.path.join(OUTDIR, "summary", "")
+OUTDIR_REPORT = os.path.join(OUTDIR, "report", "")
+
 
 def get_regions_list_per_chrom(chrom, chunksize):
     """split chr into chunks given chunksize; return a list of '[start,end]' pairs"""
@@ -78,21 +86,28 @@ def get_quilt_output_zilong(wildcards):
 
 
 def get_glimpse_chunks(wildcards):
-    chunks = (
-        os.popen(
-            f"GLIMPSE_chunk --input {REFPANEL[wildcards.chrom]['vcf']} --reference {REFPANEL[wildcards.chrom]['vcf']} --region {wildcards.chrom} --window-size {config['glimpse']['chunksize']} --buffer-size {config['glimpse']['buffer']} --output {REFPANEL[wildcards.chrom]['vcf']}.chunks && cat {REFPANEL[wildcards.chrom]['vcf']}.chunks"
+    """ugly but it's good to use GLIMPSE_chunk split the chromosome first"""
+    fn = os.path.join(OUTDIR_SUMMARY, f"{wildcards.chrom}.glimpse.chunks")
+    if os.path.isfile(fn):
+        chunks = os.popen(f"cat {fn} ").read().split("\n")
+    else:
+        chunks = (
+            os.popen(
+                f"GLIMPSE_chunk --input {REFPANEL[wildcards.chrom]['vcf']} --reference {REFPANEL[wildcards.chrom]['vcf']} --region {wildcards.chrom} --window-size {config['glimpse']['chunksize']} --buffer-size {config['glimpse']['buffer']} --output {fn} && cat {fn} "
+            )
+            .read()
+            .split("\n")
         )
-        .read()
-        .split("\n")
-    )
     d = dict()
     for chunk in chunks:
+        if chunk == "":
+            continue
         tmp = chunk.split("\t")
         d[tmp[0]] = {"irg": tmp[2], "org": tmp[3]}
     return d
 
 
-def get_glimpse_outputs(wildcards):
+def get_glimpse_phase_outputs(wildcards):
     d = get_glimpse_chunks(wildcards)
     return expand(rules.glimpse_phase.output, chunkid=d.keys(), allow_missing=True)
 

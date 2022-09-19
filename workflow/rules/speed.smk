@@ -1,5 +1,3 @@
-OUTDIR_REPORT = "results/reports"
-
 
 rule summary_speed:
     input:
@@ -8,17 +6,17 @@ rule summary_speed:
         zilong=collect_quilt_log_zilong,
     output:
         regular=os.path.join(
-            OUTDIR_REPORT, "quilt.regular.panelsize{size}.down{depth}x.{chrom}.txt"
+            OUTDIR_SUMMARY, "quilt.regular.panelsize{size}.down{depth}x.{chrom}.txt"
         ),
         mspbwt=os.path.join(
-            OUTDIR_REPORT, "quilt.mspbwt.panelsize{size}.down{depth}x.{chrom}.txt"
+            OUTDIR_SUMMARY, "quilt.mspbwt.panelsize{size}.down{depth}x.{chrom}.txt"
         ),
         zilong=os.path.join(
-            OUTDIR_REPORT, "quilt.zilong.panelsize{size}.down{depth}x.{chrom}.txt"
+            OUTDIR_SUMMARY, "quilt.zilong.panelsize{size}.down{depth}x.{chrom}.txt"
         ),
     log:
         os.path.join(
-            OUTDIR_REPORT, "quilt.panelsize{size}.down{depth}x.{chrom}.txt.log"
+            OUTDIR_SUMMARY, "quilt.panelsize{size}.down{depth}x.{chrom}.txt.log"
         ),
     conda:
         "../envs/quilt.yaml"
@@ -48,9 +46,9 @@ rule plot_speed:
             allow_missing=True,
         ),
     output:
-        os.path.join(OUTDIR_REPORT, "quilt.speed.panelsize{size}.{chrom}.pdf"),
+        os.path.join(OUTDIR_SUMMARY, "quilt.speed.panelsize{size}.{chrom}.pdf"),
     log:
-        os.path.join(OUTDIR_REPORT, "quilt.speed.panelsize{size}.{chrom}.pdf.llog"),
+        os.path.join(OUTDIR_SUMMARY, "quilt.speed.panelsize{size}.{chrom}.pdf.llog"),
     conda:
         "../envs/quilt.yaml"
     script:
