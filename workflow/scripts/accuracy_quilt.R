@@ -33,7 +33,7 @@ acc_r2_by_af <- function(d0, d1, d2, d3, af, breaks) {
     as.data.frame(cbind(bin = breaks[-1], regular = sapply(d1_cor_af, "[[", "simple"),  mspbwt = sapply(d2_cor_af, "[[", "simple"), zilong = sapply(d3_cor_af, "[[", "simple")))
 }
 
-deps <- as.numeric(snakemake@config[["downsample"]])
+groups <- as.numeric(snakemake@config[["downsample"]])
 
 df.truth <- read.table(snakemake@input[["truth"]])
 af <- as.numeric(read.table(snakemake@input[["af"]])[,1])
@@ -50,12 +50,12 @@ bins <- sort(unique(c(
     seq(0.1, 0.5, length.out = 5)
 )))
 
-accuracy <- matrix(sapply(1:length(deps), function(i) {
+accuracy <- matrix(sapply(1:length(groups), function(i) {
     acc_r2_all(df.truth, dl.regular[[i]], dl.mspbwt[[i]], dl.zilong[[i]])
-}), ncol = length(deps))
+}), ncol = length(groups))
 
 
-accuracy_by_af <- lapply(1:length(deps), function(i) {
+accuracy_by_af <- lapply(1:length(groups), function(i) {
     acc_r2_by_af(df.truth, dl.regular[[i]], dl.mspbwt[[i]], dl.zilong[[i]], af, bins)
 })
 
@@ -63,13 +63,13 @@ mycols <- c("black", "orange", "red", "blue" )
 
 pdf(snakemake@output[[1]], w=12, h=6)
 par(mfrow = c(1, 2))
-plot(deps, accuracy[1,], type = "b", lwd=1.5, pch = 1, col = mycols[1], ylab = "Aggregated R2 for the chromosome", xlab = "Samples sequencing depth", ylim=c(0.7, 1.0))
-lines(deps, accuracy[2,], type = "b", lwd=1.5, pch = 1, col = mycols[2])
-lines(deps, accuracy[3,], type = "b", lwd=1.5, pch = 1, col = mycols[3])
+plot(groups, accuracy[1,], type = "b", lwd=1.5, pch = 1, col = mycols[1], ylab = "Aggregated R2 for the chromosome", xlab = "Samples sequencing depth", ylim=c(0.7, 1.0))
+lines(groups, accuracy[2,], type = "b", lwd=1.5, pch = 1, col = mycols[2])
+lines(groups, accuracy[3,], type = "b", lwd=1.5, pch = 1, col = mycols[3])
 legend("bottomright", legend=c("QUILT-regular", "QUILT-mspbwt", "QUILT-zilong"), col=c("black", "orange", "red"), pch = c(1,1,1), lwd = 1.5, cex = 1.1, xjust = 0, yjust = 1, bty = "n")
 
 plot(1, col = "transparent", xlim = c(0, 0.5), ylim = c(0, 1.0), ylab = "Aggregated R2 within each MAF bin",  xlab = "Minor Allele Frequency")
-nd <- length(deps)
+nd <- length(groups)
 for(i in 1:nd) {
     d <- accuracy_by_af[[i]]
     x <- log10(as.numeric(d$bin))
@@ -80,6 +80,6 @@ for(i in 1:nd) {
     y <- unlist(ifelse(sapply(d$zilong, is.null), NA, d$zilong))
     lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[3])
 }
-legend("bottomright", legend=paste0(deps, "x"), lwd = (1:nd) * 2.5 / nd, bty = "n")
+legend("bottomright", legend=paste0(groups, "x"), lwd = (1:nd) * 2.5 / nd, bty = "n")
 
 dev.off()

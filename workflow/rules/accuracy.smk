@@ -10,6 +10,7 @@ rule collect_truth_gts:
     output:
         gt=os.path.join(OUTDIR_SUMMARY, "truth.gts.{chrom}.txt"),
         af=os.path.join(OUTDIR_SUMMARY, "af.input.panel.{chrom}.txt"),
+        tmp=temp(os.path.join(OUTDIR_SUMMARY, "af.input.panel.{chrom}.txt.tmp")),
     log:
         os.path.join(OUTDIR_SUMMARY, "truth.gts.{chrom}.log"),
     params:
@@ -25,8 +26,8 @@ rule collect_truth_gts:
         "../envs/quilt.yaml"
     shell:
         """
-        bcftools +fill-tags {params.ref} -- -t AF |  bcftools query -f '{params.ql1}' > {output.af}.tmp
-        awk '{params.awk}' <(bcftools query -f '{params.ql0}' {input.sites[0]}) {output.af}.tmp >{output.af}
+        bcftools +fill-tags {params.ref} -- -t AF |  bcftools query -f '{params.ql1}' > {output.tmp}
+        awk '{params.awk}' <(bcftools query -f '{params.ql0}' {input.sites[0]}) {output.tmp} >{output.af}
         bcftools view -s {params.samples} -T {input.sites[0]} {params.truth} | bcftools query -f '{params.ql2}' | sed -E 's/\/|\|/\\t/g' > {output.gt}
         """
 
@@ -117,10 +118,46 @@ rule plot_quilt_accuracy:
     conda:
         "../envs/quilt.yaml"
     script:
-        "../scripts/accuracy.R"
+        "../scripts/accuracy_quilt.R"
 
 
-rule plot_all_accuracy:
+rule plot_accuracy_panelsize:
+    input:
+        truth=rules.collect_truth_gts.output.gt,
+        af=rules.collect_truth_gts.output.af,
+        glimpse=expand(
+            rules.collect_glimpse_imputed_gts.output,
+            size=config["refsize"],
+            allow_missing=True,
+        ),
+        regular=expand(
+            rules.collect_quilt_imputed_gts.output.regular,
+            size=config["refsize"],
+            allow_missing=True,
+        ),
+        mspbwt=expand(
+            rules.collect_quilt_imputed_gts.output.mspbwt,
+            size=config["refsize"],
+            allow_missing=True,
+        ),
+        zilong=expand(
+            rules.collect_quilt_imputed_gts.output.zilong,
+            size=config["refsize"],
+            allow_missing=True,
+        ),
+    output:
+        os.path.join(OUTDIR_SUMMARY, "all.accuracy.down{depth}x.{chrom}.pdf"),
+    log:
+        os.path.join(OUTDIR_SUMMARY, "all.accuracy.down{depth}x.{chrom}.llog"),
+    params:
+        N="plot_accuracy_panelsize",
+    conda:
+        "../envs/quilt.yaml"
+    script:
+        "../scripts/accuracy_panelsize.R"
+
+
+rule plot_accuracy_depth:
     input:
         truth=rules.collect_truth_gts.output.gt,
         af=rules.collect_truth_gts.output.af,
@@ -152,8 +189,8 @@ rule plot_all_accuracy:
     log:
         os.path.join(OUTDIR_SUMMARY, "all.accuracy.panelsize{size}.{chrom}.pdf.llog"),
     params:
-        N="plot_all_accuracy",
+        N="plot_accuracy_depth",
     conda:
         "../envs/quilt.yaml"
     script:
-        "../scripts/accuracy2.R"
+        "../scripts/accuracy_depth.R"
