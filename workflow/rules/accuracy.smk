@@ -2,8 +2,8 @@
 rule collect_truth_gts:
     """would be better to use sites in subrefs"""
     input:
-        tsv=lambda wildcards: expand(
-            rules.subset_refpanel.output.tsv,
+        sites=lambda wildcards: expand(
+            rules.subset_refpanel.output.sites,
             size=config["refsize"],
             allow_missing=True,
         ),
@@ -11,6 +11,7 @@ rule collect_truth_gts:
         gt=os.path.join(OUTDIR_SUMMARY, "truth.gts.{chrom}.txt"),
         af=os.path.join(OUTDIR_SUMMARY, "af.input.panel.{chrom}.txt"),
         tmp=temp(os.path.join(OUTDIR_SUMMARY, "af.input.panel.{chrom}.txt.tmp")),
+        tmp2=os.path.join(OUTDIR_SUMMARY, "truth.gts.{chrom}.txt.tmp"),
     log:
         os.path.join(OUTDIR_SUMMARY, "truth.gts.{chrom}.log"),
     params:
@@ -21,14 +22,16 @@ rule collect_truth_gts:
         ql0="%CHROM:%POS:%REF:%ALT\\n",
         ql1="%CHROM:%POS:%REF:%ALT\\t%AF\\n",
         ql2="%CHROM:%POS:%REF:%ALT\\t[\\t%GT]\\n",
-        awk="NR==FNR{a[$1]=1;} NR!=FNR{if(a[$1]) print $2;}",
+        awk="NR==FNR{a[$1]=1;} NR!=FNR{if(a[$1]){print $2;}}",
+        awk2="NR==FNR{a[$1]=1;} NR!=FNR{if(a[$1]){print $0;}}",
     conda:
         "../envs/quilt.yaml"
     shell:
         """
         bcftools +fill-tags {params.ref} -- -t AF |  bcftools query -f '{params.ql1}' > {output.tmp}
-        awk '{params.awk}' <(bcftools query -f '{params.ql0}' {input.tsv[0]}) {output.tmp} >{output.af}
-        bcftools view -s {params.samples} -T {input.tsv[0]} {params.truth} | bcftools query -f '{params.ql2}' | sed -E 's/\/|\|/\\t/g' > {output.gt}
+        awk '{params.awk}' <(bcftools query -f '{params.ql0}' {input.sites[0]}) {output.tmp} >{output.af}
+        bcftools view -s {params.samples} {params.truth} | bcftools query -f '{params.ql2}' | sed -E 's/\/|\|/\\t/g' > {output.tmp2}
+        awk '{params.awk2}' <(bcftools query -f '{params.ql0}' {input.sites[0]}) {output.tmp2} >{output.gt}
         """
 
 
