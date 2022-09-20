@@ -25,6 +25,8 @@ rule glimpse_prepare_glvcf:
         fasta=config["genome"]["fasta"],
         bq=config["glimpse"]["bq"],
         mq=config["glimpse"]["mq"],
+    conda:
+        "../envs/pandas.yaml"
     shell:
         """
         (
@@ -58,6 +60,8 @@ rule glimpse_phase:
         N="glimpse_phase",
         irg=get_glimpse_chunki_irg,
         org=get_glimpse_chunki_org,
+    conda:
+        "../envs/pandas.yaml"
     shell:
         """
         (
@@ -87,8 +91,12 @@ rule glimpse_ligate:
                 "down{depth}x.{chrom}.vcf.list",
             ),
         ),
+    log:
+        os.path.join(OUTDIR_GLIMPSE, "panelsize{size}", "{chrom}", "down{depth}x.{chrom}.llog"),
     params:
         N="glimpse_ligate",
+    conda:
+        "../envs/pandas.yaml"
     shell:
         """
         echo {input} | tr ' ' '\\n' > {output.lst}

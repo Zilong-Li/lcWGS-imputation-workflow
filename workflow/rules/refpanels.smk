@@ -5,6 +5,8 @@ rule subset_sample_list:
         samples=temp(os.path.join(OUTDIR_PANEL, "{chrom}.size{size}.kept.samples")),
     params:
         N="subset_sample_list",
+    log:
+        os.path.join(OUTDIR_PANEL, "{chrom}.size{size}.kept.samples.llog"),
     run:
         samples_target = SAMPLES.keys()
         samples_all = (
