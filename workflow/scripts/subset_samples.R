@@ -1,6 +1,6 @@
 
 ql <- paste("query", "-l", snakemake@params[["vcf"]] )
-size <- int(snakemake@wildcards[["size"]] )
+size <- as.integer(snakemake@wildcards[["size"]] )
 allsamples <- system2("bcftools", ql, stdout = TRUE)
 targesamples <- snakemake@params[["samples"]]
 # remove target sample from the panel
@@ -9,6 +9,6 @@ if(size == 0) {
     subsets <- allsamples
 } else {
     # random sample N pairs haplotypes
-    subsets <- sample(1:length(allsamples), size)
+    subsets <- allsamples[sort(sample(1:length(allsamples), size))]
 }
 cat(subsets, file = snakemake@output[[1]], sep = "\n")
