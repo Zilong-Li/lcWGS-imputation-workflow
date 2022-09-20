@@ -115,5 +115,5 @@ for(i in 1:nd) {
 }
 axis(side = 1, at = x, labels=labels)
 axis(side = 2)
-legend("bottomleft", legend=c("QUILT-regular", "QUILT-mspbwt", "QUILT-zilong", "GLIMPSE"), col=c("black", "orange", "red", "blue"), pch = 1, lwd = 1.5, cex = 1.0, xjust = 0, yjust = 1, bty = "n")
+legend("bottomleft", legend=c("QUILT-regular", "QUILT-mspbwt", "QUILT-zilong", "GLIMPSE"), col=mycols, pch = 1, lwd = 1.5, cex = 1.0, xjust = 0, yjust = 1, bty = "n")
 dev.off()

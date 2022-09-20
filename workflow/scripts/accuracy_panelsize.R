@@ -63,14 +63,30 @@ saveRDS(accuracy_by_af, snakemake@output[["rds"]])
 wong <- c("#e69f00", "#d55e00", "#56b4e9", "#cc79a7", "#009e73", "#0072b2", "#f0e442")
 mycols <- wong[1:4]
 
-pdf(snakemake@output[["pdf"]], w=12, h=6)
+pdf(snakemake@output[["pdf"]], w=8, h=12)
 a1 <- accuracy_by_af[[1]]
 x <- a1$bin[!sapply(a1[,2], is.null)]
 x <- log10(as.numeric(x))
 labels <- 100 * bins[-1]
 labels <- labels[!sapply(a1[,2], is.null)]
 
-par(mfrow = c(1, 2))
+par(mfrow = c(2,1))
+plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.90, 1.0), ylab = "Aggregated R2 within each MAF bin",  xlab = "Minor Allele Frequency")
+for(i in 1:nd) {
+    d <- accuracy_by_af[[i]]
+    y <- rmnull(d$regular)
+    lines(x, y, type = "b", lty = nd-i+1, pch = 1, col = mycols[1])
+    y <- rmnull(d$mspbwt)
+    lines(x, y, type = "b", lwd = nd-i+1, pch = 1, col = mycols[2])
+    y <- rmnull(d$zilong)
+    lines(x, y, type = "b", lwd = nd-i+1, pch = 1, col = mycols[3])
+    y <- rmnull(d$glimpse)
+    lines(x, y, type = "b", lwd = nd-i+1, pch = 1, col = mycols[4])
+}
+axis(side = 1, at = x, labels=labels)
+axis(side = 2)
+legend("bottomleft", legend=c("QUILT-regular", "QUILT-mspbwt", "QUILT-zilong", "GLIMPSE"), col=mycols, pch = 1, lwd = 1.5, cex = 1.0, xjust = 0, yjust = 1, bty = "n")
+
 plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0, 1.0), ylab = "Aggregated R2 within each MAF bin",  xlab = "Minor Allele Frequency")
 nd <- length(groups)
 for(i in 1:nd) {
@@ -88,19 +104,4 @@ axis(side = 1, at = x, labels=labels)
 axis(side = 2, at = seq(0, 1, 0.2))
 legend("bottomright", legend=paste0("N=",groups), lty = nd:1, bty = "n")
 
-plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.90, 1.0), ylab = "Aggregated R2 within each MAF bin",  xlab = "Minor Allele Frequency")
-for(i in 1:nd) {
-    d <- accuracy_by_af[[i]]
-    y <- rmnull(d$regular)
-    lines(x, y, type = "b", lty = nd-i+1, pch = 1, col = mycols[1])
-    y <- rmnull(d$mspbwt)
-    lines(x, y, type = "b", lwd = nd-i+1, pch = 1, col = mycols[2])
-    y <- rmnull(d$zilong)
-    lines(x, y, type = "b", lwd = nd-i+1, pch = 1, col = mycols[3])
-    y <- rmnull(d$glimpse)
-    lines(x, y, type = "b", lwd = nd-i+1, pch = 1, col = mycols[4])
-}
-axis(side = 1, at = x, labels=labels)
-axis(side = 2)
-legend("bottomleft", legend=c("QUILT-regular", "QUILT-mspbwt", "QUILT-zilong", "GLIMPSE"), col=c("black", "orange", "red", "blue"), pch = 1, lwd = 1.5, cex = 1.0, xjust = 0, yjust = 1, bty = "n")
 dev.off()

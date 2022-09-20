@@ -11,7 +11,7 @@ rule collect_truth_gts:
         gt=os.path.join(OUTDIR_SUMMARY, "truth.gts.{chrom}.txt"),
         af=os.path.join(OUTDIR_SUMMARY, "af.input.panel.{chrom}.txt"),
         tmp=temp(os.path.join(OUTDIR_SUMMARY, "af.input.panel.{chrom}.txt.tmp")),
-        tmp2=os.path.join(OUTDIR_SUMMARY, "truth.gts.{chrom}.txt.tmp"),
+        tmp2=temp(os.path.join(OUTDIR_SUMMARY, "truth.gts.{chrom}.txt.tmp")),
     log:
         os.path.join(OUTDIR_SUMMARY, "truth.gts.{chrom}.log"),
     params:
