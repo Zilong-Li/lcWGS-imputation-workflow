@@ -56,9 +56,13 @@ saveRDS(accuracy_by_af, snakemake@output[["rds"]])
 mycols <- c("black", "orange", "red", "blue" )
 
 pdf(snakemake@output[["pdf"]], w=12, h=6)
-par(mfrow = c(1, 2))
-x <- log10(as.numeric(accuracy_by_af[[1]]$bin))
+a1 <- accuracy_by_af[[1]]
+x <- a1$bin[!sapply(a1[,2], is.null)]
+x <- log10(as.numeric(x))
+labels <- 100 * bins[-1]
+labels <- labels[!sapply(a1[,2], is.null)]
 
+par(mfrow = c(1, 2))
 plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0, 1.0), ylab = "Aggregated R2 within each MAF bin",  xlab = "Minor Allele Frequency")
 nd <- length(groups)
 for(i in 1:nd) {
@@ -72,7 +76,7 @@ for(i in 1:nd) {
     y <- unlist(ifelse(sapply(d$glimpse, is.null), NA, d$glimpse))
     lines(x, y, type = "b", lty = i, pch = 1, col = mycols[4])
 }
-axis(side = 1, at = x, labels=100*bins[-1])
+axis(side = 1, at = x, labels=labels)
 axis(side = 2, at = seq(0, 1, 0.2))
 legend("bottomright", legend=paste0("N=",groups), lty = 1:nd, bty = "n")
 
@@ -88,7 +92,7 @@ for(i in 1:nd) {
     y <- unlist(ifelse(sapply(d$glimpse, is.null), NA, d$glimpse))
     lines(x, y, type = "b", lty = i, pch = 1, col = mycols[4])
 }
-axis(side = 1, at = x, labels=100*bins[-1])
+axis(side = 1, at = x, labels=labels)
 axis(side = 2)
 legend("bottomright", legend=c("QUILT-regular", "QUILT-mspbwt", "QUILT-zilong", "GLIMPSE"), col=c("black", "orange", "red", "blue"), pch = 1, lwd = 1.5, cex = 1.1, xjust = 0, yjust = 1, bty = "n")
 dev.off()
