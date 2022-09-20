@@ -92,7 +92,9 @@ rule glimpse_ligate:
             ),
         ),
     log:
-        os.path.join(OUTDIR_GLIMPSE, "panelsize{size}", "{chrom}", "down{depth}x.{chrom}.llog"),
+        os.path.join(
+            OUTDIR_GLIMPSE, "panelsize{size}", "{chrom}", "down{depth}x.{chrom}.llog"
+        ),
     params:
         N="glimpse_ligate",
     conda:

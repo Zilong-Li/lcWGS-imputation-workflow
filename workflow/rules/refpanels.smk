@@ -5,20 +5,14 @@ rule subset_sample_list:
         samples=temp(os.path.join(OUTDIR_PANEL, "{chrom}.size{size}.kept.samples")),
     params:
         N="subset_sample_list",
+        samples=SAMPLES.keys(),
+        vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
     log:
         os.path.join(OUTDIR_PANEL, "{chrom}.size{size}.kept.samples.llog"),
-    run:
-        samples_target = SAMPLES.keys()
-        samples_all = (
-            os.popen(f"bcftools query -l { REFPANEL[wildcards.chrom]['vcf'] }")
-            .read()
-            .split("\n")[:-1]
-        )
-        [samples_all.remove(i) for i in samples_target]
-        size = int(wildcards.size)
-        samples_subset = samples_all if size == 0 else random.sample(samples_all, size)
-        with open(output.samples, "w") as outfile:
-            print("\n".join(samples_subset), file=outfile)
+    conda:
+        "../envs/quilt.yaml"
+    script:
+        "../scripts/subset_samples.R"
 
 
 rule subset_refpanel:

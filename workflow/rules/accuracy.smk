@@ -2,8 +2,8 @@
 rule collect_truth_gts:
     """would be better to use sites in subrefs"""
     input:
-        sites=lambda wildcards: expand(
-            rules.subset_refpanel.output.sites,
+        tsv=lambda wildcards: expand(
+            rules.subset_refpanel.output.tsv,
             size=config["refsize"],
             allow_missing=True,
         ),
@@ -27,8 +27,8 @@ rule collect_truth_gts:
     shell:
         """
         bcftools +fill-tags {params.ref} -- -t AF |  bcftools query -f '{params.ql1}' > {output.tmp}
-        awk '{params.awk}' <(bcftools query -f '{params.ql0}' {input.sites[0]}) {output.tmp} >{output.af}
-        bcftools view -s {params.samples} -T {input.sites[0]} {params.truth} | bcftools query -f '{params.ql2}' | sed -E 's/\/|\|/\\t/g' > {output.gt}
+        awk '{params.awk}' <(bcftools query -f '{params.ql0}' {input.tsv[0]}) {output.tmp} >{output.af}
+        bcftools view -s {params.samples} -T {input.tsv[0]} {params.truth} | bcftools query -f '{params.ql2}' | sed -E 's/\/|\|/\\t/g' > {output.gt}
         """
 
 
