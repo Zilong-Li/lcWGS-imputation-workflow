@@ -41,6 +41,12 @@ acc_r2_by_af <- function(d0, d1, d2, d3, d4, af, breaks) {
     as.data.frame(cbind(bin = breaks[-1], regular = sapply(d1_cor_af, "[[", "simple"),  mspbwt = sapply(d2_cor_af, "[[", "simple"), zilong = sapply(d3_cor_af, "[[", "simple"), glimpse = sapply(d4_cor_af, "[[", "simple")))
 }
 
+# https://stackoverflow.com/questions/33004238/r-removing-null-elements-from-a-list
+rmnull <- function(l) {
+   l <- l[!sapply(l, is.null)]
+   unlist(l)
+}
+
 groups <- as.numeric(snakemake@config[["downsample"]])
 
 df.truth <- read.table(snakemake@input[["truth"]])
@@ -78,16 +84,18 @@ labels <- labels[!sapply(a1[,2], is.null)]
 par(mfrow = c(1, 2))
 plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0, 1.0), ylab = "Aggregated R2 within each MAF bin",  xlab = "Minor Allele Frequency")
 nd <- length(groups)
+
 for(i in 1:nd) {
     d <- accuracy_by_af[[i]]
-    y <- unlist(ifelse(sapply(d$regular, is.null), NA, d$regular))
-    lines(x, na.omit(y), type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[1])
-    y <- unlist(ifelse(sapply(d$mspbwt, is.null), NA, d$mspbwt))
-    lines(x, na.omit(y), type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[2])
-    y <- unlist(ifelse(sapply(d$zilong, is.null), NA, d$zilong))
-    lines(x, na.omit(y), type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[3])
-    y <- unlist(ifelse(sapply(d$glimpse, is.null), NA, d$glimpse))
-    lines(x, na.omit(y), type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[4])
+    # https://stackoverflow.com/questions/33004238/r-removing-null-elements-from-a-list
+    y <- rmnull(d$regular)
+    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[1])
+    y <- rmnull(d$mspbwt)
+    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[2])
+    y <- rmnull(d$zilong)
+    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[3])
+    y <- rmnull(d$glimpse)
+    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[4])
 }
 axis(side = 1, at = x, labels=labels)
 axis(side = 2, at = seq(0, 1, 0.2))
@@ -96,14 +104,14 @@ legend("bottomright", legend=paste0(groups, "x"), lwd = (1:nd) * 2.5 / nd, bty =
 plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.90, 1.0), ylab = "Aggregated R2 within each MAF bin",  xlab = "Minor Allele Frequency")
 for(i in 1:nd) {
     d <- accuracy_by_af[[i]]
-    y <- unlist(ifelse(sapply(d$regular, is.null), NA, d$regular))
-    lines(x, na.omit(y), type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[1])
-    y <- unlist(ifelse(sapply(d$mspbwt, is.null), NA, d$mspbwt))
-    lines(x, na.omit(y), type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[2])
-    y <- unlist(ifelse(sapply(d$zilong, is.null), NA, d$zilong))
-    lines(x, na.omit(y), type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[3])
-    y <- unlist(ifelse(sapply(d$glimpse, is.null), NA, d$glimpse))
-    lines(x, na.omit(y), type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[4])
+    y <- rmnull(d$regular)
+    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[1])
+    y <- rmnull(d$mspbwt)
+    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[2])
+    y <- rmnull(d$zilong)
+    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[3])
+    y <- rmnull(d$glimpse)
+    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[4])
 }
 axis(side = 1, at = x, labels=labels)
 axis(side = 2)
