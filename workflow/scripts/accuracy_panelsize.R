@@ -62,29 +62,29 @@ nd <- length(groups)
 for(i in 1:nd) {
     d <- accuracy_by_af[[i]]
     y <- unlist(ifelse(sapply(d$regular, is.null), NA, d$regular))
-    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[1])
+    lines(x, y, type = "b", lty = i, pch = 1, col = mycols[1])
     y <- unlist(ifelse(sapply(d$mspbwt, is.null), NA, d$mspbwt))
-    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[2])
+    lines(x, y, type = "b", lty = i, pch = 1, col = mycols[2])
     y <- unlist(ifelse(sapply(d$zilong, is.null), NA, d$zilong))
-    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[3])
+    lines(x, y, type = "b", lty = i, pch = 1, col = mycols[3])
     y <- unlist(ifelse(sapply(d$glimpse, is.null), NA, d$glimpse))
-    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[4])
+    lines(x, y, type = "b", lty = i, pch = 1, col = mycols[4])
 }
 axis(side = 1, at = x, labels=100*bins[-1])
 axis(side = 2, at = seq(0, 1, 0.2))
-legend("bottomright", legend=paste0("N=",groups), lwd = (1:nd) * 2.5 / nd, bty = "n")
+legend("bottomright", legend=paste0("N=",groups), lty = 1:nd, bty = "n")
 
 plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.90, 1.0), ylab = "Aggregated R2 within each MAF bin",  xlab = "Minor Allele Frequency")
 for(i in 1:nd) {
     d <- accuracy_by_af[[i]]
     y <- unlist(ifelse(sapply(d$regular, is.null), NA, d$regular))
-    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[1])
+    lines(x, y, type = "b", lty = i, pch = 1, col = mycols[1])
     y <- unlist(ifelse(sapply(d$mspbwt, is.null), NA, d$mspbwt))
-    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[2])
+    lines(x, y, type = "b", lty = i, pch = 1, col = mycols[2])
     y <- unlist(ifelse(sapply(d$zilong, is.null), NA, d$zilong))
-    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[3])
+    lines(x, y, type = "b", lty = i, pch = 1, col = mycols[3])
     y <- unlist(ifelse(sapply(d$glimpse, is.null), NA, d$glimpse))
-    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[4])
+    lines(x, y, type = "b", lty = i, pch = 1, col = mycols[4])
 }
 axis(side = 1, at = x, labels=100*bins[-1])
 axis(side = 2)
