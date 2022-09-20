@@ -26,7 +26,9 @@ times <- cbind(gnutime(dl.regular), gnutime(dl.mspbwt), gnutime(dl.zilong), gnut
 rams <- cbind(gunram(dl.regular), gunram(dl.mspbwt), gunram(dl.zilong), gunram(dl.glimpse))
 
 
-mycols <- c("black", "orange", "red", "blue" )
+wong <- c("#e69f00", "#d55e00", "#56b4e9", "#cc79a7", "#009e73", "#0072b2", "#f0e442")
+mycols <- wong[1:4]
+
 
 pdf(snakemake@output[[1]], w=12, h=6)
 par(mfrow=c(1,2))

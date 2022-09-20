@@ -53,7 +53,8 @@ accuracy_by_af <- lapply(1:length(groups), function(i) {
 
 saveRDS(accuracy_by_af, snakemake@output[["rds"]])
 
-mycols <- c("black", "orange", "red", "blue" )
+wong <- c("#e69f00", "#d55e00", "#56b4e9", "#cc79a7", "#009e73", "#0072b2", "#f0e442")
+mycols <- wong[1:4]
 
 pdf(snakemake@output[["pdf"]], w=12, h=6)
 a1 <- accuracy_by_af[[1]]
@@ -68,13 +69,13 @@ nd <- length(groups)
 for(i in 1:nd) {
     d <- accuracy_by_af[[i]]
     y <- unlist(ifelse(sapply(d$regular, is.null), NA, d$regular))
-    lines(x, y, type = "b", lty = i, pch = 1, col = mycols[1])
+    lines(x, na.omit(y), type = "b", lty = i, pch = 1, col = mycols[1])
     y <- unlist(ifelse(sapply(d$mspbwt, is.null), NA, d$mspbwt))
-    lines(x, y, type = "b", lty = i, pch = 1, col = mycols[2])
+    lines(x, na.omit(y), type = "b", lty = i, pch = 1, col = mycols[2])
     y <- unlist(ifelse(sapply(d$zilong, is.null), NA, d$zilong))
-    lines(x, y, type = "b", lty = i, pch = 1, col = mycols[3])
+    lines(x, na.omit(y), type = "b", lty = i, pch = 1, col = mycols[3])
     y <- unlist(ifelse(sapply(d$glimpse, is.null), NA, d$glimpse))
-    lines(x, y, type = "b", lty = i, pch = 1, col = mycols[4])
+    lines(x, na.omit(y), type = "b", lty = i, pch = 1, col = mycols[4])
 }
 axis(side = 1, at = x, labels=labels)
 axis(side = 2, at = seq(0, 1, 0.2))
@@ -84,15 +85,15 @@ plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.90, 
 for(i in 1:nd) {
     d <- accuracy_by_af[[i]]
     y <- unlist(ifelse(sapply(d$regular, is.null), NA, d$regular))
-    lines(x, y, type = "b", lty = i, pch = 1, col = mycols[1])
+    lines(x, na.omit(y), type = "b", lty = i, pch = 1, col = mycols[1])
     y <- unlist(ifelse(sapply(d$mspbwt, is.null), NA, d$mspbwt))
-    lines(x, y, type = "b", lty = i, pch = 1, col = mycols[2])
+    lines(x, na.omit(y), type = "b", lty = i, pch = 1, col = mycols[2])
     y <- unlist(ifelse(sapply(d$zilong, is.null), NA, d$zilong))
-    lines(x, y, type = "b", lty = i, pch = 1, col = mycols[3])
+    lines(x, na.omit(y), type = "b", lty = i, pch = 1, col = mycols[3])
     y <- unlist(ifelse(sapply(d$glimpse, is.null), NA, d$glimpse))
-    lines(x, y, type = "b", lty = i, pch = 1, col = mycols[4])
+    lines(x, na.omit(y), type = "b", lty = i, pch = 1, col = mycols[4])
 }
 axis(side = 1, at = x, labels=labels)
 axis(side = 2)
-legend("bottomright", legend=c("QUILT-regular", "QUILT-mspbwt", "QUILT-zilong", "GLIMPSE"), col=c("black", "orange", "red", "blue"), pch = 1, lwd = 1.5, cex = 1.1, xjust = 0, yjust = 1, bty = "n")
+legend("bottomleft", legend=c("QUILT-regular", "QUILT-mspbwt", "QUILT-zilong", "GLIMPSE"), col=c("black", "orange", "red", "blue"), pch = 1, lwd = 1.5, cex = 1.0, xjust = 0, yjust = 1, bty = "n")
 dev.off()
