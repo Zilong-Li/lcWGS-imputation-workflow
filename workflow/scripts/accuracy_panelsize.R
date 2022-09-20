@@ -37,6 +37,7 @@ rmnull <- function(l) {
 }
 
 groups <- as.numeric(snakemake@config[["refsize"]])
+nd <- length(groups)
 
 df.truth <- read.table(snakemake@input[["truth"]])
 af <- as.numeric(read.table(snakemake@input[["af"]])[,1])
