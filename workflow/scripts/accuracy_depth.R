@@ -62,10 +62,11 @@ bins <- sort(unique(c(
 accuracy_by_af <- lapply(1:length(groups), function(i) {
     acc_r2_by_af(df.truth, dl.regular[[i]], dl.mspbwt[[i]], dl.zilong[[i]], dl.glimpse[[i]], af, bins)
 })
+saveRDS(accuracy_by_af, snakemake@output[["rds"]])
 
 mycols <- c("black", "orange", "red", "blue" )
 
-pdf(snakemake@output[[1]], w=12, h=6)
+pdf(snakemake@output[["pdf"]], w=12, h=6)
 par(mfrow = c(1, 2))
 x <- log10(as.numeric(accuracy_by_af[[1]]$bin))
 
