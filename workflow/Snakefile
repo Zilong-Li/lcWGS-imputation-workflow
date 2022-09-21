@@ -11,9 +11,12 @@ min_version("6.4.1")
 
 configfile: "config/config.yaml"
 
+
 #### report ######
 
+
 report: "report/workflow.rst"
+
 
 #### load rules ########
 
@@ -27,45 +30,53 @@ include: "rules/speed.smk"
 include: "rules/accuracy.smk"
 
 
-rule all:
-    input:
-        expand(rules.bamlist.output, chrom=config["chroms"], depth=config["downsample"]),
-        expand(
-            rules.plot_speed.output,
-            chrom=config["chroms"],
-            depth=config["downsample"],
-        ),
-        expand(
-            rules.plot_accuracy_panelsize.output,
-            chrom=config["chroms"],
-            depth=config["downsample"],
-        ),
-        expand(
-            rules.plot_accuracy_depth.output,
-            chrom=config["chroms"],
-            size=config["refsize"],
-        ),
-        # expand(
-        #     rules.glimpse_ligate.output,
-        #     chrom=config["chroms"],
-        #     depth=config["downsample"],
-        #     size=config["refsize"],
-        # ),
-        # expand(
-        #     rules.quilt_ligate_regular.output,
-        #     chrom=config["chroms"],
-        #     depth=config["downsample"],
-        #     size=config["refsize"],
-        # ),
-        # expand(
-        #     rules.quilt_ligate_mspbwt.output,
-        #     chrom=config["chroms"],
-        #     depth=config["downsample"],
-        #     size=config["refsize"],
-        # ),
-        # expand(
-        #     rules.quilt_ligate_zilong.output,
-        #     chrom=config["chroms"],
-        #     depth=config["downsample"],
-        #     size=config["refsize"],
-        # ),
+if RUN == "all":
+
+    rule all:
+        input:
+            get_speed_plots(),
+            get_accuracy_panelsize_plots(),
+            get_accuracy_depth_plots(),
+
+
+elif RUN == "accuracy":
+
+    rule all:
+        input:
+            get_accuracy_panelsize_plots(),
+            get_accuracy_depth_plots(),
+
+
+elif RUN == "speed":
+
+    rule all:
+        input:
+            get_speed_plots(),
+
+
+elif RUN == "quilt":
+
+    rule all:
+        input:
+            get_quilt_regular_results(),
+
+
+elif RUN == "quilt-mspbwt":
+
+    rule all:
+        input:
+            get_quilt_mspbwt_results(),
+
+
+elif RUN == "quilt-zilong":
+
+    rule all:
+        input:
+            get_quilt_zilong_results(),
+
+
+elif RUN == "glimpse":
+
+    rule all:
+        input:
+            get_glimpse_results(),

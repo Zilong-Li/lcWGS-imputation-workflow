@@ -32,6 +32,7 @@ rule collect_speed_log:
         echo {input.glimpse} | tr ' ' '\\n' | xargs grep -E 'Elaps|Maximum' | awk '{{print $NF}}' | sed 'N;s/\\n/ /' > {output.glimpse}
         """
 
+
 rule plot_speed:
     input:
         glimpse=expand(

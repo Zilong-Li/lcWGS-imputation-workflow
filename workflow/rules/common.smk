@@ -16,6 +16,8 @@ REFPANEL = (
     .to_dict(orient="index")
 )
 
+RUN = config["scenario"]
+
 OUTDIR = "results"
 OUTDIR_DOWNSAMPLE = os.path.join(OUTDIR, "downsample", "")
 OUTDIR_PANEL = os.path.join(OUTDIR, "subrefs", "")
@@ -24,11 +26,69 @@ OUTDIR_GLIMPSE = os.path.join(OUTDIR, "glimpse", "")
 OUTDIR_SUMMARY = os.path.join(OUTDIR, "summary", "")
 OUTDIR_REPORT = os.path.join(OUTDIR, "report", "")
 
+
+def get_speed_plots():
+    return expand(
+        rules.plot_speed.output, chrom=config["chroms"], depth=config["downsample"]
+    )
+
+
+def get_accuracy_panelsize_plots():
+    return expand(
+        rules.plot_accuracy_panelsize.output,
+        chrom=config["chroms"],
+        depth=config["downsample"],
+    )
+
+
+def get_accuracy_depth_plots():
+    return expand(
+        rules.plot_accuracy_depth.output, chrom=config["chroms"], size=config["refsize"]
+    )
+
+
+def get_quilt_regular_results():
+    return expand(
+        rules.quilt_ligate_regular.output,
+        chrom=config["chroms"],
+        size=config["refsize"],
+        depth=config["downsample"],
+    )
+
+
+def get_quilt_mspbwt_results():
+    return expand(
+        rules.quilt_ligate_mspbwt.output,
+        chrom=config["chroms"],
+        size=config["refsize"],
+        depth=config["downsample"],
+    )
+
+
+def get_quilt_zilong_results():
+    return expand(
+        rules.quilt_ligate_zilong.output,
+        chrom=config["chroms"],
+        size=config["refsize"],
+        depth=config["downsample"],
+    )
+
+
+def get_glimpse_results():
+    return expand(
+        rules.glimpse_ligate.output,
+        chrom=config["chroms"],
+        size=config["refsize"],
+        depth=config["downsample"],
+    )
+
+
 def if_use_af_in_refpanel(wildcards):
     if REFPANEL[wildcards.chrom].get("af"):
         return REFPANEL[wildcards.chrom]["af"]
     else:
         return ""
+
 
 def get_regions_list_per_chrom(chrom, chunksize):
     """split chr into chunks given chunksize; return a list of '[start,end]' pairs"""
