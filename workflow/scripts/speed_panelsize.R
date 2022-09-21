@@ -21,7 +21,7 @@ dl.regular <- lapply(snakemake@input[["regular"]], read.table)
 dl.mspbwt <- lapply(snakemake@input[["mspbwt"]], read.table)
 dl.zilong <- lapply(snakemake@input[["zilong"]], read.table)
 dl.glimpse <- lapply(snakemake@input[["glimpse"]], read.table)
-saveRDS(list(dl.regular, dl.glimpse), snakemake@output[["rds"]])
+saveRDS(list(regular = dl.regular, mspbwt = dl.mspbwt, zilong = dl.zilong, glimpse = dl.glimpse), snakemake@output[["rds"]])
 
 times <- cbind(gnutime(dl.regular), gnutime(dl.mspbwt), gnutime(dl.zilong), gnutime(dl.glimpse))
 rams <- cbind(gunram(dl.regular), gunram(dl.mspbwt), gunram(dl.zilong), gunram(dl.glimpse))
