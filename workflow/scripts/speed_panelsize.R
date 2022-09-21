@@ -21,6 +21,7 @@ dl.regular <- lapply(snakemake@input[["regular"]], read.table)
 dl.mspbwt <- lapply(snakemake@input[["mspbwt"]], read.table)
 dl.zilong <- lapply(snakemake@input[["zilong"]], read.table)
 dl.glimpse <- lapply(snakemake@input[["glimpse"]], read.table)
+saveRDS(list(dl.regular, dl.glimpse), snakemake@output[["rds"]])
 
 times <- cbind(gnutime(dl.regular), gnutime(dl.mspbwt), gnutime(dl.zilong), gnutime(dl.glimpse))
 rams <- cbind(gunram(dl.regular), gunram(dl.mspbwt), gunram(dl.zilong), gunram(dl.glimpse))
@@ -30,7 +31,7 @@ wong <- c("#e69f00", "#d55e00", "#56b4e9", "#cc79a7", "#009e73", "#0072b2", "#f0
 mycols <- wong[1:4]
 
 
-pdf(snakemake@output[[1]], w=12, h=6)
+pdf(snakemake@output[["pdf"]], w=12, h=6)
 par(mfrow=c(1,2))
 plot(groups, times[,1], type = "b", lwd=1.0, pch = 1, col = mycols[1], ylab = "Total Time in seconds for the chromosome", xlab = "Reference panel size", ylim=c(min(times)*0.9, max(times)*1.1))
 lines(groups, times[,2], type = "b", lwd=1.0, pch = 1, col = mycols[2])
