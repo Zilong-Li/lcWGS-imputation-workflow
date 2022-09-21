@@ -33,7 +33,7 @@ rule all:
         expand(
             rules.plot_speed.output,
             chrom=config["chroms"],
-            size=config["refsize"],
+            depth=config["downsample"],
         ),
         expand(
             rules.plot_accuracy_panelsize.output,

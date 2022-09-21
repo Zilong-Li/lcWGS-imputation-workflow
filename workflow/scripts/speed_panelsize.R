@@ -1,4 +1,3 @@
-
 gettimes <- function(ss) {
    sapply(strsplit(ss, ':'), function(s){s=as.numeric(s);n=length(s); sum(sapply(1:n, function(i){s[i]*60^(n-i)}))})
 }
@@ -33,14 +32,14 @@ mycols <- wong[1:4]
 
 pdf(snakemake@output[[1]], w=12, h=6)
 par(mfrow=c(1,2))
-plot(groups, times[,1], type = "b", lwd=1.5, pch = 1, col = mycols[1], ylab = "Total Time in seconds for the chromosome", xlab = "Samples sequencing depth", ylim=c(min(times)*0.9, max(times)*1.1))
-lines(groups, times[,2], type = "b", lwd=1.5, pch = 1, col = mycols[2])
-lines(groups, times[,3], type = "b", lwd=1.5, pch = 1, col = mycols[3])
-lines(groups, times[,4], type = "b", lwd=1.5, pch = 1, col = mycols[4])
+plot(groups, times[,1], type = "b", lwd=1.0, pch = 1, col = mycols[1], ylab = "Total Time in seconds for the chromosome", xlab = "Reference panel size", ylim=c(min(times)*0.9, max(times)*1.1))
+lines(groups, times[,2], type = "b", lwd=1.0, pch = 1, col = mycols[2])
+lines(groups, times[,3], type = "b", lwd=1.0, pch = 1, col = mycols[3])
+lines(groups, times[,4], type = "b", lwd=1.0, pch = 1, col = mycols[4])
 legend("topleft", legend=c("QUILT-regular", "QUILT-mspbwt", "QUILT-zilong", "GLIMPSE"), col=mycols, pch = 1, lwd = 1.5, cex = 1.1, xjust = 0, yjust = 1, bty = "n")
 
-plot(groups, rams[,1], type = "b", lwd=1.5, pch = 1, col = mycols[1], ylab = "Maximum RAM in MBs for the chromosome", xlab = "Samples sequencing depth", ylim=c(min(rams)*0.9, max(rams)*1.1))
-lines(groups, rams[,2], type = "b", lwd=1.5, pch = 1, col = mycols[2])
-lines(groups, rams[,3], type = "b", lwd=1.5, pch = 1, col = mycols[3])
-lines(groups, rams[,4], type = "b", lwd=1.5, pch = 1, col = mycols[4])
+plot(groups, rams[,1], type = "b", lwd=1.0, pch = 1, col = mycols[1], ylab = "Maximum RAM in MBs for the chromosome", xlab = "Reference panel size", ylim=c(min(rams)*0.9, max(rams)*1.1))
+lines(groups, rams[,2], type = "b", lwd=1.0, pch = 1, col = mycols[2])
+lines(groups, rams[,3], type = "b", lwd=1.0, pch = 1, col = mycols[3])
+lines(groups, rams[,4], type = "b", lwd=1.0, pch = 1, col = mycols[4])
 dev.off()

@@ -43,31 +43,32 @@ rule plot_speed:
     input:
         glimpse=expand(
             rules.collect_speed_log.output.glimpse,
-            depth=config["downsample"],
+            size=config["refsize"],
             allow_missing=True,
         ),
         regular=expand(
             rules.collect_speed_log.output.regular,
-            depth=config["downsample"],
+            size=config["refsize"],
             allow_missing=True,
         ),
         mspbwt=expand(
             rules.collect_speed_log.output.mspbwt,
-            depth=config["downsample"],
+            size=config["refsize"],
             allow_missing=True,
         ),
         zilong=expand(
             rules.collect_speed_log.output.zilong,
-            depth=config["downsample"],
+            size=config["refsize"],
             allow_missing=True,
         ),
     output:
-        os.path.join(OUTDIR_SUMMARY, "speed.panelsize{size}.{chrom}.pdf"),
+        pdf=os.path.join(OUTDIR_SUMMARY, "all.speed.down{depth}x.{chrom}.pdf"),
+        rds=os.path.join(OUTDIR_SUMMARY, "all.speed.down{depth}x.{chrom}.rds"),
     log:
-        os.path.join(OUTDIR_SUMMARY, "speed.panelsize{size}.{chrom}.pdf.llog"),
+        os.path.join(OUTDIR_SUMMARY, "all.speed.down{depth}x.{chrom}.pdf.llog"),
     params:
         N="plot_speed",
     conda:
         "../envs/quilt.yaml"
     script:
-        "../scripts/speed_ram.R"
+        "../scripts/speed_panelsize.R"
