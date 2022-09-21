@@ -1,44 +1,30 @@
-acc_r2_all <- function(d0, d1, d2, d3, d4) {
-    truthGT <- as.vector(sapply(seq(1, dim(d0)[2] - 1, 2), function(i){rowSums(d0[,(i+1):(i+2)])}))
-    idx <- seq(1, dim(d1)[2], 3) # dosage indicies
-    y1 <- cor(truthGT, as.vector(as.matrix(d1[, idx[-1]])), use = 'pairwise.complete') ** 2
-    idx <- seq(1, dim(d2)[2], 3) # dosage indicies
-    y2 <- cor(truthGT, as.vector(as.matrix(d2[, idx[-1]])), use = 'pairwise.complete') ** 2
-    idx <- seq(1, dim(d3)[2], 3) # dosage indicies
-    y3 <- cor(truthGT, as.vector(as.matrix(d3[, idx[-1]])), use = 'pairwise.complete') ** 2
-    idx <- seq(1, dim(d4)[2], 3) # dosage indicies
-    y4 <- cor(truthGT, as.vector(as.matrix(d4[, idx[-1]])), use = 'pairwise.complete') ** 2
-    c(y1,y2,y3,y4)
-}
 
-acc_r2_by_af <- function(d0, d1, d2, d3, d4, af, breaks) {
+library(data.table)
+
+acc_r2_by_af <- function(d0, d1, d2, d3, d4, af, bins) {
     truthGT <- sapply(seq(1, dim(d0)[2] - 1, 2), function(i){rowSums(d0[,(i+1):(i+2)])})  # matrix: nsnps x nsamples
-    idx <- seq(1, dim(d1)[2], 3) # dosage indicies
-    d1 <- as.matrix(d1[, idx[-1]])
-    x <- cut(af, breaks = breaks)
+    d1 <- as.matrix(d1[, -1])
+    x <- cut(af, breaks = bins)
     d1_cor_af <- tapply(1:length(x), x, function(w) { c(n = length(w),
                                                         nA = sum(truthGT[w,], na.rm = TRUE),
                                                         simple = cor(as.vector(truthGT[w,]), as.vector(d1[w,]), use = 'pairwise.complete') ** 2
                                                         )})
-    idx <- seq(1, dim(d2)[2], 3) # dosage indicies
-    d2 <- as.matrix(d2[, idx[-1]])
+    d2 <- as.matrix(d2[, -1])
     d2_cor_af <- tapply(1:length(x), x, function(w) { c(n = length(w),
                                                         nA = sum(truthGT[w,], na.rm = TRUE),
                                                         simple = cor(as.vector(truthGT[w,]), as.vector(d2[w,]), use = 'pairwise.complete') ** 2
                                                         )})
-    idx <- seq(1, dim(d3)[2], 3) # dosage indicies
-    d3 <- as.matrix(d3[, idx[-1]])
+    d3 <- as.matrix(d3[, -1])
     d3_cor_af <- tapply(1:length(x), x, function(w) { c(n = length(w),
                                                         nA = sum(truthGT[w,], na.rm = TRUE),
                                                         simple = cor(as.vector(truthGT[w,]), as.vector(d3[w,]), use = 'pairwise.complete') ** 2
                                                         )})
-    idx <- seq(1, dim(d4)[2], 3) # dosage indicies
-    d4 <- as.matrix(d4[, idx[-1]])
+    d4 <- as.matrix(d4[, -1])
     d4_cor_af <- tapply(1:length(x), x, function(w) { c(n = length(w),
                                                         nA = sum(truthGT[w,], na.rm = TRUE),
                                                         simple = cor(as.vector(truthGT[w,]), as.vector(d4[w,]), use = 'pairwise.complete') ** 2
                                                         )})
-    as.data.frame(cbind(bin = breaks[-1], regular = sapply(d1_cor_af, "[[", "simple"),  mspbwt = sapply(d2_cor_af, "[[", "simple"), zilong = sapply(d3_cor_af, "[[", "simple"), glimpse = sapply(d4_cor_af, "[[", "simple")))
+    as.data.frame(cbind(bin = bins[-1], regular = sapply(d1_cor_af, "[[", "simple"),  mspbwt = sapply(d2_cor_af, "[[", "simple"), zilong = sapply(d3_cor_af, "[[", "simple"), glimpse = sapply(d4_cor_af, "[[", "simple")))
 }
 
 # https://stackoverflow.com/questions/33004238/r-removing-null-elements-from-a-list
@@ -53,10 +39,18 @@ df.truth <- read.table(snakemake@input[["truth"]])
 af <- as.numeric(read.table(snakemake@input[["af"]])[,1])
 af <- ifelse(af>0.5, 1-af, af)
 
-dl.regular <- lapply(snakemake@input[["regular"]], read.table)
-dl.mspbwt <- lapply(snakemake@input[["mspbwt"]], read.table)
-dl.zilong <- lapply(snakemake@input[["zilong"]], read.table)
-dl.glimpse <- lapply(snakemake@input[["glimpse"]], read.table)
+dl.regular <- lapply(snakemake@input[["regular"]], function(fn) {
+    fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn))
+})
+dl.mspbwt <- lapply(snakemake@input[["mspbwt"]], function(fn) {
+    fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn))
+})
+dl.zilong <- lapply(snakemake@input[["zilong"]], function(fn) {
+    fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn))
+})
+dl.glimpse <- lapply(snakemake@input[["glimpse"]], function(fn) {
+    fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn))
+})
 
 bins <- sort(unique(c(
     c(0, 0.01 / 100, 0.02 / 100, 0.05 / 100),
