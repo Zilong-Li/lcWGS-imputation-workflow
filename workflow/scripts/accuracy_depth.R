@@ -80,22 +80,27 @@ x <- a1$bin[!sapply(a1[,2], is.null)] # remove AF bin with NULL results
 x <- log10(as.numeric(x))
 labels <- 100 * bins[-1]
 labels <- labels[!sapply(a1[,2], is.null)]
+ymin <- min(sapply(accuracy_by_af, function(d){
+    m = as.matrix(apply(d[,-1], 2, unlist))
+    min(m, na.rm = T)
+}))
+
 
 par(mfrow = c(1, 2))
-plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0, 1.0), ylab = "Aggregated R2 within each MAF bin",  xlab = "Minor Allele Frequency")
+plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.9*ymin, 1.0), ylab = "Aggregated R2 within each MAF bin",  xlab = "Minor Allele Frequency")
 nd <- length(groups)
 
 for(i in 1:nd) {
     d <- accuracy_by_af[[i]]
     # https://stackoverflow.com/questions/33004238/r-removing-null-elements-from-a-list
     y <- rmnull(d$regular)
-    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[1])
+    lines(x, y, type = "l", lwd = i/nd * 2.5, pch = 1, col = mycols[1])
     y <- rmnull(d$mspbwt)
-    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[2])
+    lines(x, y, type = "l", lwd = i/nd * 2.5, pch = 1, col = mycols[2])
     y <- rmnull(d$zilong)
-    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[3])
+    lines(x, y, type = "l", lwd = i/nd * 2.5, pch = 1, col = mycols[3])
     y <- rmnull(d$glimpse)
-    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[4])
+    lines(x, y, type = "l", lwd = i/nd * 2.5, pch = 1, col = mycols[4])
 }
 axis(side = 1, at = x, labels=labels)
 axis(side = 2, at = seq(0, 1, 0.2))
@@ -105,13 +110,13 @@ plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.90, 
 for(i in 1:nd) {
     d <- accuracy_by_af[[i]]
     y <- rmnull(d$regular)
-    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[1])
+    lines(x, y, type = "l", lwd = i/nd * 2.5, pch = 1, col = mycols[1])
     y <- rmnull(d$mspbwt)
-    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[2])
+    lines(x, y, type = "l", lwd = i/nd * 2.5, pch = 1, col = mycols[2])
     y <- rmnull(d$zilong)
-    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[3])
+    lines(x, y, type = "l", lwd = i/nd * 2.5, pch = 1, col = mycols[3])
     y <- rmnull(d$glimpse)
-    lines(x, y, type = "b", lwd = i/nd * 2.5, pch = 1, col = mycols[4])
+    lines(x, y, type = "l", lwd = i/nd * 2.5, pch = 1, col = mycols[4])
 }
 axis(side = 1, at = x, labels=labels)
 axis(side = 2)
