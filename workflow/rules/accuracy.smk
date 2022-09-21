@@ -19,6 +19,7 @@ rule collect_truth_gts:
         samples=",".join(SAMPLES.keys()),
         truth=lambda wildcards: REFPANEL[wildcards.chrom]["truth"],
         ref=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
+        af=if_use_af_in_refpanel,
         ql0="%CHROM:%POS:%REF:%ALT\\n",
         ql1="%CHROM:%POS:%REF:%ALT\\t%AF\\n",
         ql2="%CHROM:%POS:%REF:%ALT\\t[\\t%GT]\\n",
@@ -28,10 +29,16 @@ rule collect_truth_gts:
         "../envs/quilt.yaml"
     shell:
         """
-        bcftools +fill-tags {params.ref} -- -t AF |  bcftools query -f '{params.ql1}' > {output.tmp}
-        awk '{params.awk}' <(bcftools query -f '{params.ql0}' {input.sites[0]}) {output.tmp} >{output.af}
-        bcftools view -s {params.samples} {params.truth} | bcftools query -f '{params.ql2}' | sed -E 's/\/|\|/\\t/g' > {output.tmp2}
-        awk '{params.awk2}' <(bcftools query -f '{params.ql0}' {input.sites[0]}) {output.tmp2} >{output.gt}
+        (
+        if [[ {params.af} == "" ]];then \
+            bcftools +fill-tags {params.ref} -- -t AF |  bcftools query -f '{params.ql1}' > {output.tmp} \
+        else \
+            perl -lane 'print join(":",@F[0..3])."\t$F[4]"' {params.af} > {output.tmp} \
+        fi \
+        awk '{params.awk}' <(bcftools query -f '{params.ql0}' {input.sites[0]}) {output.tmp} >{output.af} \
+        bcftools view -s {params.samples} {params.truth} | bcftools query -f '{params.ql2}' | sed -E 's/\/|\|/\\t/g' > {output.tmp2} \
+        awk '{params.awk2}' <(bcftools query -f '{params.ql0}' {input.sites[0]}) {output.tmp2} >{output.gt} \
+        ) &> {log}
         """
 
 

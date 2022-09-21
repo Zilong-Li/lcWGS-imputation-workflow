@@ -24,6 +24,11 @@ OUTDIR_GLIMPSE = os.path.join(OUTDIR, "glimpse", "")
 OUTDIR_SUMMARY = os.path.join(OUTDIR, "summary", "")
 OUTDIR_REPORT = os.path.join(OUTDIR, "report", "")
 
+def if_use_af_in_refpanel(wildcards):
+    if REFPANEL[wildcards.chrom].get("af"):
+        return REFPANEL[wildcards.chrom]["af"]
+    else:
+        return ""
 
 def get_regions_list_per_chrom(chrom, chunksize):
     """split chr into chunks given chunksize; return a list of '[start,end]' pairs"""

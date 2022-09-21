@@ -4,3 +4,4 @@ logs/**
 .snakemake
 .snakemake/**
 .DS_Store
+t.*
