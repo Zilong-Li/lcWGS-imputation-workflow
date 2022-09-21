@@ -87,7 +87,7 @@ def if_use_af_in_refpanel(wildcards):
     if REFPANEL[wildcards.chrom].get("af"):
         return REFPANEL[wildcards.chrom]["af"]
     else:
-        return ""
+        return "false"
 
 
 def get_regions_list_per_chrom(chrom, chunksize):

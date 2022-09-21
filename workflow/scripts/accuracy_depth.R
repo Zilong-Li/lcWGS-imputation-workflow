@@ -40,16 +40,16 @@ af <- as.numeric(read.table(snakemake@input[["af"]])[,1])
 af <- ifelse(af>0.5, 1-af, af)
 
 dl.regular <- lapply(snakemake@input[["regular"]], function(fn) {
-    fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn))
+    fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn), data.table = F)
 })
 dl.mspbwt <- lapply(snakemake@input[["mspbwt"]], function(fn) {
-    fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn))
+    fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn), data.table = F)
 })
 dl.zilong <- lapply(snakemake@input[["zilong"]], function(fn) {
-    fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn))
+    fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn), data.table = F)
 })
 dl.glimpse <- lapply(snakemake@input[["glimpse"]], function(fn) {
-    fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn))
+    fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn), data.table = F)
 })
 
 bins <- sort(unique(c(
