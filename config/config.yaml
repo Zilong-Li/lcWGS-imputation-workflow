@@ -14,6 +14,8 @@ refsize: [0]
 
 chroms: ['21']
 
+scenario: ['all', 'speed', 'accuracy']
+
 quilt:
   chunksize: 2000000
   nGen: 20

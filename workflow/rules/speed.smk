@@ -3,7 +3,6 @@ rule collect_speed_log:
     input:
         regular=collect_quilt_log_regular,
         mspbwt=collect_quilt_log_mspbwt,
-        zilong=collect_quilt_log_zilong,
         glimpse=collect_glimpse_log,
     output:
         glimpse=os.path.join(
@@ -18,10 +17,6 @@ rule collect_speed_log:
             OUTDIR_SUMMARY,
             "speed.quilt.mspbwt.panelsize{size}.down{depth}x.{chrom}.txt",
         ),
-        zilong=os.path.join(
-            OUTDIR_SUMMARY,
-            "speed.quilt.zilong.panelsize{size}.down{depth}x.{chrom}.txt",
-        ),
     log:
         os.path.join(
             OUTDIR_SUMMARY, "speed.quilt.panelsize{size}.down{depth}x.{chrom}.txt.log"
@@ -34,10 +29,8 @@ rule collect_speed_log:
         """
         echo {input.regular} | tr ' ' '\\n' | xargs grep -E 'Elaps|Maximum' | awk '{{print $NF}}' | sed 'N;s/\\n/ /' > {output.regular}
         echo {input.mspbwt} | tr ' ' '\\n' | xargs grep -E 'Elaps|Maximum' | awk '{{print $NF}}' | sed 'N;s/\\n/ /' > {output.mspbwt}
-        echo {input.zilong} | tr ' ' '\\n' | xargs grep -E 'Elaps|Maximum' | awk '{{print $NF}}' | sed 'N;s/\\n/ /' > {output.zilong}
         echo {input.glimpse} | tr ' ' '\\n' | xargs grep -E 'Elaps|Maximum' | awk '{{print $NF}}' | sed 'N;s/\\n/ /' > {output.glimpse}
         """
-
 
 rule plot_speed:
     input:
@@ -53,11 +46,6 @@ rule plot_speed:
         ),
         mspbwt=expand(
             rules.collect_speed_log.output.mspbwt,
-            size=config["refsize"],
-            allow_missing=True,
-        ),
-        zilong=expand(
-            rules.collect_speed_log.output.zilong,
             size=config["refsize"],
             allow_missing=True,
         ),
