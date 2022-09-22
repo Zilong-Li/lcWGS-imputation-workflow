@@ -24,12 +24,12 @@ quilt:
   Ksubset: 400
   nGibbsSamples: 7
   n_seek_its: 3
-  n_burn_in_seek_its: NA
+  n_burn_in_seek_its: 2
   small_ref_panel_block_gibbs_iterations: "c(3,6,9)"
   small_ref_panel_gibbs_iterations: 20
   pbwtL: 2
   pbwtS: 8
-  mspbwt-nindices: 1
+  mspbwt-nindices: 4
 
 glimpse:
   chunksize: 2000000

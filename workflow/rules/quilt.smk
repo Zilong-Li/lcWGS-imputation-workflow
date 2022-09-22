@@ -199,7 +199,7 @@ rule quilt_run_regular:
             --nGibbsSamples={params.nGibbsSamples} \
             --n_seek_its={params.n_seek_its} \
             --n_burn_in_seek_its={params.n_burnin_its} \
-            --small_ref_panel_block_gibbs_iterations={params.block_gibbs} \
+            --small_ref_panel_block_gibbs_iterations='{params.block_gibbs}' \
             --small_ref_panel_gibbs_iterations={params.gibbs_iters} \
             --output_filename={output} &> {log}
         """
@@ -299,7 +299,7 @@ rule quilt_run_mspbwt:
             --nGibbsSamples={params.nGibbsSamples} \
             --n_seek_its={params.n_seek_its} \
             --n_burn_in_seek_its={params.n_burnin_its} \
-            --small_ref_panel_block_gibbs_iterations={params.block_gibbs} \
+            --small_ref_panel_block_gibbs_iterations='{params.block_gibbs}' \
             --small_ref_panel_gibbs_iterations={params.gibbs_iters} \
             --output_filename={output} &> {log}
         """
@@ -403,7 +403,7 @@ rule quilt_run_zilong:
             --nGibbsSamples={params.nGibbsSamples} \
             --n_seek_its={params.n_seek_its} \
             --n_burn_in_seek_its={params.n_burnin_its} \
-            --small_ref_panel_block_gibbs_iterations={params.block_gibbs} \
+            --small_ref_panel_block_gibbs_iterations='{params.block_gibbs}' \
             --small_ref_panel_gibbs_iterations={params.gibbs_iters} \
             --output_filename={output} &> {log}
         """
