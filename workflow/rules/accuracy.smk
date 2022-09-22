@@ -131,6 +131,30 @@ rule plot_quilt_accuracy:
         "../scripts/accuracy_quilt.R"
 
 
+rule plot_glimpse_accuracy:
+    input:
+        truth=rules.collect_truth_gts.output.gt,
+        af=rules.collect_truth_gts.output.af,
+        glimpse=expand(
+            rules.collect_glimpse_imputed_gts.output,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+    params:
+        N="plot_glimpse_accuracy",
+    output:
+        pdf=os.path.join(OUTDIR_SUMMARY, "glimpse.accuracy.panelsize{size}.{chrom}.pdf"),
+        rds=os.path.join(OUTDIR_SUMMARY, "glimpse.accuracy.panelsize{size}.{chrom}.rds"),
+    log:
+        os.path.join(
+            OUTDIR_SUMMARY, "glimpse.accuracy.panelsize{size}.{chrom}.pdf.llog"
+        ),
+    conda:
+        "../envs/quilt.yaml"
+    script:
+        "../scripts/accuracy_glimpse.R"
+
+
 rule plot_accuracy_panelsize:
     input:
         truth=rules.collect_truth_gts.output.gt,

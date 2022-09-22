@@ -1,16 +1,11 @@
 
 library(data.table)
 
-acc_r2_all <- function(d0, d1, d2, d3) {
+acc_r2_all <- function(d0, d1) {
     truthGT <- sapply(seq(1, dim(d0)[2] - 1, 2), function(i){rowSums(d0[,(i+1):(i+2)])})  # matrix: nsnps x nsamples
     d1 <- as.matrix(d1[, -1]) # get dosages
-    y1 <- cor(as.vector(truthGT), as.vector(d1), use = 'pairwise.complete') ** 2
-    d2 <- as.matrix(d2[, -1]) # get dosages
-    y2 <- cor(as.vector(truthGT), as.vector(d2), use = 'pairwise.complete') ** 2
-    d3 <- as.matrix(d3[, -1]) # get dosages
-    y3 <- cor(as.vector(truthGT), as.vector(d3), use = 'pairwise.complete') ** 2
-    c(y1,y2,y3)
 }
+
 
 acc_r2_by_af <- function(d0, d1, d2, d3, d4, af, bins) {
     truthGT <- sapply(seq(1, dim(d0)[2] - 1, 2), function(i){rowSums(d0[,(i+1):(i+2)])})  # matrix: nsnps x nsamples
@@ -20,17 +15,7 @@ acc_r2_by_af <- function(d0, d1, d2, d3, d4, af, bins) {
                                                         nA = sum(truthGT[w,], na.rm = TRUE),
                                                         simple = cor(as.vector(truthGT[w,]), as.vector(d1[w,]), use = 'pairwise.complete') ** 2
                                                         )})
-    d2 <- as.matrix(d2[, -1])
-    d2_cor_af <- tapply(1:length(x), x, function(w) { c(n = length(w),
-                                                        nA = sum(truthGT[w,], na.rm = TRUE),
-                                                        simple = cor(as.vector(truthGT[w,]), as.vector(d2[w,]), use = 'pairwise.complete') ** 2
-                                                        )})
-    d3 <- as.matrix(d3[, -1])
-    d3_cor_af <- tapply(1:length(x), x, function(w) { c(n = length(w),
-                                                        nA = sum(truthGT[w,], na.rm = TRUE),
-                                                        simple = cor(as.vector(truthGT[w,]), as.vector(d3[w,]), use = 'pairwise.complete') ** 2
-                                                        )})
-    as.data.frame(cbind(bin = bins[-1], regular = sapply(d1_cor_af, "[[", "simple"),  mspbwt = sapply(d2_cor_af, "[[", "simple"), zilong = sapply(d3_cor_af, "[[", "simple"))
+    as.data.frame(cbind(bin = bins[-1], glimpse = sapply(d1_cor_af, "[[", "simple")))
 }
 
 rmnull <- function(l) {
@@ -44,13 +29,7 @@ df.truth <- read.table(snakemake@input[["truth"]])
 af <- as.numeric(read.table(snakemake@input[["af"]])[,1])
 af <- ifelse(af>0.5, 1-af, af)
 
-dl.regular <- lapply(snakemake@input[["regular"]], function(fn) {
-    fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn), data.table = F)
-})
-dl.mspbwt <- lapply(snakemake@input[["mspbwt"]], function(fn) {
-    fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn), data.table = F)
-})
-dl.zilong <- lapply(snakemake@input[["zilong"]], function(fn) {
+dl.glimpse <- lapply(snakemake@input[["glimpse"]], function(fn) {
     fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn), data.table = F)
 })
 
@@ -62,12 +41,11 @@ bins <- sort(unique(c(
 )))
 
 accuracy <- matrix(sapply(1:length(groups), function(i) {
-    acc_r2_all(df.truth, dl.regular[[i]], dl.mspbwt[[i]], dl.zilong[[i]])
+    acc_r2_all(df.truth, dl.glimpse[[i]])
 }), ncol = length(groups))
 
-
 accuracy_by_af <- lapply(1:length(groups), function(i) {
-    acc_r2_by_af(df.truth, dl.regular[[i]], dl.mspbwt[[i]], dl.zilong[[i]], af, bins)
+    acc_r2_by_af(df.truth, dl.glimpse[[i]], af, bins)
 })
 saveRDS(accuracy_by_af, snakemake@output[["rds"]])
 
@@ -77,9 +55,7 @@ mycols <- wong[1:4]
 pdf(snakemake@output[["pdf"]], w=12, h=6)
 par(mfrow = c(1, 2))
 plot(groups, accuracy[1,], type = "b", lwd=1.0, pch = 1, col = mycols[1], ylab = "Aggregated R2 for the chromosome", xlab = "Samples sequencing depth", ylim=c(0.9*min(accuracy), 1.0))
-lines(groups, accuracy[2,], type = "b", lwd=1.0, pch = 1, col = mycols[2])
-lines(groups, accuracy[3,], type = "b", lwd=1.0, pch = 1, col = mycols[3])
-legend("bottomright", legend=c("QUILT-regular", "QUILT-mspbwt", "QUILT-zilong"), col=mycols, pch = 1, lwd = 1.5, cex = 1.1, xjust = 0, yjust = 1, bty = "n")
+legend("bottomright", legend=c("glimpse"), col=mycols, pch = 1, lwd = 1.5, cex = 1.1, xjust = 0, yjust = 1, bty = "n")
 
 a1 <- accuracy_by_af[[1]]
 x <- a1$bin[!sapply(a1[,2], is.null)] # remove AF bin with NULL results
@@ -95,12 +71,8 @@ plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0, 1.0
 nd <- length(groups)
 for(i in 1:nd) {
     d <- accuracy_by_af[[i]]
-    y <- rmnull(d$regular)
+    y <- rmnull(d$glimpse)
     lines(x, y, type = "l", lty = nd-i+1, pch = 1, col = mycols[1])
-    y <- rmnull(d$mspbwt)
-    lines(x, y, type = "l", lty = nd-i+1, pch = 1, col = mycols[2])
-    y <- rmnull(d$zilong)
-    lines(x, y, type = "l", lty = nd-i+1, pch = 1, col = mycols[3])
 }
 axis(side = 1, at = x, labels=labels)
 axis(side = 2)

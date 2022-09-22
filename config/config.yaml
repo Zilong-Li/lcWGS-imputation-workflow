@@ -14,7 +14,7 @@ refsize: [0]
 
 chroms: ['21']
 
-scenario: 'speed' #'all', 'speed', 'accuracy', 'quilt', 'glimpse'
+scenario: 'glimpse' #'all', 'speed', 'accuracy', 'quilt', 'glimpse'
 
 quilt:
   chunksize: 2000000

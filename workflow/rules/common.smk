@@ -38,9 +38,9 @@ def get_all_results():
     elif RUN == "speed":
         return get_speed_plots()
     elif RUN == "quilt":
-        return (get_quilt_accuracy(),)
+        return get_quilt_accuracy()
     elif RUN == "glimpse":
-        return get_glimpse_results()
+        return get_glimpse_accuracy()
     else:
         pass
 
@@ -68,6 +68,14 @@ def get_accuracy_depth_plots():
 def get_quilt_accuracy():
     return expand(
         rules.plot_quilt_accuracy.output,
+        chrom=config["chroms"],
+        size=config["refsize"],
+    )
+
+
+def get_glimpse_accuracy():
+    return expand(
+        rules.plot_glimpse_accuracy.output,
         chrom=config["chroms"],
         size=config["refsize"],
     )
