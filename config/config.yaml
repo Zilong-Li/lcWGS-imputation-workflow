@@ -15,7 +15,7 @@ refsize: [0]
 chroms: ['21']
 
 #'all', 'speed', 'accuracy', 'quilt', 'glimpse', 'quilt-regular', 'quilt-mspbwt'
-scenario: 'quilt-mspbwt'
+scenario: 'all'
 
 quilt:
   chunksize: 2000000
@@ -25,7 +25,7 @@ quilt:
   nGibbsSamples: 7
   n_seek_its: 3
   n_burn_in_seek_its: NA
-  small_ref_panel_gibbs_iterations: "c(3,6,9)"
+  small_ref_panel_block_gibbs_iterations: "c(3,6,9)"
   small_ref_panel_gibbs_iterations: 20
   pbwtL: 2
   pbwtS: 8

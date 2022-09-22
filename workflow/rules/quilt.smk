@@ -164,6 +164,12 @@ rule quilt_run_regular:
         N="quilt_run_regular",
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
+        Ksubset=config["quilt"]["Ksubset"],
+        nGibbsSamples=config["quilt"]["nGibbsSamples"],
+        n_seek_its=config["quilt"]["n_seek_its"],
+        n_burnin_its=config["quilt"]["n_burn_in_seek_its"],
+        block_gibbs=config["quilt"]["small_ref_panel_block_gibbs_iterations"],
+        gibbs_iters=config["quilt"]["small_ref_panel_gibbs_iterations"],
     log:
         os.path.join(
             OUTDIR_QUILT,
@@ -189,6 +195,12 @@ rule quilt_run_regular:
             --nGen={params.nGen} \
             --zilong=FALSE \
             --use_mspbwt=FALSE \
+            --Ksubset={params.Ksubset} \
+            --nGibbsSamples={params.nGibbsSamples} \
+            --n_seek_its={params.n_seek_its} \
+            --n_burn_in_seek_its={params.n_burnin_its} \
+            --small_ref_panel_block_gibbs_iterations={params.block_gibbs} \
+            --small_ref_panel_gibbs_iterations={params.gibbs_iters} \
             --output_filename={output} &> {log}
         """
 
@@ -252,6 +264,12 @@ rule quilt_run_mspbwt:
         N="quilt_run_mspbwt",
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
+        Ksubset=config["quilt"]["Ksubset"],
+        nGibbsSamples=config["quilt"]["nGibbsSamples"],
+        n_seek_its=config["quilt"]["n_seek_its"],
+        n_burnin_its=config["quilt"]["n_burn_in_seek_its"],
+        block_gibbs=config["quilt"]["small_ref_panel_block_gibbs_iterations"],
+        gibbs_iters=config["quilt"]["small_ref_panel_gibbs_iterations"],
     log:
         os.path.join(
             OUTDIR_QUILT,
@@ -277,6 +295,12 @@ rule quilt_run_mspbwt:
             --nGen={params.nGen} \
             --zilong=FALSE \
             --use_mspbwt=TRUE \
+            --Ksubset={params.Ksubset} \
+            --nGibbsSamples={params.nGibbsSamples} \
+            --n_seek_its={params.n_seek_its} \
+            --n_burn_in_seek_its={params.n_burnin_its} \
+            --small_ref_panel_block_gibbs_iterations={params.block_gibbs} \
+            --small_ref_panel_gibbs_iterations={params.gibbs_iters} \
             --output_filename={output} &> {log}
         """
 
@@ -342,6 +366,12 @@ rule quilt_run_zilong:
         buffer=config["quilt"]["buffer"],
         pbwtL=config["quilt"]["pbwtL"],
         pbwtS=config["quilt"]["pbwtS"],
+        Ksubset=config["quilt"]["Ksubset"],
+        nGibbsSamples=config["quilt"]["nGibbsSamples"],
+        n_seek_its=config["quilt"]["n_seek_its"],
+        n_burnin_its=config["quilt"]["n_burn_in_seek_its"],
+        block_gibbs=config["quilt"]["small_ref_panel_block_gibbs_iterations"],
+        gibbs_iters=config["quilt"]["small_ref_panel_gibbs_iterations"],
     log:
         os.path.join(
             OUTDIR_QUILT,
@@ -369,6 +399,12 @@ rule quilt_run_zilong:
             --pbwtS={params.pbwtS} \
             --zilong=TRUE \
             --use_mspbwt=FALSE \
+            --Ksubset={params.Ksubset} \
+            --nGibbsSamples={params.nGibbsSamples} \
+            --n_seek_its={params.n_seek_its} \
+            --n_burn_in_seek_its={params.n_burnin_its} \
+            --small_ref_panel_block_gibbs_iterations={params.block_gibbs} \
+            --small_ref_panel_gibbs_iterations={params.gibbs_iters} \
             --output_filename={output} &> {log}
         """
 
