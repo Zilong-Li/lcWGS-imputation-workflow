@@ -30,53 +30,6 @@ include: "rules/speed.smk"
 include: "rules/accuracy.smk"
 
 
-if RUN == "all":
-
-    rule all:
-        input:
-            get_speed_plots(),
-            get_accuracy_panelsize_plots(),
-            get_accuracy_depth_plots(),
-
-
-elif RUN == "accuracy":
-
-    rule all:
-        input:
-            get_accuracy_panelsize_plots(),
-            get_accuracy_depth_plots(),
-
-
-elif RUN == "speed":
-
-    rule all:
-        input:
-            get_speed_plots(),
-
-
-elif RUN == "quilt":
-
-    rule all:
-        input:
-            get_quilt_regular_results(),
-
-
-elif RUN == "quilt-mspbwt":
-
-    rule all:
-        input:
-            get_quilt_mspbwt_results(),
-
-
-elif RUN == "quilt-zilong":
-
-    rule all:
-        input:
-            get_quilt_zilong_results(),
-
-
-elif RUN == "glimpse":
-
-    rule all:
-        input:
-            get_glimpse_results(),
+rule all:
+    input:
+        get_all_results(),

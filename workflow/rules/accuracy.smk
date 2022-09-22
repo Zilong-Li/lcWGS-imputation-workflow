@@ -121,7 +121,8 @@ rule plot_quilt_accuracy:
     params:
         N="plot_quilt_accuracy",
     output:
-        os.path.join(OUTDIR_SUMMARY, "quilt.accuracy.panelsize{size}.{chrom}.pdf"),
+        pdf=os.path.join(OUTDIR_SUMMARY, "quilt.accuracy.panelsize{size}.{chrom}.pdf"),
+        rds=os.path.join(OUTDIR_SUMMARY, "quilt.accuracy.panelsize{size}.{chrom}.rds"),
     log:
         os.path.join(OUTDIR_SUMMARY, "quilt.accuracy.panelsize{size}.{chrom}.pdf.llog"),
     conda:

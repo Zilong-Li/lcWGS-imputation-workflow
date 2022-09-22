@@ -16,8 +16,6 @@ REFPANEL = (
     .to_dict(orient="index")
 )
 
-RUN = config["scenario"]
-
 OUTDIR = "results"
 OUTDIR_DOWNSAMPLE = os.path.join(OUTDIR, "downsample", "")
 OUTDIR_PANEL = os.path.join(OUTDIR, "subrefs", "")
@@ -25,6 +23,26 @@ OUTDIR_QUILT = os.path.join(OUTDIR, "quilt", "")
 OUTDIR_GLIMPSE = os.path.join(OUTDIR, "glimpse", "")
 OUTDIR_SUMMARY = os.path.join(OUTDIR, "summary", "")
 OUTDIR_REPORT = os.path.join(OUTDIR, "report", "")
+
+
+def get_all_results():
+    RUN = config["scenario"]
+    if RUN == "all":
+        return (
+            get_speed_plots(),
+            get_accuracy_panelsize_plots(),
+            get_accuracy_depth_plots(),
+        )
+    elif RUN == "accuracy":
+        return get_accuracy_panelsize_plots(), get_accuracy_depth_plots()
+    elif RUN == "speed":
+        return get_speed_plots()
+    elif RUN == "quilt":
+        return (get_quilt_accuracy(),)
+    elif RUN == "glimpse":
+        return get_glimpse_results()
+    else:
+        pass
 
 
 def get_speed_plots():
@@ -44,6 +62,14 @@ def get_accuracy_panelsize_plots():
 def get_accuracy_depth_plots():
     return expand(
         rules.plot_accuracy_depth.output, chrom=config["chroms"], size=config["refsize"]
+    )
+
+
+def get_quilt_accuracy():
+    return expand(
+        rules.plot_quilt_accuracy.output,
+        chrom=config["chroms"],
+        size=config["refsize"],
     )
 
 

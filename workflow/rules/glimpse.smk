@@ -60,6 +60,11 @@ rule glimpse_phase:
         N="glimpse_phase",
         irg=get_glimpse_chunki_irg,
         org=get_glimpse_chunki_org,
+        burnin=config["glimpse"]["burnin"],
+        main=config["glimpse"]["main"],
+        pbwtL=config["glimpse"]["pbwt-depth"],
+        pbwtS=config["glimpse"]["pbwt-modulo"],
+        ne=config["glimpse"]["ne"],
     conda:
         "../envs/pandas.yaml"
     shell:
@@ -70,6 +75,11 @@ rule glimpse_phase:
             --reference {input.refvcf} \
             --input-region {params.irg} \
             --output-region {params.org} \
+            --burnin {params.burnin} \
+            --main {params.main} \
+            --pbwt-depth {params.pbwtL} \
+            --pbwt-modulo {params.pbwtS} \
+            --ne {params.ne} \
             --output {output} && \
             bcftools index -f {output} \
         ) &> {log}
