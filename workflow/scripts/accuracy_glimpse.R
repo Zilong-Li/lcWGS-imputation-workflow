@@ -4,10 +4,11 @@ library(data.table)
 acc_r2_all <- function(d0, d1) {
     truthGT <- sapply(seq(1, dim(d0)[2] - 1, 2), function(i){rowSums(d0[,(i+1):(i+2)])})  # matrix: nsnps x nsamples
     d1 <- as.matrix(d1[, -1]) # get dosages
+    y1 <- cor(as.vector(truthGT), as.vector(d1), use = 'pairwise.complete') ** 2
 }
 
 
-acc_r2_by_af <- function(d0, d1, d2, d3, d4, af, bins) {
+acc_r2_by_af <- function(d0, d1, af, bins) {
     truthGT <- sapply(seq(1, dim(d0)[2] - 1, 2), function(i){rowSums(d0[,(i+1):(i+2)])})  # matrix: nsnps x nsamples
     d1 <- as.matrix(d1[, -1])
     x <- cut(af, breaks = bins)
@@ -15,7 +16,7 @@ acc_r2_by_af <- function(d0, d1, d2, d3, d4, af, bins) {
                                                         nA = sum(truthGT[w,], na.rm = TRUE),
                                                         simple = cor(as.vector(truthGT[w,]), as.vector(d1[w,]), use = 'pairwise.complete') ** 2
                                                         )})
-    as.data.frame(cbind(bin = bins[-1], glimpse = sapply(d1_cor_af, "[[", "simple")))
+    as.data.frame(cbind(bin = bins[-1], glimpse = sapply(d1_cor_af, "[[", "simple"), orphan = sapply(d1_cor_af, "[[", "simple")))
 }
 
 rmnull <- function(l) {
