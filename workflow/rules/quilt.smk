@@ -196,6 +196,7 @@ rule quilt_run_regular:
             --zilong=FALSE \
             --use_mspbwt=FALSE \
             --Ksubset={params.Ksubset} \
+            --Knew={params.Ksubset} \
             --nGibbsSamples={params.nGibbsSamples} \
             --n_seek_its={params.n_seek_its} \
             --n_burn_in_seek_its={params.n_burnin_its} \
@@ -296,6 +297,7 @@ rule quilt_run_mspbwt:
             --zilong=FALSE \
             --use_mspbwt=TRUE \
             --Ksubset={params.Ksubset} \
+            --Knew={params.Ksubset} \
             --nGibbsSamples={params.nGibbsSamples} \
             --n_seek_its={params.n_seek_its} \
             --n_burn_in_seek_its={params.n_burnin_its} \
@@ -400,6 +402,7 @@ rule quilt_run_zilong:
             --zilong=TRUE \
             --use_mspbwt=FALSE \
             --Ksubset={params.Ksubset} \
+            --Knew={params.Ksubset} \
             --nGibbsSamples={params.nGibbsSamples} \
             --n_seek_its={params.n_seek_its} \
             --n_burn_in_seek_its={params.n_burnin_its} \

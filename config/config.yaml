@@ -19,7 +19,7 @@ scenario: 'all'
 
 quilt:
   chunksize: 2000000
-  nGen: 20
+  nGen: 100
   buffer: 500000
   Ksubset: 400
   nGibbsSamples: 7
