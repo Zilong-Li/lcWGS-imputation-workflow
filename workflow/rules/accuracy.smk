@@ -8,12 +8,12 @@ rule collect_truth_gts:
             allow_missing=True,
         ),
     output:
-        gt=os.path.join(OUTDIR_SUMMARY, "truth.gts.{chrom}.txt"),
-        af=os.path.join(OUTDIR_SUMMARY, "af.input.panel.{chrom}.txt"),
-        tmp=temp(os.path.join(OUTDIR_SUMMARY, "af.input.panel.{chrom}.txt.tmp")),
-        tmp2=temp(os.path.join(OUTDIR_SUMMARY, "truth.gts.{chrom}.txt.tmp")),
+        gt=os.path.join(OUTDIR_PANEL, "truth.gts.{chrom}.txt"),
+        af=os.path.join(OUTDIR_PANEL, "af.input.panel.{chrom}.txt"),
+        tmp=temp(os.path.join(OUTDIR_PANEL, "af.input.panel.{chrom}.txt.tmp")),
+        tmp2=temp(os.path.join(OUTDIR_PANEL, "truth.gts.{chrom}.txt.tmp")),
     log:
-        os.path.join(OUTDIR_SUMMARY, "truth.gts.{chrom}.log"),
+        os.path.join(OUTDIR_PANEL, "truth.gts.{chrom}.log"),
     params:
         N="collect_truth_gts",
         samples=",".join(SAMPLES.keys()),
