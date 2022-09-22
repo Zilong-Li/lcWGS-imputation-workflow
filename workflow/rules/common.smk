@@ -170,9 +170,9 @@ def get_quilt_output_zilong(wildcards):
 
 def get_glimpse_chunks(wildcards):
     """ugly but it's good to use GLIMPSE_chunk split the chromosome first"""
-    if not os.path.exists(OUTDIR_SUMMARY):
-        os.makedirs(OUTDIR_SUMMARY)
-    fn = os.path.join(OUTDIR_SUMMARY, f"{wildcards.chrom}.glimpse.chunks")
+    if not os.path.exists(OUTDIR_PANEL):
+        os.makedirs(OUTDIR_PANEL)
+    fn = os.path.join(OUTDIR_PANEL, f"{wildcards.chrom}.glimpse.chunks")
     if not os.path.isfile(fn):
         os.system(
             f"GLIMPSE_chunk --input {REFPANEL[wildcards.chrom]['vcf']} --region {wildcards.chrom} --window-size {config['glimpse']['chunksize']} --buffer-size {config['glimpse']['buffer']} --output {fn} "
