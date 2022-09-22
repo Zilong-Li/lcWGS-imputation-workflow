@@ -41,38 +41,165 @@ rule collect_truth_gts:
         """
 
 
-rule collect_quilt_imputed_gts:
+rule collect_quilt_regular_imputed_gts:
     input:
-        regular=rules.quilt_ligate_regular.output.vcf,
-        mspbwt=rules.quilt_ligate_mspbwt.output.vcf,
-        zilong=rules.quilt_ligate_zilong.output.vcf,
+        rules.quilt_ligate_regular.output.vcf,
     output:
-        regular=os.path.join(
+        os.path.join(
             OUTDIR_SUMMARY,
             "quilt.gts.regular.panelsize{size}.down{depth}x.{chrom}.txt",
         ),
-        mspbwt=os.path.join(
-            OUTDIR_SUMMARY, "quilt.gts.mspbwt.panelsize{size}.down{depth}x.{chrom}.txt"
-        ),
-        zilong=os.path.join(
-            OUTDIR_SUMMARY, "quilt.gts.zilong.panelsize{size}.down{depth}x.{chrom}.txt"
-        ),
     log:
         os.path.join(
-            OUTDIR_SUMMARY, "quilt.gts.panelsize{size}.down{depth}x.{chrom}.llog"
+            OUTDIR_SUMMARY,
+            "quilt.gts.regular.panelsize{size}.down{depth}x.{chrom}.llog",
         ),
     params:
-        N="collect_quilt_imputed_gts",
+        N="collect_quilt_regular_imputed_gts",
         samples=",".join(SAMPLES.keys()),
         ql2="%CHROM:%POS:%REF:%ALT\\t[\\t%GT\\t%DS]\\n",
     conda:
         "../envs/quilt.yaml"
     shell:
         """
-        bcftools query -f '{params.ql2}' -s {params.samples} {input.regular} | sed -E 's/\/|\|/\\t/g' > {output.regular}
-        bcftools query -f '{params.ql2}' -s {params.samples} {input.mspbwt} | sed -E 's/\/|\|/\\t/g' > {output.mspbwt}
-        bcftools query -f '{params.ql2}' -s {params.samples} {input.zilong} | sed -E 's/\/|\|/\\t/g' > {output.zilong}
+        bcftools query -f '{params.ql2}' -s {params.samples} {input} | sed -E 's/\/|\|/\\t/g' > {output}
         """
+
+
+rule collect_quilt_mspbwt_imputed_gts:
+    input:
+        rules.quilt_ligate_mspbwt.output.vcf,
+    output:
+        os.path.join(
+            OUTDIR_SUMMARY, "quilt.gts.mspbwt.panelsize{size}.down{depth}x.{chrom}.txt"
+        ),
+    log:
+        os.path.join(
+            OUTDIR_SUMMARY,
+            "quilt.gts.mspbwt.panelsize{size}.down{depth}x.{chrom}.llog",
+        ),
+    params:
+        N="collect_quilt_mspbwt_imputed_gts",
+        samples=",".join(SAMPLES.keys()),
+        ql2="%CHROM:%POS:%REF:%ALT\\t[\\t%GT\\t%DS]\\n",
+    conda:
+        "../envs/quilt.yaml"
+    shell:
+        """
+        bcftools query -f '{params.ql2}' -s {params.samples} {input} | sed -E 's/\/|\|/\\t/g' > {output}
+        """
+
+
+rule collect_quilt_zilong_imputed_gts:
+    input:
+        rules.quilt_ligate_zilong.output.vcf,
+    output:
+        os.path.join(
+            OUTDIR_SUMMARY, "quilt.gts.zilong.panelsize{size}.down{depth}x.{chrom}.txt"
+        ),
+    log:
+        os.path.join(
+            OUTDIR_SUMMARY,
+            "quilt.gts.zilong.panelsize{size}.down{depth}x.{chrom}.llog",
+        ),
+    params:
+        N="collect_quilt_mspbwt_imputed_gts",
+        samples=",".join(SAMPLES.keys()),
+        ql2="%CHROM:%POS:%REF:%ALT\\t[\\t%GT\\t%DS]\\n",
+    conda:
+        "../envs/quilt.yaml"
+    shell:
+        """
+        bcftools query -f '{params.ql2}' -s {params.samples} {input} | sed -E 's/\/|\|/\\t/g' > {output}
+        """
+
+
+rule plot_quilt_regular:
+    input:
+        truth=rules.collect_truth_gts.output.gt,
+        af=rules.collect_truth_gts.output.af,
+        single=expand(
+            rules.collect_quilt_regular_imputed_gts.output,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+    params:
+        N="plot_quilt_regular",
+    output:
+        pdf=os.path.join(
+            OUTDIR_SUMMARY, "quilt.accuracy.regular.panelsize{size}.{chrom}.pdf"
+        ),
+        rds=os.path.join(
+            OUTDIR_SUMMARY, "quilt.accuracy.regular.panelsize{size}.{chrom}.rds"
+        ),
+    log:
+        os.path.join(
+            OUTDIR_SUMMARY, "quilt.accuracy.regular.panelsize{size}.{chrom}.pdf.llog"
+        ),
+    conda:
+        "../envs/quilt.yaml"
+    script:
+        "../scripts/accuracy_single.R"
+
+
+rule plot_quilt_mspbwt:
+    input:
+        truth=rules.collect_truth_gts.output.gt,
+        af=rules.collect_truth_gts.output.af,
+        single=expand(
+            rules.collect_quilt_mspbwt_imputed_gts.output,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+    params:
+        N="plot_quilt_mspbwt",
+    output:
+        pdf=os.path.join(
+            OUTDIR_SUMMARY, "quilt.accuracy.mspbwt.panelsize{size}.{chrom}.pdf"
+        ),
+        rds=os.path.join(
+            OUTDIR_SUMMARY, "quilt.accuracy.mspbwt.panelsize{size}.{chrom}.rds"
+        ),
+    log:
+        os.path.join(
+            OUTDIR_SUMMARY, "quilt.accuracy.mspbwt.panelsize{size}.{chrom}.pdf.llog"
+        ),
+    conda:
+        "../envs/quilt.yaml"
+    script:
+        "../scripts/accuracy_single.R"
+
+
+rule plot_quilt_accuracy:
+    input:
+        truth=rules.collect_truth_gts.output.gt,
+        af=rules.collect_truth_gts.output.af,
+        regular=expand(
+            rules.collect_quilt_regular_imputed_gts.output,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+        mspbwt=expand(
+            rules.collect_quilt_mspbwt_imputed_gts.output,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+        zilong=expand(
+            rules.collect_quilt_zilong_imputed_gts.output,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+    params:
+        N="plot_quilt_accuracy",
+    output:
+        pdf=os.path.join(OUTDIR_SUMMARY, "quilt.accuracy.panelsize{size}.{chrom}.pdf"),
+        rds=os.path.join(OUTDIR_SUMMARY, "quilt.accuracy.panelsize{size}.{chrom}.rds"),
+    log:
+        os.path.join(OUTDIR_SUMMARY, "quilt.accuracy.panelsize{size}.{chrom}.pdf.llog"),
+    conda:
+        "../envs/quilt.yaml"
+    script:
+        "../scripts/accuracy_quilt.R"
 
 
 rule collect_glimpse_imputed_gts:
@@ -97,38 +224,6 @@ rule collect_glimpse_imputed_gts:
         """
         bcftools query -f '{params.ql2}' -s {params.samples} {input} | sed -E 's/\/|\|/\\t/g' > {output}
         """
-
-
-rule plot_quilt_accuracy:
-    input:
-        truth=rules.collect_truth_gts.output.gt,
-        af=rules.collect_truth_gts.output.af,
-        regular=expand(
-            rules.collect_quilt_imputed_gts.output.regular,
-            depth=config["downsample"],
-            allow_missing=True,
-        ),
-        mspbwt=expand(
-            rules.collect_quilt_imputed_gts.output.mspbwt,
-            depth=config["downsample"],
-            allow_missing=True,
-        ),
-        zilong=expand(
-            rules.collect_quilt_imputed_gts.output.zilong,
-            depth=config["downsample"],
-            allow_missing=True,
-        ),
-    params:
-        N="plot_quilt_accuracy",
-    output:
-        pdf=os.path.join(OUTDIR_SUMMARY, "quilt.accuracy.panelsize{size}.{chrom}.pdf"),
-        rds=os.path.join(OUTDIR_SUMMARY, "quilt.accuracy.panelsize{size}.{chrom}.rds"),
-    log:
-        os.path.join(OUTDIR_SUMMARY, "quilt.accuracy.panelsize{size}.{chrom}.pdf.llog"),
-    conda:
-        "../envs/quilt.yaml"
-    script:
-        "../scripts/accuracy_quilt.R"
 
 
 rule plot_glimpse_accuracy:
@@ -165,17 +260,17 @@ rule plot_accuracy_panelsize:
             allow_missing=True,
         ),
         regular=expand(
-            rules.collect_quilt_imputed_gts.output.regular,
+            rules.collect_quilt_regular_imputed_gts.output,
             size=config["refsize"],
             allow_missing=True,
         ),
         mspbwt=expand(
-            rules.collect_quilt_imputed_gts.output.mspbwt,
+            rules.collect_quilt_mspbwt_imputed_gts.output,
             size=config["refsize"],
             allow_missing=True,
         ),
         zilong=expand(
-            rules.collect_quilt_imputed_gts.output.zilong,
+            rules.collect_quilt_zilong_imputed_gts.output,
             size=config["refsize"],
             allow_missing=True,
         ),
@@ -202,17 +297,17 @@ rule plot_accuracy_depth:
             allow_missing=True,
         ),
         regular=expand(
-            rules.collect_quilt_imputed_gts.output.regular,
+            rules.collect_quilt_regular_imputed_gts.output,
             depth=config["downsample"],
             allow_missing=True,
         ),
         mspbwt=expand(
-            rules.collect_quilt_imputed_gts.output.mspbwt,
+            rules.collect_quilt_mspbwt_imputed_gts.output,
             depth=config["downsample"],
             allow_missing=True,
         ),
         zilong=expand(
-            rules.collect_quilt_imputed_gts.output.zilong,
+            rules.collect_quilt_zilong_imputed_gts.output,
             depth=config["downsample"],
             allow_missing=True,
         ),

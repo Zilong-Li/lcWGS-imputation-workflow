@@ -14,7 +14,7 @@ refsize: [0]
 
 chroms: ['21']
 
-scenario: 'glimpse' #'all', 'speed', 'accuracy', 'quilt', 'glimpse'
+scenario: 'quilt-mspbwt' #'all', 'speed', 'accuracy', 'quilt', 'glimpse', 'quilt-regular', 'quilt-mspbwt'
 
 quilt:
   chunksize: 2000000
@@ -28,6 +28,7 @@ quilt:
   small_ref_panel_gibbs_iterations: 20
   pbwtL: 2
   pbwtS: 8
+  mspbwt-nindices: 1
 
 glimpse:
   chunksize: 2000000
@@ -35,7 +36,7 @@ glimpse:
   bq: 20
   mq: 20
   burnin: 10
-  main: 15
+  main: 10
   pbwt-depth: 2
   pbwt-modulo: 8
   ne: 20000

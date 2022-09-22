@@ -64,6 +64,7 @@ rule quilt_prepare_mspbwt:
         N="quilt_prepare_mspbwt",
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
+        nindices=config["quilt"]["mspbwt-nindices"],
         outdir=lambda wildcards, output: os.path.dirname(output[0])[:-5],
     log:
         os.path.join(
@@ -90,6 +91,7 @@ rule quilt_prepare_mspbwt:
             --nGen={params.nGen} \
             --use_pbwt_index=FALSE \
             --use_mspbwt=TRUE \
+            --mspbwt_nindices={params.nindices} \
             --outputdir={params.outdir} &> {log}
         """
 
