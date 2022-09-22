@@ -72,7 +72,7 @@ plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0, 1.0
 nd <- length(groups)
 for(i in 1:nd) {
     d <- accuracy_by_af[[i]]
-    y <- rmnull(d$glimpse)
+    y <- rmnull(d$single)
     lines(x, y, type = "l", lty = nd-i+1, pch = 1, col = mycols[1])
 }
 axis(side = 1, at = x, labels=labels)

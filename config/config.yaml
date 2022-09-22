@@ -14,7 +14,8 @@ refsize: [0]
 
 chroms: ['21']
 
-scenario: 'quilt-mspbwt' #'all', 'speed', 'accuracy', 'quilt', 'glimpse', 'quilt-regular', 'quilt-mspbwt'
+#'all', 'speed', 'accuracy', 'quilt', 'glimpse', 'quilt-regular', 'quilt-mspbwt'
+scenario: 'quilt-mspbwt'
 
 quilt:
   chunksize: 2000000
