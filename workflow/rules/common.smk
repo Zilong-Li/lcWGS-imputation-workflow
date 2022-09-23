@@ -36,11 +36,11 @@ def get_all_results():
     elif RUN == "accuracy":
         return get_accuracy_panelsize_plots(), get_accuracy_depth_plots()
     elif RUN == "speed":
-        return get_speed_plots()
+        return get_speed_all_plots()
     elif RUN == "quilt-regular":
-        return get_quilt_regular_accuracy()
+        return get_quilt_regular_accuracy(), get_speed_quilt_regular_plots()
     elif RUN == "quilt-mspbwt":
-        return get_quilt_mspbwt_accuracy()
+        return get_quilt_mspbwt_accuracy(), get_speed_quilt_mspbwt_plots()
     elif RUN == "quilt":
         return get_quilt_accuracy()
     elif RUN == "glimpse":
@@ -49,9 +49,25 @@ def get_all_results():
         pass
 
 
-def get_speed_plots():
+def get_speed_all_plots():
     return expand(
-        rules.plot_speed.output, chrom=config["chroms"], depth=config["downsample"]
+        rules.plot_speed_all.output, chrom=config["chroms"], depth=config["downsample"]
+    )
+
+
+def get_speed_quilt_regular_plots():
+    return expand(
+        rules.plot_speed_quilt_regular.output,
+        chrom=config["chroms"],
+        size=config["refsize"],
+    )
+
+
+def get_speed_quilt_mspbwt_plots():
+    return expand(
+        rules.plot_speed_quilt_mspbwt.output,
+        chrom=config["chroms"],
+        size=config["refsize"],
     )
 
 
