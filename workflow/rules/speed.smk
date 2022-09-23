@@ -93,9 +93,8 @@ rule collect_glimpse_speed_log:
 
 rule plot_speed_quilt_regular:
     input:
-        regular=expand(
+        expand(
             rules.collect_quilt_regular_speed_log.output,
-            size=config["refsize"],
             depth=config["downsample"],
             allow_missing=True,
         ),
@@ -118,9 +117,8 @@ rule plot_speed_quilt_regular:
 
 rule plot_speed_quilt_mspbwt:
     input:
-        regular=expand(
+        expand(
             rules.collect_quilt_mspbwt_speed_log.output,
-            size=config["refsize"],
             depth=config["downsample"],
             allow_missing=True,
         ),

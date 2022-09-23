@@ -18,7 +18,7 @@ gunram <- function(dl) {
 groups <- as.numeric(snakemake@config[["downsample"]])
 nd <- length(groups)
 
-dl.regular <- lapply(snakemake@input[[1]], read.table)
+dl.regular <- lapply(snakemake@input, read.table)
 times <- data.frame(gnutime(dl.regular))
 rams <- data.frame(gunram(dl.regular))
 
@@ -31,8 +31,8 @@ mycols <- wong[1:3]
 
 pdf(snakemake@output[["pdf"]], w=12, h=6)
 par(mfrow=c(1,2))
-plot(groups, times[,1], type = "b", lwd=1.0, pch = 1, col = mycols[1], ylab = "Total Time in seconds for the chromosome", xlab = "Reference panel size", ylim=c(min(times)*0.9, max(times)*1.1))
+plot(groups, times[,1], type = "b", lwd=1.0, pch = 1, col = mycols[1], ylab = "Total Time in seconds for the chromosome", xlab = "Sequencing depth", ylim=c(min(times)*0.9, max(times)*1.1))
 legend("topleft", legend=c(snakemake@params[["N"]]), col=mycols, pch = 1, lwd = 1.5, cex = 1.1, xjust = 0, yjust = 1, bty = "n")
 
-plot(groups, rams[,1], type = "b", lwd=1.0, pch = 1, col = mycols[1], ylab = "Maximum RAM in MBs for the chromosome", xlab = "Reference panel size", ylim=c(min(rams)*0.9, max(rams)*1.1))
+plot(groups, rams[,1], type = "b", lwd=1.0, pch = 1, col = mycols[1], ylab = "Maximum RAM in MBs for the chromosome", xlab = "Sequencing depth", ylim=c(min(rams)*0.9, max(rams)*1.1))
 dev.off()
