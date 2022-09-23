@@ -1,6 +1,32 @@
 
 library(data.table)
 
+## input is matrix
+r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip = FALSE) {
+    if (flip) {
+        w <- af > 0.5
+        af[w] <- 1 - af[w]
+        truthG[w] <- 2 - truthG[w]
+        testDS[w] <- 2 - testDS[w]
+    }
+    if (!is.null(which_snps)) {
+        af <- af[which_snps]
+        truthG <- truthG[which_snps]
+        testDS <- testDS[which_snps]
+    }
+    x <- cut(af, breaks = breaks)
+    cors_per_af <- tapply(1:length(x), x, function(w) {
+        c(
+            n = length(w),
+            nA = sum(truthG[w], na.rm = TRUE),
+            simple = cor(truthG[w], testDS[w], use = 'pairwise.complete') ** 2,
+            norm = cor(truthG[w] - 2 * af[w], testDS[w] - 2 * af[w], use = 'pairwise.complete') ** 2
+        )
+    })
+    cors_per_af <- t(sapply(cors_per_af[!sapply(cors_per_af, is.null)], I))
+    return(cors_per_af)
+}
+
 acc_r2_all <- function(d0, d1, d2, d3) {
     truthGT <- sapply(seq(1, dim(d0)[2] - 1, 2), function(i){rowSums(d0[,(i+1):(i+2)])})  # matrix: nsnps x nsamples
     d1 <- as.matrix(d1[, -1]) # get dosages
@@ -15,22 +41,12 @@ acc_r2_all <- function(d0, d1, d2, d3) {
 acc_r2_by_af <- function(d0, d1, d2, d3, d4, af, bins) {
     truthGT <- sapply(seq(1, dim(d0)[2] - 1, 2), function(i){rowSums(d0[,(i+1):(i+2)])})  # matrix: nsnps x nsamples
     d1 <- as.matrix(d1[, -1])
-    x <- cut(af, breaks = bins)
-    d1_cor_af <- tapply(1:length(x), x, function(w) { c(n = length(w),
-                                                        nA = sum(truthGT[w,], na.rm = TRUE),
-                                                        simple = cor(as.vector(truthGT[w,]), as.vector(d1[w,]), use = 'pairwise.complete') ** 2
-                                                        )})
+    res1 <- r2_by_freq(breaks = bins, af, truthG = truthGT, testDS = d1)
     d2 <- as.matrix(d2[, -1])
-    d2_cor_af <- tapply(1:length(x), x, function(w) { c(n = length(w),
-                                                        nA = sum(truthGT[w,], na.rm = TRUE),
-                                                        simple = cor(as.vector(truthGT[w,]), as.vector(d2[w,]), use = 'pairwise.complete') ** 2
-                                                        )})
+    res2 <- r2_by_freq(breaks = bins, af, truthG = truthGT, testDS = d2)
     d3 <- as.matrix(d3[, -1])
-    d3_cor_af <- tapply(1:length(x), x, function(w) { c(n = length(w),
-                                                        nA = sum(truthGT[w,], na.rm = TRUE),
-                                                        simple = cor(as.vector(truthGT[w,]), as.vector(d3[w,]), use = 'pairwise.complete') ** 2
-                                                        )})
-    as.data.frame(cbind(bin = bins[-1], regular = sapply(d1_cor_af, "[[", "simple"),  mspbwt = sapply(d2_cor_af, "[[", "simple"), zilong = sapply(d3_cor_af, "[[", "simple"))
+    res3 <- r2_by_freq(breaks = bins, af, truthG = truthGT, testDS = d3)
+    as.data.frame(cbind(bin = bins[-1], regular = res1[,"simple"], mspbwt = res2[,"simple"], zilong = res3[,"simple"]))
 }
 
 rmnull <- function(l) {

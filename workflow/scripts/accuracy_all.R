@@ -1,39 +1,47 @@
 
-acc_r2_by_af <- function(d0, d1, d2, d3, d4, af, breaks) {
-    truthGT <- sapply(seq(1, dim(d0)[2] - 1, 2), function(i){rowSums(d0[,(i+1):(i+2)])})  # matrix: nsnps x nsamples
-    idx <- seq(1, dim(d1)[2], 3) # dosage indicies
-    d1 <- as.matrix(d1[, idx[-1]])
+r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip = FALSE) {
+    if (flip) {
+        w <- af > 0.5
+        af[w] <- 1 - af[w]
+        truthG[w] <- 2 - truthG[w]
+        testDS[w] <- 2 - testDS[w]
+    }
+    if (!is.null(which_snps)) {
+        af <- af[which_snps]
+        truthG <- truthG[which_snps]
+        testDS <- testDS[which_snps]
+    }
     x <- cut(af, breaks = breaks)
-    d1_cor_af <- tapply(1:length(x), x, function(w) { c(n = length(w),
-                                                        nA = sum(truthGT[w,], na.rm = TRUE),
-                                                        simple = cor(as.vector(truthGT[w,]), as.vector(d1[w,]), use = 'pairwise.complete') ** 2
-                                                        )})
-    idx <- seq(1, dim(d2)[2], 3) # dosage indicies
-    d2 <- as.matrix(d2[, idx[-1]])
-    d2_cor_af <- tapply(1:length(x), x, function(w) { c(n = length(w),
-                                                        nA = sum(truthGT[w,], na.rm = TRUE),
-                                                        simple = cor(as.vector(truthGT[w,]), as.vector(d2[w,]), use = 'pairwise.complete') ** 2
-                                                        )})
-    idx <- seq(1, dim(d3)[2], 3) # dosage indicies
-    d3 <- as.matrix(d3[, idx[-1]])
-    d3_cor_af <- tapply(1:length(x), x, function(w) { c(n = length(w),
-                                                        nA = sum(truthGT[w,], na.rm = TRUE),
-                                                        simple = cor(as.vector(truthGT[w,]), as.vector(d3[w,]), use = 'pairwise.complete') ** 2
-                                                        )})
-    idx <- seq(1, dim(d4)[2], 3) # dosage indicies
-    d4 <- as.matrix(d4[, idx[-1]])
-    d4_cor_af <- tapply(1:length(x), x, function(w) { c(n = length(w),
-                                                        nA = sum(truthGT[w,], na.rm = TRUE),
-                                                        simple = cor(as.vector(truthGT[w,]), as.vector(d4[w,]), use = 'pairwise.complete') ** 2
-                                                        )})
-    as.data.frame(cbind(bin = breaks[-1], regular = sapply(d1_cor_af, "[[", "simple"),  mspbwt = sapply(d2_cor_af, "[[", "simple"), zilong = sapply(d3_cor_af, "[[", "simple"), glimpse = sapply(d4_cor_af, "[[", "simple")))
+    cors_per_af <- tapply(1:length(x), x, function(w) {
+        c(
+            n = length(w),
+            nA = sum(truthG[w], na.rm = TRUE),
+            simple = cor(truthG[w], testDS[w], use = 'pairwise.complete') ** 2,
+            norm = cor(truthG[w] - 2 * af[w], testDS[w] - 2 * af[w], use = 'pairwise.complete') ** 2
+        )
+    })
+    cors_per_af <- t(sapply(cors_per_af[!sapply(cors_per_af, is.null)], I))
+    return(cors_per_af)
 }
+
+acc_r2_by_af <- function(d0, d1, d2, d3, d4, af, bins) {
+    truthGT <- sapply(seq(1, dim(d0)[2] - 1, 2), function(i){rowSums(d0[,(i+1):(i+2)])})  # matrix: nsnps x nsamples
+    d1 <- as.matrix(d1[, -1])
+    res1 <- r2_by_freq(breaks = bins, af, truthG = truthGT, testDS = d1)
+    d2 <- as.matrix(d2[, -1])
+    res2 <- r2_by_freq(breaks = bins, af, truthG = truthGT, testDS = d2)
+    d3 <- as.matrix(d3[, -1])
+    res3 <- r2_by_freq(breaks = bins, af, truthG = truthGT, testDS = d3)
+    d4 <- as.matrix(d4[, -1])
+    res4 <- r2_by_freq(breaks = bins, af, truthG = truthGT, testDS = d4)
+    as.data.frame(cbind(bin = bins[-1], regular = res1[,"simple"], mspbwt = res2[,"simple"], zilong = res3[,"simple"], glimpse = res4[,"simple"]))
+}
+
 
 groups <- as.numeric(snakemake@config[["refsize"]])
 
 df.truth <- read.table(snakemake@input[["truth"]])
 af <- as.numeric(read.table(snakemake@input[["af"]])[,1])
-af <- ifelse(af>0.5, 1-af, af)
 
 dl.regular <- lapply(snakemake@input[["regular"]], read.table)
 dl.mspbwt <- lapply(snakemake@input[["mspbwt"]], read.table)
