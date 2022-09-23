@@ -5,7 +5,7 @@ rule quilt_prepare_regular:
         leg=rules.subset_refpanel.output.leg,
     output:
         os.path.join(
-            OUTDIR_QUILT,
+            OUTDIR_PANEL,
             "panelsize{size}",
             "{chrom}",
             "prep_regular",
@@ -19,7 +19,7 @@ rule quilt_prepare_regular:
         outdir=lambda wildcards, output: os.path.dirname(output[0])[:-5],
     log:
         os.path.join(
-            OUTDIR_QUILT,
+            OUTDIR_PANEL,
             "panelsize{size}",
             "{chrom}",
             "prep_regular",
@@ -53,7 +53,7 @@ rule quilt_prepare_mspbwt:
         leg=rules.subset_refpanel.output.leg,
     output:
         os.path.join(
-            OUTDIR_QUILT,
+            OUTDIR_PANEL,
             "panelsize{size}",
             "{chrom}",
             "prep_mspbwt",
@@ -68,7 +68,7 @@ rule quilt_prepare_mspbwt:
         outdir=lambda wildcards, output: os.path.dirname(output[0])[:-5],
     log:
         os.path.join(
-            OUTDIR_QUILT,
+            OUTDIR_PANEL,
             "panelsize{size}",
             "{chrom}",
             "prep_mspbwt",
@@ -103,7 +103,7 @@ rule quilt_prepare_zilong:
         leg=rules.subset_refpanel.output.leg,
     output:
         os.path.join(
-            OUTDIR_QUILT,
+            OUTDIR_PANEL,
             "panelsize{size}",
             "{chrom}",
             "prep_zilong",
@@ -117,7 +117,7 @@ rule quilt_prepare_zilong:
         outdir=lambda wildcards, output: os.path.dirname(output[0])[:-5],
     log:
         os.path.join(
-            OUTDIR_QUILT,
+            OUTDIR_PANEL,
             "panelsize{size}",
             "{chrom}",
             "prep_zilong",

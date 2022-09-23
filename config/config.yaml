@@ -30,6 +30,7 @@ quilt:
   pbwtL: 2
   pbwtS: 8
   mspbwt-nindices: 4
+  map: NA
 
 glimpse:
   chunksize: 2000000
@@ -41,3 +42,4 @@ glimpse:
   pbwt-depth: 2
   pbwt-modulo: 8
   ne: 20000
+  map: NA
