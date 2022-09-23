@@ -22,7 +22,7 @@ rule collect_truth_gts:
         af=if_use_af_in_refpanel,
         ql0="%CHROM:%POS:%REF:%ALT\\n",
         ql1="%CHROM:%POS:%REF:%ALT\\t%AF\\n",
-        ql2="%CHROM:%POS:%REF:%ALT\\t[\\t%GT]\\n",
+        ql2="%CHROM:%POS:%REF:%ALT[\\t%GT]\\n",
         awk="NR==FNR{a[$1]=1;} NR!=FNR{if(a[$1]){print $2;}}",
         awk2="NR==FNR{a[$1]=1;} NR!=FNR{if(a[$1]){print $0;}}",
     conda:
@@ -57,7 +57,7 @@ rule collect_quilt_regular_imputed_gts:
     params:
         N="collect_quilt_regular_imputed_gts",
         samples=",".join(SAMPLES.keys()),
-        ql2="%CHROM:%POS:%REF:%ALT\\t[\\t%GT\\t%DS]\\n",
+        ql2="%CHROM:%POS:%REF:%ALT[\\t%GT\\t%DS]\\n",
     conda:
         "../envs/quilt.yaml"
     shell:
@@ -81,7 +81,7 @@ rule collect_quilt_mspbwt_imputed_gts:
     params:
         N="collect_quilt_mspbwt_imputed_gts",
         samples=",".join(SAMPLES.keys()),
-        ql2="%CHROM:%POS:%REF:%ALT\\t[\\t%GT\\t%DS]\\n",
+        ql2="%CHROM:%POS:%REF:%ALT[\\t%GT\\t%DS]\\n",
     conda:
         "../envs/quilt.yaml"
     shell:
@@ -105,7 +105,7 @@ rule collect_quilt_zilong_imputed_gts:
     params:
         N="collect_quilt_mspbwt_imputed_gts",
         samples=",".join(SAMPLES.keys()),
-        ql2="%CHROM:%POS:%REF:%ALT\\t[\\t%GT\\t%DS]\\n",
+        ql2="%CHROM:%POS:%REF:%ALT[\\t%GT\\t%DS]\\n",
     conda:
         "../envs/quilt.yaml"
     shell:
@@ -217,7 +217,7 @@ rule collect_glimpse_imputed_gts:
     params:
         N="collect_glimpse_imputed_gts",
         samples=",".join(SAMPLES.keys()),
-        ql2="%CHROM:%POS:%REF:%ALT\\t[\\t%GT\\t%DS]\\n",
+        ql2="%CHROM:%POS:%REF:%ALT[\\t%GT\\t%DS]\\n",
     conda:
         "../envs/quilt.yaml"
     shell:
