@@ -29,7 +29,7 @@ def get_all_results():
     RUN = config["scenario"]
     if RUN == "all":
         return (
-            get_speed_plots(),
+            get_speed_all_plots(),
             get_accuracy_panelsize_plots(),
             get_accuracy_depth_plots(),
         )
