@@ -1,6 +1,33 @@
 
 library(data.table)
 
+## input is matrix
+r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip = FALSE) {
+    if (flip) {
+        w <- af > 0.5
+        af[w] <- 1 - af[w]
+        truthG[w] <- 2 - truthG[w]
+        testDS[w] <- 2 - testDS[w]
+    }
+    if (!is.null(which_snps)) {
+        af <- af[which_snps]
+        truthG <- truthG[which_snps]
+        testDS <- testDS[which_snps]
+    }
+    x <- cut(af, breaks = breaks)
+    cors_per_af <- tapply(1:length(x), x, function(w) {
+        c(
+            n = length(w),
+            nA = sum(truthG[w], na.rm = TRUE),
+            simple = cor(truthG[w], testDS[w], use = 'pairwise.complete') ** 2,
+            norm = cor(truthG[w] - 2 * af[w], testDS[w] - 2 * af[w], use = 'pairwise.complete') ** 2
+        )
+    })
+    cors_per_af <- t(sapply(cors_per_af[!sapply(cors_per_af, is.null)], I))
+    return(cors_per_af)
+}
+
+
 acc_r2_all <- function(d0, d1) {
     truthGT <- sapply(seq(1, dim(d0)[2] - 1, 2), function(i){rowSums(d0[,(i+1):(i+2)])})  # matrix: nsnps x nsamples
     d1 <- as.matrix(d1[, -1]) # get dosages
@@ -11,12 +38,8 @@ acc_r2_all <- function(d0, d1) {
 acc_r2_by_af <- function(d0, d1, af, bins) {
     truthGT <- sapply(seq(1, dim(d0)[2] - 1, 2), function(i){rowSums(d0[,(i+1):(i+2)])})  # matrix: nsnps x nsamples
     d1 <- as.matrix(d1[, -1])
-    x <- cut(af, breaks = bins)
-    d1_cor_af <- tapply(1:length(x), x, function(w) { c(n = length(w),
-                                                        nA = sum(truthGT[w,], na.rm = TRUE),
-                                                        simple = cor(as.vector(truthGT[w,]), as.vector(d1[w,]), use = 'pairwise.complete') ** 2
-                                                        )})
-    as.data.frame(cbind(bin = bins[-1], single = sapply(d1_cor_af, "[[", "simple"), orphan = sapply(d1_cor_af, "[[", "simple")))
+    res <- r2_by_freq(breaks = bins, af, truthG = truthGT, testDS = d1)
+    as.data.frame(cbind(bin = bins[-1], single = res[,"simple"], orphan = res[,"simple"]))
 }
 
 rmnull <- function(l) {
@@ -28,7 +51,8 @@ groups <- as.numeric(snakemake@config[["downsample"]])
 
 df.truth <- read.table(snakemake@input[["truth"]])
 af <- as.numeric(read.table(snakemake@input[["af"]])[,1])
-af <- ifelse(af>0.5, 1-af, af)
+## SNPs with (1-af) > 0.0005 & (1-af) < 0.001 are all imputed hom ALT and truth hom ALT. but those are stupidly easy to impute and don’t tell you anything
+## af <- ifelse(af>0.5, 1-af, af)
 
 dl.single <- lapply(snakemake@input[["single"]], function(fn) {
     fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn), data.table = F)
