@@ -58,6 +58,7 @@ rule glimpse_phase:
         ),
     params:
         N="glimpse_phase",
+        gmap=if_use_glimpse_map_in_refpanel,
         irg=get_glimpse_chunki_irg,
         org=get_glimpse_chunki_org,
         burnin=config["glimpse"]["burnin"],
@@ -70,6 +71,21 @@ rule glimpse_phase:
     shell:
         """
         (
+        if [ -s {params.gmap} ];then \
+            /usr/bin/time -v GLIMPSE_phase \
+            --input {input.glvcf} \
+            --reference {input.refvcf} \
+            --map '{params.gmap}' \
+            --input-region {params.irg} \
+            --output-region {params.org} \
+            --burnin {params.burnin} \
+            --main {params.main} \
+            --pbwt-depth {params.pbwtL} \
+            --pbwt-modulo {params.pbwtS} \
+            --ne {params.ne} \
+            --output {output} && \
+            bcftools index -f {output} \
+        else \
             /usr/bin/time -v GLIMPSE_phase \
             --input {input.glvcf} \
             --reference {input.refvcf} \
@@ -82,6 +98,7 @@ rule glimpse_phase:
             --ne {params.ne} \
             --output {output} && \
             bcftools index -f {output} \
+        fi
         ) &> {log}
         """
 

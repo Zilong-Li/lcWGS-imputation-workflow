@@ -160,6 +160,20 @@ def if_use_af_in_refpanel(wildcards):
         return "false"
 
 
+def if_use_quilt_map_in_refpanel(wildcards):
+    if REFPANEL[wildcards.chrom].get("quilt_map"):
+        return REFPANEL[wildcards.chrom]["quilt_map"]
+    else:
+        return "false"
+
+
+def if_use_glimpse_map_in_refpanel(wildcards):
+    if REFPANEL[wildcards.chrom].get("glimpse_map"):
+        return REFPANEL[wildcards.chrom]["glimpse_map"]
+    else:
+        return "false"
+
+
 def get_regions_list_per_chrom(chrom, chunksize):
     """split chr into chunks given chunksize; return a list of '[start,end]' pairs"""
     regions = []

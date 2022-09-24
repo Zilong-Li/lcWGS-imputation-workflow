@@ -16,6 +16,7 @@ rule quilt_prepare_regular:
         N="quilt_prepare_regular",
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
+        gmap=if_use_quilt_map_in_refpanel,
         outdir=lambda wildcards, output: os.path.dirname(output[0])[:-5],
     log:
         os.path.join(
@@ -31,6 +32,22 @@ rule quilt_prepare_regular:
     threads: 1
     shell:
         """
+        (
+        if [ -s {params.gmap} ];then \
+        /usr/bin/time -v QUILT_prepare_reference.R \
+            --genetic_map_file='{params.gmap}' \
+            --reference_vcf_file={input.vcf} \
+            --reference_haplotype_file={input.hap} \
+            --reference_legend_file={input.leg} \
+            --chr={wildcards.chrom} \
+            --regionStart={wildcards.start} \
+            --regionEnd={wildcards.end} \
+            --buffer={params.buffer} \
+            --nGen={params.nGen} \
+            --use_pbwt_index=FALSE \
+            --use_mspbwt=FALSE \
+            --outputdir={params.outdir}
+        else \
         /usr/bin/time -v QUILT_prepare_reference.R \
             --reference_vcf_file={input.vcf} \
             --reference_haplotype_file={input.hap} \
@@ -42,7 +59,9 @@ rule quilt_prepare_regular:
             --nGen={params.nGen} \
             --use_pbwt_index=FALSE \
             --use_mspbwt=FALSE \
-            --outputdir={params.outdir} &> {log}
+            --outputdir={params.outdir} \
+        fi
+        ) &> {log}
         """
 
 
@@ -64,6 +83,7 @@ rule quilt_prepare_mspbwt:
         N="quilt_prepare_mspbwt",
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
+        gmap=if_use_quilt_map_in_refpanel,
         nindices=config["quilt"]["mspbwt-nindices"],
         outdir=lambda wildcards, output: os.path.dirname(output[0])[:-5],
     log:
@@ -80,6 +100,23 @@ rule quilt_prepare_mspbwt:
     threads: 1
     shell:
         """
+        (
+        if [ -s {params.gmap} ];then \
+        /usr/bin/time -v QUILT_prepare_reference.R \
+            --genetic_map_file='{params.gmap}' \
+            --reference_vcf_file={input.vcf} \
+            --reference_haplotype_file={input.hap} \
+            --reference_legend_file={input.leg} \
+            --chr={wildcards.chrom} \
+            --regionStart={wildcards.start} \
+            --regionEnd={wildcards.end} \
+            --buffer={params.buffer} \
+            --nGen={params.nGen} \
+            --use_pbwt_index=FALSE \
+            --use_mspbwt=TRUE \
+            --mspbwt_nindices={params.nindices} \
+            --outputdir={params.outdir}
+        else \
         /usr/bin/time -v QUILT_prepare_reference.R \
             --reference_vcf_file={input.vcf} \
             --reference_haplotype_file={input.hap} \
@@ -92,7 +129,9 @@ rule quilt_prepare_mspbwt:
             --use_pbwt_index=FALSE \
             --use_mspbwt=TRUE \
             --mspbwt_nindices={params.nindices} \
-            --outputdir={params.outdir} &> {log}
+            --outputdir={params.outdir} \
+        fi
+        ) &> {log}
         """
 
 
@@ -114,6 +153,7 @@ rule quilt_prepare_zilong:
         N="quilt_prepare_zilong",
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
+        gmap=if_use_quilt_map_in_refpanel,
         outdir=lambda wildcards, output: os.path.dirname(output[0])[:-5],
     log:
         os.path.join(
@@ -129,6 +169,22 @@ rule quilt_prepare_zilong:
     threads: 1
     shell:
         """
+        (
+        if [ -s {params.gmap} ];then \
+        /usr/bin/time -v QUILT_prepare_reference.R \
+            --genetic_map_file='{params.gmap}' \
+            --reference_vcf_file={input.vcf} \
+            --reference_haplotype_file={input.hap} \
+            --reference_legend_file={input.leg} \
+            --chr={wildcards.chrom} \
+            --regionStart={wildcards.start} \
+            --regionEnd={wildcards.end} \
+            --buffer={params.buffer} \
+            --nGen={params.nGen} \
+            --use_pbwt_index=TRUE \
+            --use_mspbwt=FALSE \
+            --outputdir={params.outdir}
+        else \
         /usr/bin/time -v QUILT_prepare_reference.R \
             --reference_vcf_file={input.vcf} \
             --reference_haplotype_file={input.hap} \
@@ -140,7 +196,9 @@ rule quilt_prepare_zilong:
             --nGen={params.nGen} \
             --use_pbwt_index=TRUE \
             --use_mspbwt=FALSE \
-            --outputdir={params.outdir} &> {log}
+            --outputdir={params.outdir} \
+        fi
+        ) &> {log}
         """
 
 
