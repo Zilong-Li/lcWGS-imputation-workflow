@@ -1,64 +1,11 @@
 
-library(data.table)
-
-## input is matrix
-r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip = FALSE) {
-    if (flip) {
-        w <- af > 0.5
-        af[w] <- 1 - af[w]
-        truthG[w,] <- 2 - truthG[w,]
-        testDS[w,] <- 2 - testDS[w,]
-    }
-    if (!is.null(which_snps)) {
-        af <- af[which_snps]
-        truthG <- truthG[which_snps,]
-        testDS <- testDS[which_snps,]
-    }
-    x <- cut(af, breaks = breaks)
-    cors_per_af <- tapply(1:length(x), x, function(w) {
-        c(
-            n = length(w),
-            nA = sum(truthG[w,], na.rm = TRUE),
-            simple = cor(as.vector(truthG[w,]), as.vector(testDS[w,]), use = 'pairwise.complete') ** 2,
-            norm = cor(as.vector(truthG[w,] - 2 * af[w]), as.vector(testDS[w,] - 2 * af[w]), use = 'pairwise.complete') ** 2
-        )
-    })
-    cors_per_af <- t(sapply(cors_per_af[!sapply(cors_per_af, is.null)], I))
-    return(cors_per_af)
-}
-
-quilt_r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip = FALSE) {
-    if (flip) {
-        w <- af > 0.5
-        af[w] <- 1 - af[w]
-        truthG[w] <- 2 - truthG[w]
-        testDS[w] <- 2 - testDS[w]
-    }
-    if (!is.null(which_snps)) {
-        af <- af[which_snps]
-        truthG <- truthG[which_snps]
-        testDS <- testDS[which_snps]
-    }
-    x <- cut(af, breaks = breaks)
-    cors_per_af <- tapply(1:length(x), x, function(w) {
-        c(
-            n = length(w),
-            nA = sum(truthG[w], na.rm = TRUE),
-            simple = cor(truthG[w], testDS[w], use = 'pairwise.complete') ** 2,
-            norm = cor(truthG[w] - 2 * af[w], testDS[w] - 2 * af[w], use = 'pairwise.complete') ** 2
-        )
-    })
-    cors_per_af <- t(sapply(cors_per_af[!sapply(cors_per_af, is.null)], I))
-    return(cors_per_af)
-}
-
+source("utils.R")
 
 acc_r2_all <- function(d0, d1) {
     truthGT <- sapply(seq(1, dim(d0)[2] - 1, 2), function(i){rowSums(d0[,(i+1):(i+2)])})  # matrix: nsnps x nsamples
     d1 <- as.matrix(sapply(d1[,-1], as.numeric)) # force data.frame to be numberic matrix. imputed dosages may be "."
     y1 <- cor(as.vector(truthGT), as.vector(d1), use = 'pairwise.complete') ** 2
 }
-
 
 acc_r2_by_af <- function(d0, d1, af, bins) {
     truthGT <- sapply(seq(1, dim(d0)[2] - 1, 2), function(i){rowSums(d0[,(i+1):(i+2)])})  # matrix: nsnps x nsamples
