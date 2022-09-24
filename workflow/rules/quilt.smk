@@ -46,8 +46,8 @@ rule quilt_prepare_regular:
             --nGen={params.nGen} \
             --use_pbwt_index=FALSE \
             --use_mspbwt=FALSE \
-            --outputdir={params.outdir}
-        else \
+            --outputdir={params.outdir} \
+        ; else \
         /usr/bin/time -v QUILT_prepare_reference.R \
             --reference_vcf_file={input.vcf} \
             --reference_haplotype_file={input.hap} \
@@ -60,7 +60,7 @@ rule quilt_prepare_regular:
             --use_pbwt_index=FALSE \
             --use_mspbwt=FALSE \
             --outputdir={params.outdir} \
-        fi
+        ; fi
         ) &> {log}
         """
 
@@ -115,8 +115,8 @@ rule quilt_prepare_mspbwt:
             --use_pbwt_index=FALSE \
             --use_mspbwt=TRUE \
             --mspbwt_nindices={params.nindices} \
-            --outputdir={params.outdir}
-        else \
+            --outputdir={params.outdir} \
+        ; else \
         /usr/bin/time -v QUILT_prepare_reference.R \
             --reference_vcf_file={input.vcf} \
             --reference_haplotype_file={input.hap} \
@@ -130,7 +130,7 @@ rule quilt_prepare_mspbwt:
             --use_mspbwt=TRUE \
             --mspbwt_nindices={params.nindices} \
             --outputdir={params.outdir} \
-        fi
+        ; fi \
         ) &> {log}
         """
 
@@ -183,8 +183,8 @@ rule quilt_prepare_zilong:
             --nGen={params.nGen} \
             --use_pbwt_index=TRUE \
             --use_mspbwt=FALSE \
-            --outputdir={params.outdir}
-        else \
+            --outputdir={params.outdir} \
+        ; else \
         /usr/bin/time -v QUILT_prepare_reference.R \
             --reference_vcf_file={input.vcf} \
             --reference_haplotype_file={input.hap} \
@@ -197,7 +197,7 @@ rule quilt_prepare_zilong:
             --use_pbwt_index=TRUE \
             --use_mspbwt=FALSE \
             --outputdir={params.outdir} \
-        fi
+        ; fi \
         ) &> {log}
         """
 

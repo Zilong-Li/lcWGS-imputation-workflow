@@ -85,7 +85,7 @@ rule glimpse_phase:
             --ne {params.ne} \
             --output {output} && \
             bcftools index -f {output} \
-        else \
+        ; else \
             /usr/bin/time -v GLIMPSE_phase \
             --input {input.glvcf} \
             --reference {input.refvcf} \
@@ -98,7 +98,7 @@ rule glimpse_phase:
             --ne {params.ne} \
             --output {output} && \
             bcftools index -f {output} \
-        fi
+        ; fi \
         ) &> {log}
         """
 
