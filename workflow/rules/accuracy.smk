@@ -123,8 +123,6 @@ rule plot_quilt_regular:
             depth=config["downsample"],
             allow_missing=True,
         ),
-    params:
-        N="plot_quilt_regular",
     output:
         pdf=os.path.join(
             OUTDIR_SUMMARY, "quilt.accuracy.regular.panelsize{size}.{chrom}.pdf"
@@ -136,6 +134,10 @@ rule plot_quilt_regular:
         os.path.join(
             OUTDIR_SUMMARY, "quilt.accuracy.regular.panelsize{size}.{chrom}.pdf.llog"
         ),
+    params:
+        N="plot_quilt_regular",
+    resources:
+        slots=3,
     conda:
         "../envs/quilt.yaml"
     script:
