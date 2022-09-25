@@ -2,14 +2,10 @@
 source("utils.R")
 
 acc_r2_all <- function(d0, d1) {
-    truthGT <- sapply(seq(1, dim(d0)[2] - 1, 2), function(i){rowSums(d0[,(i+1):(i+2)])})  # matrix: nsnps x nsamples
-    d1 <- as.matrix(sapply(d1[,-1], as.numeric)) # force data.frame to be numberic matrix. imputed dosages may be "."
     y1 <- cor(as.vector(truthGT), as.vector(d1), use = 'pairwise.complete') ** 2
 }
 
 acc_r2_by_af <- function(d0, d1, af, bins) {
-    truthGT <- sapply(seq(1, dim(d0)[2] - 1, 2), function(i){rowSums(d0[,(i+1):(i+2)])})  # matrix: nsnps x nsamples
-    d1 <- as.matrix(sapply(d1[,-1], as.numeric))
     res <- r2_by_freq(breaks = bins, af, truthG = truthGT, testDS = d1)
     as.data.frame(cbind(bin = bins[-1], single = res[,"simple"], orphan = res[,"simple"]))
 }
@@ -22,12 +18,14 @@ rmnull <- function(l) {
 groups <- as.numeric(snakemake@config[["downsample"]])
 
 df.truth <- read.table(snakemake@input[["truth"]])
+df.truth <- sapply(seq(1, dim(df.truth)[2] - 1, 2), function(i){rowSums(df.truth[,(i+1):(i+2)])})  # matrix: nsnps x nsamples
 af <- as.numeric(read.table(snakemake@input[["af"]])[,1])
 ## SNPs with (1-af) > 0.0005 & (1-af) < 0.001 are all imputed hom ALT and truth hom ALT. but those are stupidly easy to impute and don’t tell you anything
 ## af <- ifelse(af>0.5, 1-af, af)
 
 dl.single <- lapply(snakemake@input[["single"]], function(fn) {
     fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn), data.table = F)
+    d1 <- as.matrix(sapply(d1[,-1], as.numeric)) # force data.frame to be numberic matrix. imputed dosages may be "."
 })
 
 bins <- sort(unique(c(

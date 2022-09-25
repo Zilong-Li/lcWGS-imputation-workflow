@@ -155,6 +155,7 @@ def get_glimpse_results():
 
 def if_use_af_in_refpanel(wildcards):
     if REFPANEL[wildcards.chrom].get("af"):
+        # varify af file. 5 columns: chr pos ref alt af
         return REFPANEL[wildcards.chrom]["af"]
     else:
         return "false"
@@ -162,6 +163,7 @@ def if_use_af_in_refpanel(wildcards):
 
 def if_use_quilt_map_in_refpanel(wildcards):
     if REFPANEL[wildcards.chrom].get("quilt_map"):
+        # varify quilt genetic map file.
         return REFPANEL[wildcards.chrom]["quilt_map"]
     else:
         return "false"
@@ -169,6 +171,7 @@ def if_use_quilt_map_in_refpanel(wildcards):
 
 def if_use_glimpse_map_in_refpanel(wildcards):
     if REFPANEL[wildcards.chrom].get("glimpse_map"):
+        # varify glimpse genetic map file.
         return REFPANEL[wildcards.chrom]["glimpse_map"]
     else:
         return "false"
