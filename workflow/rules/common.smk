@@ -32,6 +32,9 @@ def get_all_results():
             get_speed_all_plots(),
             get_accuracy_panelsize_plots(),
             get_accuracy_depth_plots(),
+            get_quilt_regular_accuracy(),
+            get_quilt_mspbwt_accuracy(),
+            get_glimpse_accuracy(),
         )
     elif RUN == "accuracy":
         return get_accuracy_panelsize_plots(), get_accuracy_depth_plots()

@@ -1,5 +1,5 @@
 
-source("utils.R")
+snakemake@source("utils.R")
 
 acc_r2_all <- function(d0, d1, d2, d3) {
     y1 <- cor(as.vector(d0), as.vector(d1), use = 'pairwise.complete') ** 2

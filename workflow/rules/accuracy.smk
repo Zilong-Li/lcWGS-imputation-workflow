@@ -249,7 +249,7 @@ rule plot_glimpse_accuracy:
     conda:
         "../envs/quilt.yaml"
     script:
-        "../scripts/accuracy_glimpse.R"
+        "../scripts/accuracy_single.R"
 
 
 rule plot_accuracy_panelsize:

@@ -1,4 +1,5 @@
 
+snakemake@source("utils.R")
 
 acc_r2_by_af <- function(d0, d1, d2, d3, d4, af, bins) {
     res1 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d1)
