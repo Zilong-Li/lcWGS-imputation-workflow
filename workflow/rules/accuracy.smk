@@ -232,7 +232,7 @@ rule plot_glimpse_accuracy:
     input:
         truth=rules.collect_truth_gts.output.gt,
         af=rules.collect_truth_gts.output.af,
-        glimpse=expand(
+        single=expand(
             rules.collect_glimpse_imputed_gts.output,
             depth=config["downsample"],
             allow_missing=True,

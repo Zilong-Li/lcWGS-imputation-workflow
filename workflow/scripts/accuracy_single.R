@@ -2,17 +2,12 @@
 snakemake@source("utils.R")
 
 acc_r2_all <- function(d0, d1) {
-    y1 <- cor(as.vector(truthGT), as.vector(d1), use = 'pairwise.complete') ** 2
+    y1 <- cor(as.vector(d0), as.vector(d1), use = 'pairwise.complete') ** 2
 }
 
 acc_r2_by_af <- function(d0, d1, af, bins) {
-    res <- r2_by_freq(breaks = bins, af, truthG = truthGT, testDS = d1)
+    res <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d1)
     as.data.frame(cbind(bin = bins[-1], single = res[,"simple"], orphan = res[,"simple"]))
-}
-
-rmnull <- function(l) {
-   l <- l[!sapply(l, is.null)]
-   unlist(l)
 }
 
 groups <- as.numeric(snakemake@config[["downsample"]])
@@ -24,7 +19,7 @@ af <- as.numeric(read.table(snakemake@input[["af"]])[,1])
 ## af <- ifelse(af>0.5, 1-af, af)
 
 dl.single <- lapply(snakemake@input[["single"]], function(fn) {
-    fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn), data.table = F)
+    d1 <- fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn), data.table = F)
     d1 <- as.matrix(sapply(d1[,-1], as.numeric)) # force data.frame to be numberic matrix. imputed dosages may be "."
 })
 
