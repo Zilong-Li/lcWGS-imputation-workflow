@@ -15,14 +15,27 @@ r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip = FAL
         testDS <- testDS[which_snps,]
     }
     x <- cut(af, breaks = breaks)
-    cors_per_af <- tapply(1:length(x), x, function(w) {
-        c(
-            n = length(w),
-            nA = sum(truthG[w,], na.rm = TRUE),
-            simple = cor(as.vector(truthG[w,]), as.vector(testDS[w,]), use = 'pairwise.complete') ** 2,
-            norm = cor(as.vector(truthG[w,] - 2 * af[w]), as.vector(testDS[w,] - 2 * af[w]), use = 'pairwise.complete') ** 2
-        )
-    })
+    if (ncol(truthG) > 1) {
+        cors_per_af <- tapply(1:length(x), x, function(w) {
+            c(
+                n = length(w),
+                nA = sum(truthG[w,], na.rm = TRUE),
+                simple = cor(as.vector(truthG[w,]), as.vector(testDS[w,]), use = 'pairwise.complete') ** 2,
+                norm = cor(as.vector(truthG[w,] - 2 * af[w]), as.vector(testDS[w,] - 2 * af[w]), use = 'pairwise.complete') ** 2
+            )
+        })
+    } else {
+        # for multiple sample, calculate r2 per snp then average them
+        cors_per_af <- tapply(1:length(x), x, function(w) {
+            c(
+                n = length(w),
+                nA = sum(truthG[w,], na.rm = TRUE),
+                simple = mean(sapply(w, function(ww){ cor(truthG[ww,], testDS[ww,], use = 'pairwise.complete') ** 2 }), na.rm = TRUE),
+                norm = mean(sapply(w, function(ww){ cor(truthG[ww,] - 2 * af[ww], testDS[ww,] - 2 * af[ww], use = 'pairwise.complete') ** 2 }), na.rm = TRUE)
+            )
+        })
+    }
+    # fill with NA for AF bins without SNPs
     cors_per_af <- t(sapply(cors_per_af, function(a) {
         if (is.null(a[1])) {
             return(c(n = NA, nA = NA, simple = NA, norm = NA))
@@ -53,7 +66,12 @@ quilt_r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip
             norm = cor(truthG[w] - 2 * af[w], testDS[w] - 2 * af[w], use = 'pairwise.complete') ** 2
         )
     })
-    cors_per_af <- t(sapply(cors_per_af[!sapply(cors_per_af, is.null)], I))
+    cors_per_af <- t(sapply(cors_per_af, function(a) {
+        if (is.null(a[1])) {
+            return(c(n = NA, nA = NA, simple = NA, norm = NA))
+        }
+        a
+    }))
     return(cors_per_af)
 }
 
