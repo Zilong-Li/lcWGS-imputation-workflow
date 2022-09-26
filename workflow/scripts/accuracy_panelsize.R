@@ -64,13 +64,13 @@ par(mfrow = c(2,1))
 plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.90, 1.0), ylab = "Aggregated R2 within each MAF bin",  xlab = "Minor Allele Frequency")
 for(i in 1:nd) {
     d <- accuracy_by_af[[i]]
-    y <- rmnull(d$regular)
+    y <- rmna(d$regular)
     lines(x, y, type = "l", lty = nd-i+1, pch = 1, col = mycols[1])
-    y <- rmnull(d$mspbwt)
+    y <- rmna(d$mspbwt)
     lines(x, y, type = "l", lty = nd-i+1, pch = 1, col = mycols[2])
-    y <- rmnull(d$zilong)
+    y <- rmna(d$zilong)
     lines(x, y, type = "l", lty = nd-i+1, pch = 1, col = mycols[3])
-    y <- rmnull(d$glimpse)
+    y <- rmna(d$glimpse)
     lines(x, y, type = "l", lty = nd-i+1, pch = 1, col = mycols[4])
 }
 axis(side = 1, at = x, labels=labels)
@@ -81,13 +81,13 @@ plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.9*ym
 nd <- length(groups)
 for(i in 1:nd) {
     d <- accuracy_by_af[[i]]
-    y <- rmnull(d$regular)
+    y <- rmna(d$regular)
     lines(x, y, type = "l", lty = nd-i+1, pch = 1, col = mycols[1])
-    y <- rmnull(d$mspbwt)
+    y <- rmna(d$mspbwt)
     lines(x, y, type = "l", lty = nd-i+1, pch = 1, col = mycols[2])
-    y <- rmnull(d$zilong)
+    y <- rmna(d$zilong)
     lines(x, y, type = "l", lty = nd-i+1, pch = 1, col = mycols[3])
-    y <- rmnull(d$glimpse)
+    y <- rmna(d$glimpse)
     lines(x, y, type = "l", lty = nd-i+1, pch = 1, col = mycols[4])
 }
 axis(side = 1, at = x, labels=labels)

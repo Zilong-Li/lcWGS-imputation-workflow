@@ -61,11 +61,11 @@ plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0, 1.0
 nd <- length(groups)
 for(i in 1:nd) {
     d <- accuracy_by_af[[i]]
-    y <- rmnull(d$single)
+    y <- rmna(d$single)
     lines(x, y, type = "l", lty = nd-i+1, pch = 1, col = mycols[1])
 }
 axis(side = 1, at = x, labels=labels)
 axis(side = 2)
-legend("bottomright", legend=paste0(groups, "x"), lwd = (1:nd) * 2.5 / nd, bty = "n")
+legend("bottomright", legend=paste0(groups, "x"), lty = nd:1, bty = "n")
 
 dev.off()

@@ -75,11 +75,11 @@ plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0, 1.0
 nd <- length(groups)
 for(i in 1:nd) {
     d <- accuracy_by_af[[i]]
-    y <- rmnull(d$regular)
+    y <- rmna(d$regular)
     lines(x, y, type = "l", lty = nd-i+1, pch = 1, col = mycols[1])
-    y <- rmnull(d$mspbwt)
+    y <- rmna(d$mspbwt)
     lines(x, y, type = "l", lty = nd-i+1, pch = 1, col = mycols[2])
-    y <- rmnull(d$zilong)
+    y <- rmna(d$zilong)
     lines(x, y, type = "l", lty = nd-i+1, pch = 1, col = mycols[3])
 }
 axis(side = 1, at = x, labels=labels)

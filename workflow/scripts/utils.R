@@ -61,3 +61,8 @@ rmnull <- function(l) {
    l <- l[!sapply(l, is.null)]
    unlist(l)
 }
+
+rmna <- function(l) {
+   l <- l[!sapply(l, is.na)]
+   unlist(l)
+}
