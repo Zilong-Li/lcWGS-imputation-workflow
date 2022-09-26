@@ -23,7 +23,12 @@ r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip = FAL
             norm = cor(as.vector(truthG[w,] - 2 * af[w]), as.vector(testDS[w,] - 2 * af[w]), use = 'pairwise.complete') ** 2
         )
     })
-    cors_per_af <- t(sapply(cors_per_af[!sapply(cors_per_af, is.null)], I))
+    cors_per_af <- t(sapply(cors_per_af, function(a) {
+        if (is.null(a[1])) {
+            return(c(n = NA, nA = NA, simple = NA, norm = NA))
+        }
+        a
+    }))
     return(cors_per_af)
 }
 
@@ -39,7 +44,7 @@ quilt_r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip
         truthG <- truthG[which_snps]
         testDS <- testDS[which_snps]
     }
-    x <- cut(af, breaks = breaks)
+    x <- cut(af, breaks = breaks) # <NA> is x
     cors_per_af <- tapply(1:length(x), x, function(w) {
         c(
             n = length(w),

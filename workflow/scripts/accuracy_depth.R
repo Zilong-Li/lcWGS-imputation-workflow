@@ -52,10 +52,10 @@ mycols <- wong[1:4]
 pdf(snakemake@output[["pdf"]], w=12, h=6)
 
 a1 <- accuracy_by_af[[1]]
-x <- a1$bin[!sapply(a1[,2], is.null)] # remove AF bin with NULL results
+x <- a1$bin[!sapply(a1[,2], is.na)] # remove AF bin with NULL results
 x <- log10(as.numeric(x))
 labels <- 100 * bins[-1]
-labels <- labels[!sapply(a1[,2], is.null)]
+labels <- labels[!sapply(a1[,2], is.na)]
 ymin <- min(sapply(accuracy_by_af, function(d){
     m = as.matrix(apply(d[,-1], 2, unlist))
     min(m, na.rm = T)

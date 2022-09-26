@@ -62,10 +62,10 @@ lines(groups, accuracy[3,], type = "b", lwd=1.0, pch = 1, col = mycols[3])
 legend("bottomright", legend=c("QUILT-regular", "QUILT-mspbwt", "QUILT-zilong"), col=mycols, pch = 1, lwd = 1.5, cex = 1.1, xjust = 0, yjust = 1, bty = "n")
 
 a1 <- accuracy_by_af[[1]]
-x <- a1$bin[!sapply(a1[,2], is.null)] # remove AF bin with NULL results
+x <- a1$bin[!sapply(a1[,2], is.na)] # remove AF bin with NULL results
 x <- log10(as.numeric(x))
 labels <- 100 * bins[-1]
-labels <- labels[!sapply(a1[,2], is.null)]
+labels <- labels[!sapply(a1[,2], is.na)]
 ymin <- min(sapply(accuracy_by_af, function(d){
     m = as.matrix(apply(d[,-1], 2, unlist))
     min(m, na.rm = T)
