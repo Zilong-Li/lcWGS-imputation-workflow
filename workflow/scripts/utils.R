@@ -16,15 +16,6 @@ r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip = FAL
     }
     x <- cut(af, breaks = breaks)
     if (ncol(truthG) > 1) {
-        cors_per_af <- tapply(1:length(x), x, function(w) {
-            c(
-                n = length(w),
-                nA = sum(truthG[w,], na.rm = TRUE),
-                simple = cor(as.vector(truthG[w,]), as.vector(testDS[w,]), use = 'pairwise.complete') ** 2,
-                norm = cor(as.vector(truthG[w,] - 2 * af[w]), as.vector(testDS[w,] - 2 * af[w]), use = 'pairwise.complete') ** 2
-            )
-        })
-    } else {
         # for multiple sample, calculate r2 per snp then average them
         cors_per_af <- tapply(1:length(x), x, function(w) {
             c(
@@ -32,6 +23,15 @@ r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip = FAL
                 nA = sum(truthG[w,], na.rm = TRUE),
                 simple = mean(sapply(w, function(ww){ cor(truthG[ww,], testDS[ww,], use = 'pairwise.complete') ** 2 }), na.rm = TRUE),
                 norm = mean(sapply(w, function(ww){ cor(truthG[ww,] - 2 * af[ww], testDS[ww,] - 2 * af[ww], use = 'pairwise.complete') ** 2 }), na.rm = TRUE)
+            )
+        })
+    } else {
+        cors_per_af <- tapply(1:length(x), x, function(w) {
+            c(
+                n = length(w),
+                nA = sum(truthG[w,], na.rm = TRUE),
+                simple = cor(as.vector(truthG[w,]), as.vector(testDS[w,]), use = 'pairwise.complete') ** 2,
+                norm = cor(as.vector(truthG[w,] - 2 * af[w]), as.vector(testDS[w,] - 2 * af[w]), use = 'pairwise.complete') ** 2
             )
         })
     }
