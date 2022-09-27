@@ -51,6 +51,14 @@ def get_all_results():
         pass
 
 
+def get_subset_refs():
+    return expand(
+        rules.subset_refpanel.output,
+        chrom=config["chroms"],
+        size=config["refsize"],
+    )
+
+
 def get_speed_all_plots():
     return expand(
         rules.plot_speed_all.output, chrom=config["chroms"], depth=config["downsample"]

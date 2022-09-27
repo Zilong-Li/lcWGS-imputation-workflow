@@ -1,7 +1,7 @@
 
 ql <- paste("query", "-l", snakemake@params[["vcf"]] )
 size <- as.integer(snakemake@wildcards[["size"]] )
-allsamples <- system2("bcftools", ql, stdout = TRUE)
+allsamples <- as.character(system2("bcftools", ql, stdout = TRUE))
 targesamples <- snakemake@params[["samples"]]
 # remove target sample from the panel
 allsamples <- allsamples[! allsamples %in% targesamples ]
