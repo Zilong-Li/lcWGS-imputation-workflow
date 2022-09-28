@@ -74,12 +74,12 @@ rule collect_glimpse_speed_log:
     output:
         os.path.join(
             OUTDIR_SUMMARY,
-            "speed.glimpse.regular.panelsize{size}.down{depth}x.{chrom}.txt",
+            "speed.glimpse.panelsize{size}.down{depth}x.{chrom}.txt",
         ),
     log:
         os.path.join(
             OUTDIR_SUMMARY,
-            "speed.glimpse.regular.panelsize{size}.down{depth}x.{chrom}.txt.log",
+            "speed.glimpse.panelsize{size}.down{depth}x.{chrom}.txt.log",
         ),
     params:
         N="collect_glimpse_speed_log",
@@ -133,6 +133,26 @@ rule plot_speed_quilt_mspbwt:
         os.path.join(OUTDIR_SUMMARY, "quilt.speed.mspbwt.panelsize{size}.{chrom}.llog"),
     params:
         N="plot_speed_qulit_mspbwt",
+    conda:
+        "../envs/quilt.yaml"
+    script:
+        "../scripts/speed_single.R"
+
+
+rule plot_speed_glimpse:
+    input:
+        expand(
+            rules.collect_glimpse_speed_log.output,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+    output:
+        pdf=os.path.join(OUTDIR_SUMMARY, "glimpse.speed.panelsize{size}.{chrom}.pdf"),
+        rds=os.path.join(OUTDIR_SUMMARY, "glimpse.speed.panelsize{size}.{chrom}.rds"),
+    log:
+        os.path.join(OUTDIR_SUMMARY, "glimpse.speed.panelsize{size}.{chrom}.llog"),
+    params:
+        N="plot_speed_glimpse",
     conda:
         "../envs/quilt.yaml"
     script:

@@ -46,7 +46,7 @@ def get_all_results():
     elif RUN == "quilt":
         return get_quilt_accuracy()
     elif RUN == "glimpse":
-        return get_glimpse_accuracy()
+        return get_glimpse_accuracy(), get_speed_glimpse_plots()
     else:
         pass
 
@@ -76,6 +76,14 @@ def get_speed_quilt_regular_plots():
 def get_speed_quilt_mspbwt_plots():
     return expand(
         rules.plot_speed_quilt_mspbwt.output,
+        chrom=config["chroms"],
+        size=config["refsize"],
+    )
+
+
+def get_speed_glimpse_plots():
+    return expand(
+        rules.plot_speed_glimpse.output,
         chrom=config["chroms"],
         size=config["refsize"],
     )
