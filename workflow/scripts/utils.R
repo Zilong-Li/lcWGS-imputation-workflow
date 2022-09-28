@@ -2,7 +2,7 @@
 library(data.table)
 
 ## input is matrix
-r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip = FALSE) {
+r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip = FALSE, per_snp = FALSE) {
     if (flip) {
         w <- af > 0.5
         af[w] <- 1 - af[w]
@@ -15,7 +15,7 @@ r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip = FAL
         testDS <- testDS[which_snps,]
     }
     x <- cut(af, breaks = breaks)
-    if (ncol(truthG) > 1) {
+    if (ncol(truthG) > 1 && per_snp) {
         # for multiple sample, calculate r2 per snp then average them
         cors_per_af <- tapply(1:length(x), x, function(w) {
             c(
