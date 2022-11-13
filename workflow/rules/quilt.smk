@@ -1,3 +1,4 @@
+
 rule quilt_prepare_regular:
     input:
         vcf=rules.subset_refpanel.output.vcf,
@@ -13,6 +14,7 @@ rule quilt_prepare_regular:
             "QUILT_prepared_reference.{chrom}.{start}.{end}.RData",
         ),
     params:
+        time=config["time"],
         N="quilt_prepare_regular",
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
@@ -34,7 +36,7 @@ rule quilt_prepare_regular:
         """
         (
         if [ -s {params.gmap} ];then \
-        /usr/bin/time -v QUILT_prepare_reference.R \
+        {params.time} -v QUILT_prepare_reference.R \
             --genetic_map_file='{params.gmap}' \
             --reference_vcf_file={input.vcf} \
             --reference_haplotype_file={input.hap} \
@@ -48,7 +50,7 @@ rule quilt_prepare_regular:
             --use_mspbwt=FALSE \
             --outputdir={params.outdir} \
         ; else \
-        /usr/bin/time -v QUILT_prepare_reference.R \
+        {params.time} -v QUILT_prepare_reference.R \
             --reference_vcf_file={input.vcf} \
             --reference_haplotype_file={input.hap} \
             --reference_legend_file={input.leg} \
@@ -80,6 +82,7 @@ rule quilt_prepare_mspbwt:
             "QUILT_prepared_reference.{chrom}.{start}.{end}.RData",
         ),
     params:
+        time=config["time"],
         N="quilt_prepare_mspbwt",
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
@@ -102,7 +105,7 @@ rule quilt_prepare_mspbwt:
         """
         (
         if [ -s {params.gmap} ];then \
-        /usr/bin/time -v QUILT_prepare_reference.R \
+        {params.time} -v QUILT_prepare_reference.R \
             --genetic_map_file='{params.gmap}' \
             --reference_vcf_file={input.vcf} \
             --reference_haplotype_file={input.hap} \
@@ -117,7 +120,7 @@ rule quilt_prepare_mspbwt:
             --mspbwt_nindices={params.nindices} \
             --outputdir={params.outdir} \
         ; else \
-        /usr/bin/time -v QUILT_prepare_reference.R \
+        {params.time} -v QUILT_prepare_reference.R \
             --reference_vcf_file={input.vcf} \
             --reference_haplotype_file={input.hap} \
             --reference_legend_file={input.leg} \
@@ -150,6 +153,7 @@ rule quilt_prepare_zilong:
             "QUILT_prepared_reference.{chrom}.{start}.{end}.RData",
         ),
     params:
+        time=config["time"],
         N="quilt_prepare_zilong",
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
@@ -171,7 +175,7 @@ rule quilt_prepare_zilong:
         """
         (
         if [ -s {params.gmap} ];then \
-        /usr/bin/time -v QUILT_prepare_reference.R \
+        {params.time} -v QUILT_prepare_reference.R \
             --genetic_map_file='{params.gmap}' \
             --reference_vcf_file={input.vcf} \
             --reference_haplotype_file={input.hap} \
@@ -185,7 +189,7 @@ rule quilt_prepare_zilong:
             --use_mspbwt=FALSE \
             --outputdir={params.outdir} \
         ; else \
-        /usr/bin/time -v QUILT_prepare_reference.R \
+        {params.time} -v QUILT_prepare_reference.R \
             --reference_vcf_file={input.vcf} \
             --reference_haplotype_file={input.hap} \
             --reference_legend_file={input.leg} \
@@ -219,6 +223,7 @@ rule quilt_run_regular:
             )
         ),
     params:
+        time=config["time"],
         N="quilt_run_regular",
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
@@ -240,7 +245,7 @@ rule quilt_run_regular:
     threads: 1
     shell:
         """
-        /usr/bin/time -v QUILT.R \
+        {params.time} -v QUILT.R \
             --reference_vcf_file={input.vcf} \
             --reference_haplotype_file={input.hap} \
             --reference_legend_file={input.leg} \
@@ -320,6 +325,7 @@ rule quilt_run_mspbwt:
             )
         ),
     params:
+        time=config["time"],
         N="quilt_run_mspbwt",
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
@@ -341,7 +347,7 @@ rule quilt_run_mspbwt:
     threads: 1
     shell:
         """
-        /usr/bin/time -v QUILT.R \
+        {params.time} -v QUILT.R \
             --reference_vcf_file={input.vcf} \
             --reference_haplotype_file={input.hap} \
             --reference_legend_file={input.leg} \
@@ -421,6 +427,7 @@ rule quilt_run_zilong:
             )
         ),
     params:
+        time=config["time"],
         N="quilt_run_zilong",
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
@@ -444,7 +451,7 @@ rule quilt_run_zilong:
     threads: 1
     shell:
         """
-        /usr/bin/time -v QUILT.R \
+        {params.time} -v QUILT.R \
             --reference_vcf_file={input.vcf} \
             --reference_haplotype_file={input.hap} \
             --reference_legend_file={input.leg} \

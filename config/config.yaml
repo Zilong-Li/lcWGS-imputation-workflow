@@ -41,3 +41,7 @@ glimpse:
   pbwt-depth: 2
   pbwt-modulo: 8
   ne: 20000
+
+
+# global programs
+time: "/usr/bin/time"

@@ -1,5 +1,4 @@
 
-
 rule glimpse_prepare_glvcf:
     input:
         bams=rules.bamlist.output,
@@ -57,6 +56,7 @@ rule glimpse_phase:
             "down{depth}x.{chrom}.chunks{chunkid}.bcf.llog",
         ),
     params:
+        time=config["time"],
         N="glimpse_phase",
         gmap=if_use_glimpse_map_in_refpanel,
         irg=get_glimpse_chunki_irg,
@@ -72,7 +72,7 @@ rule glimpse_phase:
         """
         (
         if [ -s {params.gmap} ];then \
-            /usr/bin/time -v GLIMPSE_phase \
+            {params.time} -v GLIMPSE_phase \
             --input {input.glvcf} \
             --reference {input.refvcf} \
             --map '{params.gmap}' \
@@ -86,7 +86,7 @@ rule glimpse_phase:
             --output {output} && \
             bcftools index -f {output} \
         ; else \
-            /usr/bin/time -v GLIMPSE_phase \
+            {params.time} -v GLIMPSE_phase \
             --input {input.glvcf} \
             --reference {input.refvcf} \
             --input-region {params.irg} \
