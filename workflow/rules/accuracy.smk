@@ -23,7 +23,7 @@ rule collect_truth_gts:
         ql0="%CHROM:%POS:%REF:%ALT\\n",
         ql1="%CHROM:%POS:%REF:%ALT\\t%AF\\n",
         ql2="%CHROM:%POS:%REF:%ALT[\\t%GT]\\n",
-        awk="NR==FNR{a[$1]=1;} NR!=FNR{if(a[$1]){print $2;}}",
+        awk="NR==FNR{a[$1]=1;} NR!=FNR{if(a[$1]){print $1,$2;}}",
         awk2="NR==FNR{a[$1]=1;} NR!=FNR{if(a[$1]){print $0;}}",
     conda:
         "../envs/quilt.yaml"

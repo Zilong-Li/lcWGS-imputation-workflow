@@ -84,3 +84,11 @@ rmna <- function(l) {
    l <- l[!sapply(l, is.na)]
    unlist(l)
 }
+
+parse.quilt.gts <- function(fn) {
+  d1 <- fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn), data.table = F)
+  id <- d1[,1]
+  d1 <- as.matrix(sapply(d1[, -1], as.numeric))
+  rownames(d1) <- id
+  return(d1)
+}
