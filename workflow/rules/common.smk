@@ -197,18 +197,22 @@ def if_use_glimpse_map_in_refpanel(wildcards):
 
 def get_regions_list_per_chrom(chrom, chunksize):
     """split chr into chunks given chunksize; return a list of '[start,end]' pairs"""
-    regions = []
-    s, e = int(REFPANEL[chrom]["start"]), int(REFPANEL[chrom]["end"])
-    n = int((e - s) / chunksize) + 1
-    if (n - 1) * chunksize == e - s:
-        n = n - 1
     starts, ends = [], []
-    for i in range(n):
-        ps = chunksize * i + s
-        pe = chunksize * (i + 1) + s - 1
-        pe = e if pe > e else pe
-        starts.append(ps)
-        ends.append(pe)
+    if REFPANEL[chrom].get("region"):
+        rg = REFPANEL[chrom]["region"].split("-")
+        starts = [int(rg[0])]
+        ends = [int(rg[1])]
+    else:
+        s, e = int(REFPANEL[chrom]["start"]), int(REFPANEL[chrom]["end"])
+        n = int((e - s) / chunksize) + 1
+        if (n - 1) * chunksize == e - s:
+            n = n - 1
+        for i in range(n):
+            ps = chunksize * i + s
+            pe = chunksize * (i + 1) + s - 1
+            pe = e if pe > e else pe
+            starts.append(ps)
+            ends.append(pe)
     return starts, ends
 
 
@@ -241,18 +245,24 @@ def get_quilt_output_zilong(wildcards):
 
 def get_glimpse_chunks(wildcards):
     """ugly but it's good to use GLIMPSE_chunk split the chromosome first"""
-    if not os.path.exists(OUTDIR_PANEL):
-        os.makedirs(OUTDIR_PANEL)
-    fn = os.path.join(OUTDIR_PANEL, f"{wildcards.chrom}.glimpse.chunks")
-    if not os.path.isfile(fn):
-        os.system(
-            f"GLIMPSE_chunk --input {REFPANEL[wildcards.chrom]['vcf']} --region {wildcards.chrom} --window-size {config['glimpse']['chunksize']} --buffer-size {config['glimpse']['buffer']} --output {fn} "
-        )
     d = dict()
-    with open(fn) as f:
-        for row in f:
-            tmp = row.split("\t")
-            d[tmp[0]] = {"irg": tmp[2], "org": tmp[3]}
+    if REFPANEL[wildcards.chrom].get("region"):
+        irg = wildcards.chrom + ":" + REFPANEL[wildcards.chrom]["region"]
+        org = wildcards.chrom + ":" + REFPANEL[wildcards.chrom]["region"]
+        d["0"] = {"irg": irg, "org": org}
+    else:
+        if not os.path.exists(OUTDIR_PANEL):
+            os.makedirs(OUTDIR_PANEL)
+        fn = os.path.join(OUTDIR_PANEL, f"{wildcards.chrom}.glimpse.chunks")
+        if not os.path.isfile(fn):
+            os.system(
+                f"GLIMPSE_chunk --input {REFPANEL[wildcards.chrom]['vcf']} --region {wildcards.chrom} --window-size {config['glimpse']['chunksize']} --buffer-size {config['glimpse']['buffer']} --output {fn} "
+            )
+        with open(fn) as f:
+            for row in f:
+                """0       chr20   chr20:82590-6074391     chr20:82590-5574162     5491573 1893"""
+                tmp = row.split("\t")
+                d[tmp[0]] = {"irg": tmp[2], "org": tmp[3]}
     return d
 
 

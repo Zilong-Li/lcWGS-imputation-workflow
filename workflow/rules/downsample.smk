@@ -15,8 +15,12 @@ rule downsample_bam:
     shell:
         """
         (
-        FRAC=$(echo "scale=4 ; {wildcards.depth} / {params.depth}" | bc -l)
-        samtools view -s $FRAC -o {output} {params.bam} {wildcards.chrom} && samtools index {output}
+        if [ {wildcards.depth} == 0 ];then \
+            samtools view -o {output} {params.bam} {wildcards.chrom} && samtools index {output} \
+        ;else\
+            FRAC=$(echo "scale=4 ; {wildcards.depth} / {params.depth}" | bc -l) && \
+            samtools view -s $FRAC -o {output} {params.bam} {wildcards.chrom} && samtools index {output} \
+        ; fi
         ) &> {log}
         """
 
