@@ -2,15 +2,16 @@ import os
 import pandas as pd
 
 # dict : {"NA12878": {"bam":ftp://ftp.sra.ebi.ac.uk/vol1/run/ERR323/ERR3239334/NA12878.final.cram, "depth": 99999}, ...}
+
 SAMPLES = (
-    pd.read_csv(config["samples"], sep="\t", dtype=str)
+    pd.read_csv(os.path.abspath(config["samples"]), sep="\t", dtype=str)
     .set_index("sampleid")
     .to_dict(orient="index")
 )
 
 # dict : {"chr1": {"vcf": chr1.vcf.gz,"start":1, "end": 99999}, ...}
 REFPANEL = (
-    pd.read_csv(config["genome"]["refpanel"], sep="\t", dtype=str)
+    pd.read_csv(os.path.abspath(config["genome"]["refpanel"]), sep="\t", dtype=str)
     .set_index("chr")
     .to_dict(orient="index")
 )
@@ -247,8 +248,8 @@ def get_glimpse_chunks(wildcards):
     """ugly but it's good to use GLIMPSE_chunk split the chromosome first"""
     d = dict()
     if REFPANEL[wildcards.chrom].get("region"):
-        irg = wildcards.chrom + ":" + REFPANEL[wildcards.chrom]["region"]
-        org = wildcards.chrom + ":" + REFPANEL[wildcards.chrom]["region"]
+        irg = f"{wildcards.chrom}:{REFPANEL[wildcards.chrom]['region']}"
+        org = f"{wildcards.chrom}:{REFPANEL[wildcards.chrom]['region']}"
         d["0"] = {"irg": irg, "org": org}
     else:
         if not os.path.exists(OUTDIR_PANEL):
