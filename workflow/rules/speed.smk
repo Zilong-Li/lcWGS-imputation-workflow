@@ -68,6 +68,28 @@ rule collect_quilt_zilong_speed_log:
         """
 
 
+rule collect_glimpse2_speed_log:
+    input:
+        collect_glimpse2_log,
+    output:
+        os.path.join(
+            OUTDIR_SUMMARY,
+            "speed.glimpse2.panelsize{size}.down{depth}x.{chrom}.txt",
+        ),
+    log:
+        os.path.join(
+            OUTDIR_SUMMARY,
+            "speed.glimpse2.panelsize{size}.down{depth}x.{chrom}.txt.log",
+        ),
+    params:
+        N="collect_glimpse2_speed_log",
+    conda:
+        "../envs/quilt.yaml"
+    shell:
+        """
+        echo {input} | tr ' ' '\\n' | xargs grep -E 'Elaps|Maximum' | awk '{{print $NF}}' | sed 'N;s/\\n/ /' > {output}
+        """
+
 rule collect_glimpse_speed_log:
     input:
         collect_glimpse_log,
@@ -166,13 +188,18 @@ rule plot_speed_all:
             size=config["refsize"],
             allow_missing=True,
         ),
+        glimpse2=expand(
+            rules.collect_glimpse2_speed_log.output,
+            size=config["refsize"],
+            allow_missing=True,
+        ),
         regular=expand(
             rules.collect_quilt_regular_speed_log.output,
             size=config["refsize"],
             allow_missing=True,
         ),
-        mspbwt=expand(
-            rules.collect_quilt_mspbwt_speed_log.output,
+        zilong=expand(
+            rules.collect_quilt_zilong_speed_log.output,
             size=config["refsize"],
             allow_missing=True,
         ),

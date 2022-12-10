@@ -21,6 +21,7 @@ OUTDIR_DOWNSAMPLE = os.path.join(OUTDIR, "downsample", "")
 OUTDIR_PANEL = os.path.join(OUTDIR, "subrefs", "")
 OUTDIR_QUILT = os.path.join(OUTDIR, "quilt", "")
 OUTDIR_GLIMPSE = os.path.join(OUTDIR, "glimpse", "")
+OUTDIR_GLIMPSE2 = os.path.join(OUTDIR, "glimpse2", "")
 OUTDIR_SUMMARY = os.path.join(OUTDIR, "summary", "")
 OUTDIR_REPORT = os.path.join(OUTDIR, "report", "")
 
@@ -282,6 +283,11 @@ def get_glimpse_phase_outputs(wildcards):
     return expand(rules.glimpse_phase.output, chunkid=d.keys(), allow_missing=True)
 
 
+def get_glimpse2_phase_outputs(wildcards):
+    d = get_glimpse_chunks(wildcards)
+    return expand(rules.glimpse2_phase.output, chunkid=d.keys(), allow_missing=True)
+
+
 def collect_quilt_log_regular(wildcards):
     starts, ends = get_regions_list_per_chrom(
         wildcards.chrom, config["quilt"]["chunksize"]
@@ -307,6 +313,11 @@ def collect_quilt_log_zilong(wildcards):
     return expand(
         rules.quilt_run_zilong.log, zip, start=starts, end=ends, allow_missing=True
     )
+
+
+def collect_glimpse2_log(wildcards):
+    d = get_glimpse_chunks(wildcards)
+    return expand(rules.glimpse2_phase.log, chunkid=d.keys(), allow_missing=True)
 
 
 def collect_glimpse_log(wildcards):
