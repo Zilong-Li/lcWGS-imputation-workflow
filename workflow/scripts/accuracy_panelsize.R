@@ -17,7 +17,7 @@ df.truth <- read.table(snakemake@input[["truth"]])
 df.truth <- sapply(seq(1, dim(df.truth)[2] - 1, 2), function(i) {
   rowSums(df.truth[, (i + 1):(i + 2)])
 }) # matrix: nsnps x nsamples
-af <- as.numeric(read.table(snakemake@input[["af"]])[, 1])
+af <- as.numeric(read.table(snakemake@input[["af"]])[, 2])
 
 dl.regular <- lapply(snakemake@input[["regular"]], function(fn) {
   d1 <- fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn), data.table = F)

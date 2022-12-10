@@ -9,7 +9,7 @@ acc_r2_all <- function(d0, d1, d2, d3) {
   c(y1, y2, y3)
 }
 
-acc_r2_by_af <- function(d0, d1, d2, d3, d4, af, bins) {
+acc_r2_by_af <- function(d0, d1, d2, d3, af, bins) {
   res1 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d1)
   res2 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d2)
   res3 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d3)
