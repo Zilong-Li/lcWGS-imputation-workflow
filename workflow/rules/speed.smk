@@ -90,6 +90,7 @@ rule collect_glimpse2_speed_log:
         echo {input} | tr ' ' '\\n' | xargs grep -E 'Elaps|Maximum' | awk '{{print $NF}}' | sed 'N;s/\\n/ /' > {output}
         """
 
+
 rule collect_glimpse_speed_log:
     input:
         collect_glimpse_log,
@@ -137,6 +138,30 @@ rule plot_speed_quilt_regular:
         "../scripts/speed_single.R"
 
 
+rule plot_speed_quilt_zilong:
+    input:
+        expand(
+            rules.collect_quilt_zilong_speed_log.output,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+    output:
+        pdf=os.path.join(
+            OUTDIR_SUMMARY, "quilt.speed.zilong.panelsize{size}.{chrom}.pdf"
+        ),
+        rds=os.path.join(
+            OUTDIR_SUMMARY, "quilt.speed.zilong.panelsize{size}.{chrom}.rds"
+        ),
+    log:
+        os.path.join(OUTDIR_SUMMARY, "quilt.speed.zilong.panelsize{size}.{chrom}.llog"),
+    params:
+        N="plot_speed_qulit_zilong",
+    conda:
+        "../envs/quilt.yaml"
+    script:
+        "../scripts/speed_single.R"
+
+
 rule plot_speed_quilt_mspbwt:
     input:
         expand(
@@ -155,6 +180,26 @@ rule plot_speed_quilt_mspbwt:
         os.path.join(OUTDIR_SUMMARY, "quilt.speed.mspbwt.panelsize{size}.{chrom}.llog"),
     params:
         N="plot_speed_qulit_mspbwt",
+    conda:
+        "../envs/quilt.yaml"
+    script:
+        "../scripts/speed_single.R"
+
+
+rule plot_speed_glimpse2:
+    input:
+        expand(
+            rules.collect_glimpse2_speed_log.output,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+    output:
+        pdf=os.path.join(OUTDIR_SUMMARY, "glimpse2.speed.panelsize{size}.{chrom}.pdf"),
+        rds=os.path.join(OUTDIR_SUMMARY, "glimpse2.speed.panelsize{size}.{chrom}.rds"),
+    log:
+        os.path.join(OUTDIR_SUMMARY, "glimpse2.speed.panelsize{size}.{chrom}.llog"),
+    params:
+        N="plot_speed_glimpse2",
     conda:
         "../envs/quilt.yaml"
     script:
@@ -183,7 +228,7 @@ rule plot_speed_glimpse:
 
 rule plot_speed_all:
     input:
-        glimpse=expand(
+        glimpse1=expand(
             rules.collect_glimpse_speed_log.output,
             size=config["refsize"],
             allow_missing=True,

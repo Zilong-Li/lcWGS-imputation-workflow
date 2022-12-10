@@ -34,21 +34,22 @@ def get_all_results():
         return (
             get_speed_all_plots(),
             get_quilt_regular_accuracy(),
-            get_quilt_mspbwt_accuracy(),
+            get_quilt_zilong_accuracy(),
             get_glimpse_accuracy(),
+            get_glimpse2_accuracy(),
         )
     elif RUN == "accuracy":
         return get_accuracy_panelsize_plots(), get_accuracy_depth_plots()
     elif RUN == "speed":
         return get_speed_all_plots()
-    elif RUN == "quilt-regular":
+    elif RUN == "quilt1":
         return get_quilt_regular_accuracy(), get_speed_quilt_regular_plots()
-    elif RUN == "quilt-mspbwt":
-        return get_quilt_mspbwt_accuracy(), get_speed_quilt_mspbwt_plots()
-    elif RUN == "quilt":
-        return get_quilt_accuracy()
-    elif RUN == "glimpse":
+    elif RUN == "quilt2":
+        return get_quilt_zilong_accuracy(), get_speed_quilt_zilong_plots()
+    elif RUN == "glimpse1":
         return get_glimpse_accuracy(), get_speed_glimpse_plots()
+    elif RUN == "glimpse2":
+        return get_glimpse2_accuracy(), get_speed_glimpse2_plots()
     else:
         pass
 
@@ -67,6 +68,13 @@ def get_speed_all_plots():
     )
 
 
+def get_speed_quilt_zilong_plots():
+    return expand(
+        rules.plot_speed_quilt_zilong.output,
+        chrom=config["chroms"],
+        size=config["refsize"],
+    )
+
 def get_speed_quilt_regular_plots():
     return expand(
         rules.plot_speed_quilt_regular.output,
@@ -82,6 +90,13 @@ def get_speed_quilt_mspbwt_plots():
         size=config["refsize"],
     )
 
+
+def get_speed_glimpse2_plots():
+    return expand(
+        rules.plot_speed_glimpse2.output,
+        chrom=config["chroms"],
+        size=config["refsize"],
+    )
 
 def get_speed_glimpse_plots():
     return expand(
@@ -104,6 +119,12 @@ def get_accuracy_depth_plots():
         rules.plot_accuracy_depth.output, chrom=config["chroms"], size=config["refsize"]
     )
 
+def get_quilt_zilong_accuracy():
+    return expand(
+        rules.plot_quilt_zilong.output,
+        chrom=config["chroms"],
+        size=config["refsize"],
+    )
 
 def get_quilt_regular_accuracy():
     return expand(
@@ -112,6 +133,13 @@ def get_quilt_regular_accuracy():
         size=config["refsize"],
     )
 
+
+def get_quilt_zilong_accuracy():
+    return expand(
+        rules.plot_quilt_zilong.output,
+        chrom=config["chroms"],
+        size=config["refsize"],
+    )
 
 def get_quilt_mspbwt_accuracy():
     return expand(
@@ -129,13 +157,20 @@ def get_quilt_accuracy():
     )
 
 
+def get_glimpse2_accuracy():
+    return expand(
+        rules.plot_glimpse2_accuracy.output,
+        chrom=config["chroms"],
+        size=config["refsize"],
+    )
+
+
 def get_glimpse_accuracy():
     return expand(
         rules.plot_glimpse_accuracy.output,
         chrom=config["chroms"],
         size=config["refsize"],
     )
-
 
 def get_quilt_regular_results():
     return expand(

@@ -25,9 +25,9 @@ nd <- length(groups)
 
 dl.regular <- lapply(snakemake@input[["regular"]], read.table)
 dl.zilong <- lapply(snakemake@input[["zilong"]], read.table)
-dl.glimpse <- lapply(snakemake@input[["glimpse"]], read.table)
+dl.glimpse1 <- lapply(snakemake@input[["glimpse1"]], read.table)
 dl.glimpse2 <- lapply(snakemake@input[["glimpse2"]], read.table)
-saveRDS(list(QUILT2 = dl.zilong, GLIMPSE2 = dl.glimpse2, QUILT1 = dl.regular, GLIMPSE1 = dl.glimpse), snakemake@output[["rds"]])
+saveRDS(list(QUILT2 = dl.zilong, GLIMPSE2 = dl.glimpse2, QUILT1 = dl.regular, GLIMPSE1 = dl.glimpse1), snakemake@output[["rds"]])
 
 rds <- readRDS(snakemake@output[["rds"]])
 

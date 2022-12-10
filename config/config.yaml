@@ -14,7 +14,7 @@ refsize: [0]
 
 chroms: ['21']
 
-#'all', 'speed', 'accuracy', 'quilt', 'glimpse', 'quilt-regular', 'quilt-mspbwt'
+#'all', 'speed', 'accuracy', 'quilt1', 'glimpse1', 'quilt2', 'glimpse2'
 scenario: 'all'
 
 quilt:

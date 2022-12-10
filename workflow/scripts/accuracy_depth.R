@@ -19,19 +19,19 @@ df.truth <- sapply(seq(1, dim(df.truth)[2] - 1, 2), function(i) {
 }) # matrix: nsnps x nsamples
 af <- as.numeric(read.table(snakemake@input[["af"]])[, 2])
 
-dl.regular <- lapply(snakemake@input[["regular"]], function(fn) {
+dl.quilt1 <- lapply(snakemake@input[["regular"]], function(fn) {
   d1 <- fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn), data.table = F)
   d1 <- as.matrix(sapply(d1[, -1], as.numeric))
 })
-dl.mspbwt <- lapply(snakemake@input[["mspbwt"]], function(fn) {
+dl.quilt2 <- lapply(snakemake@input[["zilong"]], function(fn) {
   d1 <- fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn), data.table = F)
   d1 <- as.matrix(sapply(d1[, -1], as.numeric))
 })
-dl.zilong <- lapply(snakemake@input[["zilong"]], function(fn) {
+dl.glimpse1 <- lapply(snakemake@input[["glimpse1"]], function(fn) {
   d1 <- fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn), data.table = F)
   d1 <- as.matrix(sapply(d1[, -1], as.numeric))
 })
-dl.glimpse <- lapply(snakemake@input[["glimpse"]], function(fn) {
+dl.glimpse2 <- lapply(snakemake@input[["glimpse2"]], function(fn) {
   d1 <- fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn), data.table = F)
   d1 <- as.matrix(sapply(d1[, -1], as.numeric))
 })
@@ -44,13 +44,13 @@ bins <- sort(unique(c(
   seq(0.1, 0.5, length.out = 5)
 )))
 
-accuracy_by_af <- lapply(1:length(groups), function(i) {
-  acc_r2_by_af(df.truth, dl.regular[[i]], dl.mspbwt[[i]], dl.zilong[[i]], dl.glimpse[[i]], af, bins)
+accuracy_by_af <- lapply(seq(length(groups)), function(i) {
+  acc_r2_by_af(df.truth, dl.quilt2[[i]], dl.glimpse2[[i]], dl.quilt1[[i]], dl.glimpse1[[i]], af, bins)
 })
 saveRDS(accuracy_by_af, snakemake@output[["rds"]])
 
 wong <- c("#e69f00", "#d55e00", "#56b4e9", "#cc79a7", "#009e73", "#0072b2", "#f0e442")
-mycols <- wong[1:4]
+mycols <- wong
 
 pdf(snakemake@output[["pdf"]], w = 12, h = 6)
 
@@ -72,13 +72,13 @@ nd <- length(groups)
 for (i in 1:nd) {
   d <- accuracy_by_af[[i]]
   # https://stackoverflow.com/questions/33004238/r-removing-null-elements-from-a-list
-  y <- rmna(d$regular)
+  y <- rmna(d$quilt2)
   lines(x, y, type = "l", lwd = i / nd * 2.5, pch = 1, col = mycols[1])
-  y <- rmna(d$mspbwt)
+  y <- rmna(d$glimpse2)
   lines(x, y, type = "l", lwd = i / nd * 2.5, pch = 1, col = mycols[2])
-  y <- rmna(d$zilong)
+  y <- rmna(d$quilt1)
   lines(x, y, type = "l", lwd = i / nd * 2.5, pch = 1, col = mycols[3])
-  y <- rmna(d$glimpse)
+  y <- rmna(d$glimpse1)
   lines(x, y, type = "l", lwd = i / nd * 2.5, pch = 1, col = mycols[4])
 }
 axis(side = 1, at = x, labels = labels)
@@ -88,16 +88,16 @@ legend("bottomright", legend = paste0(groups, "x"), lwd = (1:nd) * 2.5 / nd, bty
 plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.90, 1.0), ylab = "Aggregated R2 within each MAF bin", xlab = "Minor Allele Frequency")
 for (i in 1:nd) {
   d <- accuracy_by_af[[i]]
-  y <- rmna(d$regular)
+  y <- rmna(d$quilt2)
   lines(x, y, type = "l", lwd = i / nd * 2.5, pch = 1, col = mycols[1])
-  y <- rmna(d$mspbwt)
+  y <- rmna(d$glimpse2)
   lines(x, y, type = "l", lwd = i / nd * 2.5, pch = 1, col = mycols[2])
-  y <- rmna(d$zilong)
+  y <- rmna(d$quilt1)
   lines(x, y, type = "l", lwd = i / nd * 2.5, pch = 1, col = mycols[3])
-  y <- rmna(d$glimpse)
+  y <- rmna(d$glimpse1)
   lines(x, y, type = "l", lwd = i / nd * 2.5, pch = 1, col = mycols[4])
 }
 axis(side = 1, at = x, labels = labels)
 axis(side = 2)
-legend("bottomleft", legend = c("QUILT-regular", "QUILT-mspbwt", "QUILT-zilong", "GLIMPSE"), col = mycols, pch = 1, lwd = 1.5, cex = 1.0, xjust = 0, yjust = 1, bty = "n")
+legend("bottomleft", legend = c("QUILT2", "GLIMPSE2", "QUILT1", "GLIMPSE1"), col = mycols, pch = 1, lwd = 1.5, cex = 1.0, xjust = 0, yjust = 1, bty = "n")
 dev.off()
