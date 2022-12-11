@@ -2,12 +2,14 @@
 snakemake@source("common.R")
 
 
+# d1: quilt2, d2:glimpse2, d3:quilt1, d4:glimpse1
 acc_r2_by_af <- function(d0, d1, d2, d3, d4, af, bins) {
-  res1 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d1)
-  res2 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d2)
-  res3 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d3)
-  res4 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d4)
-  as.data.frame(cbind(bin = bins[-1], regular = res1[, "simple"], mspbwt = res2[, "simple"], zilong = res3[, "simple"], glimpse = res4[, "simple"]))
+  id <- intersect(rownames(d0), rownames(d1))
+  res1 <- r2_by_freq(breaks = bins, af[id], truthG = d0[id,], testDS = d1[id,])
+  res2 <- r2_by_freq(breaks = bins, af[id], truthG = d0[id,], testDS = d2[id,])
+  res3 <- r2_by_freq(breaks = bins, af[id], truthG = d0[id,], testDS = d3[id,])
+  res4 <- r2_by_freq(breaks = bins, af[id], truthG = d0[id,], testDS = d4[id,])
+  as.data.frame(cbind(bin = bins[-1], quilt2 = res1[, "simple"], glimpse2 = res2[, "simple"], quilt1 = res3[, "simple"], glimpse1 = res4[, "simple"]))
 }
 
 groups <- as.numeric(snakemake@config[["refsize"]])
@@ -17,24 +19,14 @@ df.truth <- read.table(snakemake@input[["truth"]])
 df.truth <- sapply(seq(1, dim(df.truth)[2] - 1, 2), function(i) {
   rowSums(df.truth[, (i + 1):(i + 2)])
 }) # matrix: nsnps x nsamples
+rownames(df.truth) <- read.table(snakemake@input[["truth"]])[,1]
 af <- as.numeric(read.table(snakemake@input[["af"]])[, 2])
+names(af) <- read.table(snakemake@input[["af"]])[, 1]
 
-dl.quilt1 <- lapply(snakemake@input[["regular"]], function(fn) {
-  d1 <- fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn), data.table = F)
-  d1 <- as.matrix(sapply(d1[, -1], as.numeric))
-})
-dl.quilt2 <- lapply(snakemake@input[["zilong"]], function(fn) {
-  d1 <- fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn), data.table = F)
-  d1 <- as.matrix(sapply(d1[, -1], as.numeric))
-})
-dl.glimpse1 <- lapply(snakemake@input[["glimpse"]], function(fn) {
-  d1 <- fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn), data.table = F)
-  d1 <- as.matrix(sapply(d1[, -1], as.numeric))
-})
-dl.glimpse2 <- lapply(snakemake@input[["glimpse"]], function(fn) {
-  d1 <- fread(cmd = paste("awk '{for(i=1;i<=NF;i=i+3) printf $i\" \"; print \"\"}'", fn), data.table = F)
-  d1 <- as.matrix(sapply(d1[, -1], as.numeric))
-})
+dl.quilt1 <- lapply(snakemake@input[["regular"]], parse.quilt.gts)
+dl.quilt2 <- lapply(snakemake@input[["zilong"]], parse.quilt.gts)
+dl.glimpse1 <- lapply(snakemake@input[["glimpse1"]], parse.quilt.gts)
+dl.glimpse2 <- lapply(snakemake@input[["glimpse2"]], parse.quilt.gts)
 
 bins <- sort(unique(c(
   c(0, 0.01 / 100, 0.02 / 100, 0.05 / 100),
@@ -44,7 +36,9 @@ bins <- sort(unique(c(
 )))
 
 accuracy_by_af <- lapply(seq(length(groups)), function(i) {
-  acc_r2_by_af(df.truth, dl.quilt2[[i]], dl.glimpse2[[i]], dl.quilt1[[i]], dl.glimpse1[[i]], af, bins)
+  d <- acc_r2_by_af(df.truth, dl.quilt2[[i]], dl.glimpse2[[i]], dl.quilt1[[i]], dl.glimpse1[[i]], af, bins)
+  colnames(d) <- c("bin","QUILT2", "GLIMPSE2", "QUILT1", "GLIMPSE1")
+  d
 })
 
 saveRDS(accuracy_by_af, snakemake@output[["rds"]])

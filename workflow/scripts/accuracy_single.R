@@ -2,11 +2,13 @@
 snakemake@source("common.R")
 
 acc_r2_all <- function(d0, d1) {
-  y1 <- cor(as.vector(d0), as.vector(d1), use = "pairwise.complete")**2
+  id <- intersect(rownames(d0), rownames(d1))
+  y1 <- cor(as.vector(d0[id,]), as.vector(d1[id,]), use = "pairwise.complete")**2
 }
 
 acc_r2_by_af <- function(d0, d1, af, bins) {
-  res <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d1)
+  id <- intersect(rownames(d0), rownames(d1))
+  res <- r2_by_freq(breaks = bins, af[id], truthG = d0[id,], testDS = d1[id,])
   as.data.frame(cbind(bin = bins[-1], single = res[, "simple"], orphan = res[, "simple"]))
 }
 
@@ -19,6 +21,7 @@ df.truth <- sapply(seq(1, dim(df.truth)[2] - 1, 2), function(i) {
 rownames(df.truth) <- read.table(snakemake@input[["truth"]])[,1]
 af <- as.numeric(read.table(snakemake@input[["af"]])[, 2])
 names(af) <- read.table(snakemake@input[["af"]])[, 1]
+
 ## SNPs with (1-af) > 0.0005 & (1-af) < 0.001 are all imputed hom ALT and truth hom ALT. but those are stupidly easy to impute and don’t tell you anything
 ## af <- ifelse(af>0.5, 1-af, af)
 

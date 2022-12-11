@@ -3,29 +3,30 @@ snakemake@source("common.R")
 
 acc_r2_all <- function(d0, d1, d2, d3) {
   ## todo match rownames
-  y1 <- cor(as.vector(d0), as.vector(d1), use = "pairwise.complete")**2
-  y2 <- cor(as.vector(d0), as.vector(d2), use = "pairwise.complete")**2
-  y3 <- cor(as.vector(d0), as.vector(d3), use = "pairwise.complete")**2
+  id <- intersect(rownames(d0), rownames(d1))
+  y1 <- cor(as.vector(d0[id,]), as.vector(d1[id,]), use = "pairwise.complete")**2
+  y2 <- cor(as.vector(d0[id,]), as.vector(d2[id,]), use = "pairwise.complete")**2
+  y3 <- cor(as.vector(d0[id,]), as.vector(d3[id,]), use = "pairwise.complete")**2
   c(y1, y2, y3)
 }
 
 acc_r2_by_af <- function(d0, d1, d2, d3, af, bins) {
-  res1 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d1)
-  res2 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d2)
-  res3 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d3)
+  id <- intersect(rownames(d0), rownames(d1))
+  res1 <- r2_by_freq(breaks = bins, af[id], truthG = d0[id,], testDS = d1[id,])
+  res2 <- r2_by_freq(breaks = bins, af[id], truthG = d0[id,], testDS = d2[id,])
+  res3 <- r2_by_freq(breaks = bins, af[id], truthG = d0[id,], testDS = d3[id,])
   as.data.frame(cbind(bin = bins[-1], regular = res1[, "simple"], mspbwt = res2[, "simple"], zilong = res3[, "simple"]))
 }
 
 groups <- as.numeric(snakemake@config[["downsample"]])
 
 df.truth <- read.table(snakemake@input[["truth"]])
-truth.id <- read.table(snakemake@input[["truth"]])[,1]
 df.truth <- sapply(seq(1, dim(df.truth)[2] - 1, 2), function(i) {
   rowSums(df.truth[, (i + 1):(i + 2)])
 }) # matrix: nsnps x nsamples
-
-af.id <- read.table(snakemake@input[["af"]])[, 1]
+rownames(df.truth) <- read.table(snakemake@input[["truth"]])[,1]
 af <- as.numeric(read.table(snakemake@input[["af"]])[, 2])
+names(af) <- read.table(snakemake@input[["af"]])[, 1]
 
 dl.regular <- lapply(snakemake@input[["regular"]], parse.quilt.gts)
 dl.mspbwt <- lapply(snakemake@input[["mspbwt"]], parse.quilt.gts)
@@ -44,12 +45,13 @@ accuracy <- matrix(sapply(1:length(groups), function(i) {
 
 
 accuracy_by_af <- lapply(1:length(groups), function(i) {
-  acc_r2_by_af(df.truth, dl.regular[[i]], dl.mspbwt[[i]], dl.zilong[[i]], af, bins)
+  d <- acc_r2_by_af(df.truth, dl.regular[[i]], dl.mspbwt[[i]], dl.zilong[[i]], af, bins)
+  colnames(d) <- c("bin", "QUILT-regular", "QUILT-mspbwt", "QUILT-zilong" )
 })
 saveRDS(accuracy_by_af, snakemake@output[["rds"]])
 
 wong <- c("#e69f00", "#d55e00", "#56b4e9", "#cc79a7", "#009e73", "#0072b2", "#f0e442")
-mycols <- wong[1:4]
+mycols <- wong
 
 pdf(snakemake@output[["pdf"]], w = 12, h = 6)
 par(mfrow = c(1, 2))
