@@ -110,8 +110,14 @@ rule glimpse2_ligate:
         get_glimpse2_phase_outputs,
     output:
         vcf=os.path.join(
-            OUTDIR_GLIMPSE2, "panelsize{size}", "{chrom}", "down{depth}x.{chrom}.bcf"
+            OUTDIR_GLIMPSE2, "panelsize{size}", "{chrom}", "down{depth}x.{chrom}.vcf.gz"
         ),
+        sample=os.path.join(
+            OUTDIR_GLIMPSE2, "panelsize{size}", "{chrom}", "down{depth}x.{chrom}.vcf.gz.sample"
+        ),
+        tmp=temp(os.path.join(
+            OUTDIR_GLIMPSE2, "panelsize{size}", "{chrom}", "stupid.down{depth}x.{chrom}.bcf"
+        )),
         lst=temp(
             os.path.join(
                 OUTDIR_GLIMPSE2,
@@ -126,12 +132,16 @@ rule glimpse2_ligate:
         ),
     params:
         N="glimpse2_ligate",
+        sample=config["samples"],
     conda:
         "../envs/pandas.yaml"
     shell:
         """
         echo {input} | tr ' ' '\\n' > {output.lst}
-        GLIMPSE2_ligate --input {output.lst} --output {output.vcf} --threads 2
+        GLIMPSE2_ligate --input {output.lst} --output {output.tmp} --threads 2 && \
+        awk 'NR>1 {{ print $1 }}' {params.sample} > {output.sample} && \
+        bcftools reheader -s {output.sample} -o {output.vcf} {output.tmp} && \
+        bcftools index -f {output.vcf}
         """
 
 

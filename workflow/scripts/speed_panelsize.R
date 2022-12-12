@@ -31,8 +31,8 @@ saveRDS(list(QUILT2 = dl.zilong, GLIMPSE2 = dl.glimpse2, QUILT1 = dl.regular, GL
 
 rds <- readRDS(snakemake@output[["rds"]])
 
-times <- cbind(gnutime(rds$quilt2), gnutime(rds$glimpse2), gnutime(rds$quilt1), gnutime(rds$glimpse1))
-rams <- cbind(gunram(rds$quilt2), gunram(rds$glimpse2), gunram(rds$quilt1), gunram(rds$glimpse1))
+times <- cbind(gnutime(rds$QUILT2), gnutime(rds$GLIMPSE2), gnutime(rds$QUILT1), gnutime(rds$GLIMPSE1))
+rams <- cbind(gunram(rds$QUILT2), gunram(rds$GLIMPSE2), gunram(rds$QUILT1), gunram(rds$GLIMPSE1))
 
 
 wong <- c("#e69f00", "#d55e00", "#56b4e9", "#cc79a7", "#009e73", "#0072b2", "#f0e442")

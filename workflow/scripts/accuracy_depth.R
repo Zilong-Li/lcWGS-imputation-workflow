@@ -64,13 +64,13 @@ nd <- length(groups)
 for (i in 1:nd) {
   d <- accuracy_by_af[[i]]
   # https://stackoverflow.com/questions/33004238/r-removing-null-elements-from-a-list
-  y <- rmna(d$quilt2)
+  y <- rmna(d$QUILT2)
   lines(x, y, type = "l", lwd = i / nd * 2.5, pch = 1, col = mycols[1])
-  y <- rmna(d$glimpse2)
+  y <- rmna(d$GLIMPSE2)
   lines(x, y, type = "l", lwd = i / nd * 2.5, pch = 1, col = mycols[2])
-  y <- rmna(d$quilt1)
+  y <- rmna(d$QUILT1)
   lines(x, y, type = "l", lwd = i / nd * 2.5, pch = 1, col = mycols[3])
-  y <- rmna(d$glimpse1)
+  y <- rmna(d$GLIMPSE1)
   lines(x, y, type = "l", lwd = i / nd * 2.5, pch = 1, col = mycols[4])
 }
 axis(side = 1, at = x, labels = labels)
@@ -80,13 +80,13 @@ legend("bottomright", legend = paste0(groups, "x"), lwd = (1:nd) * 2.5 / nd, bty
 plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.90, 1.0), ylab = "Aggregated R2 within each MAF bin", xlab = "Minor Allele Frequency")
 for (i in 1:nd) {
   d <- accuracy_by_af[[i]]
-  y <- rmna(d$quilt2)
+  y <- rmna(d$QUILT2)
   lines(x, y, type = "l", lwd = i / nd * 2.5, pch = 1, col = mycols[1])
-  y <- rmna(d$glimpse2)
+  y <- rmna(d$GLIMPSE2)
   lines(x, y, type = "l", lwd = i / nd * 2.5, pch = 1, col = mycols[2])
-  y <- rmna(d$quilt1)
+  y <- rmna(d$QUILT1)
   lines(x, y, type = "l", lwd = i / nd * 2.5, pch = 1, col = mycols[3])
-  y <- rmna(d$glimpse1)
+  y <- rmna(d$GLIMPSE1)
   lines(x, y, type = "l", lwd = i / nd * 2.5, pch = 1, col = mycols[4])
 }
 axis(side = 1, at = x, labels = labels)

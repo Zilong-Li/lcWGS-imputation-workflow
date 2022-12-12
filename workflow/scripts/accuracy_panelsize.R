@@ -61,13 +61,13 @@ par(mfrow = c(2, 1))
 plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.90, 1.0), ylab = "Aggregated R2 within each MAF bin", xlab = "Minor Allele Frequency")
 for (i in 1:nd) {
   d <- accuracy_by_af[[i]]
-  y <- rmna(d$quilt2)
+  y <- rmna(d$QUILT2)
   lines(x, y, type = "l", lty = nd - i + 1, pch = 1, col = mycols[1])
-  y <- rmna(d$glimpse2)
+  y <- rmna(d$GLIMPSE2)
   lines(x, y, type = "l", lty = nd - i + 1, pch = 1, col = mycols[2])
-  y <- rmna(d$quilt1)
+  y <- rmna(d$QUILT1)
   lines(x, y, type = "l", lty = nd - i + 1, pch = 1, col = mycols[3])
-  y <- rmna(d$glimpse1)
+  y <- rmna(d$GLIMPSE1)
   lines(x, y, type = "l", lty = nd - i + 1, pch = 1, col = mycols[4])
 }
 axis(side = 1, at = x, labels = labels)
@@ -78,13 +78,13 @@ plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.9 * 
 nd <- length(groups)
 for (i in 1:nd) {
   d <- accuracy_by_af[[i]]
-  y <- rmna(d$quilt2)
+  y <- rmna(d$QUILT2)
   lines(x, y, type = "l", lty = nd - i + 1, pch = 1, col = mycols[1])
-  y <- rmna(d$glimpse2)
+  y <- rmna(d$GLIMPSE2)
   lines(x, y, type = "l", lty = nd - i + 1, pch = 1, col = mycols[2])
-  y <- rmna(d$quilt1)
+  y <- rmna(d$QUILT1)
   lines(x, y, type = "l", lty = nd - i + 1, pch = 1, col = mycols[3])
-  y <- rmna(d$glimpse1)
+  y <- rmna(d$GLIMPSE1)
   lines(x, y, type = "l", lty = nd - i + 1, pch = 1, col = mycols[4])
 }
 axis(side = 1, at = x, labels = labels)
