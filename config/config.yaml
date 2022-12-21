@@ -27,8 +27,9 @@ quilt:
   n_burn_in_seek_its: 2
   small_ref_panel_block_gibbs_iterations: c(3,6,9)
   small_ref_panel_gibbs_iterations: 20
-  pbwtL: 2
+  pbwtL: 32
   pbwtS: 8
+  pbwtM: 8
   mspbwt-nindices: 4
 
 glimpse:

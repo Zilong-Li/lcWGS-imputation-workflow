@@ -158,6 +158,7 @@ rule quilt_prepare_zilong:
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
         gmap=if_use_quilt_map_in_refpanel,
+        nindices=config["quilt"]["mspbwt-nindices"],
         outdir=lambda wildcards, output: os.path.dirname(output[0])[:-5],
     log:
         os.path.join(
@@ -187,6 +188,7 @@ rule quilt_prepare_zilong:
             --nGen={params.nGen} \
             --use_pbwt_index=TRUE \
             --use_mspbwt=FALSE \
+            --mspbwt_nindices={params.nindices} \
             --outputdir={params.outdir} \
         ; else \
         {params.time} -v QUILT_prepare_reference.R \
@@ -200,6 +202,7 @@ rule quilt_prepare_zilong:
             --nGen={params.nGen} \
             --use_pbwt_index=TRUE \
             --use_mspbwt=FALSE \
+            --mspbwt_nindices={params.nindices} \
             --outputdir={params.outdir} \
         ; fi \
         ) &> {log}
@@ -433,6 +436,7 @@ rule quilt_run_zilong:
         buffer=config["quilt"]["buffer"],
         pbwtL=config["quilt"]["pbwtL"],
         pbwtS=config["quilt"]["pbwtS"],
+        pbwtM=config["quilt"]["pbwtM"],
         Ksubset=config["quilt"]["Ksubset"],
         nGibbsSamples=config["quilt"]["nGibbsSamples"],
         n_seek_its=config["quilt"]["n_seek_its"],
@@ -464,6 +468,7 @@ rule quilt_run_zilong:
             --nGen={params.nGen} \
             --pbwtL={params.pbwtL} \
             --pbwtS={params.pbwtS} \
+            --pbwtM={params.pbwtM} \
             --zilong=TRUE \
             --use_mspbwt=FALSE \
             --Ksubset={params.Ksubset} \
