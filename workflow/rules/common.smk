@@ -75,6 +75,7 @@ def get_speed_quilt_zilong_plots():
         size=config["refsize"],
     )
 
+
 def get_speed_quilt_regular_plots():
     return expand(
         rules.plot_speed_quilt_regular.output,
@@ -98,6 +99,7 @@ def get_speed_glimpse2_plots():
         size=config["refsize"],
     )
 
+
 def get_speed_glimpse_plots():
     return expand(
         rules.plot_speed_glimpse.output,
@@ -119,12 +121,14 @@ def get_accuracy_depth_plots():
         rules.plot_accuracy_depth.output, chrom=config["chroms"], size=config["refsize"]
     )
 
+
 def get_quilt_zilong_accuracy():
     return expand(
         rules.plot_quilt_zilong.output,
         chrom=config["chroms"],
         size=config["refsize"],
     )
+
 
 def get_quilt_regular_accuracy():
     return expand(
@@ -140,6 +144,7 @@ def get_quilt_zilong_accuracy():
         chrom=config["chroms"],
         size=config["refsize"],
     )
+
 
 def get_quilt_mspbwt_accuracy():
     return expand(
@@ -171,6 +176,7 @@ def get_glimpse_accuracy():
         chrom=config["chroms"],
         size=config["refsize"],
     )
+
 
 def get_quilt_regular_results():
     return expand(
@@ -253,6 +259,39 @@ def get_regions_list_per_chrom(chrom, chunksize):
     return starts, ends
 
 
+def get_regions_list_from_glimpse_chunk(chrom):
+    """split chr into chunks given chunksize; return a list of '[start,end]' pairs"""
+    starts, ends = [], []
+    if REFPANEL[chrom].get("region"):
+        rg = REFPANEL[chrom]["region"].split("-")
+        starts = [int(rg[0])]
+        ends = [int(rg[1])]
+    else:
+        if not os.path.exists(OUTDIR_PANEL):
+            os.makedirs(OUTDIR_PANEL)
+        fn = os.path.join(OUTDIR_PANEL, f"{chrom}.glimpse.chunks")
+        if not os.path.isfile(fn):
+            os.system(
+                f"GLIMPSE_chunk --input {REFPANEL[chrom]['vcf']} --region {chrom} --window-size {config['glimpse']['chunksize']} --buffer-size {config['glimpse']['buffer']} --output {fn} "
+            )
+        with open(fn) as f:
+            for row in f:
+                """0       chr20   chr20:82590-6074391     chr20:82590-5574162     5491573 1893"""
+                tmp = row.split("\t")
+                tmp3 = tmp[3].split(":")[1]
+                rg = tmp3.split("-")
+                starts.append(int(rg[0]))
+                ends.append(int(rg[1]))
+    return starts, ends
+
+
+def get_quilt_output_regular2(wildcards):
+    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom)
+    return expand(
+        rules.quilt_run_regular.output, zip, start=starts, end=ends, allow_missing=True
+    )
+
+
 def get_quilt_output_regular(wildcards):
     starts, ends = get_regions_list_per_chrom(
         wildcards.chrom, config["quilt"]["chunksize"]
@@ -262,12 +301,26 @@ def get_quilt_output_regular(wildcards):
     )
 
 
+def get_quilt_output_mspbwt2(wildcards):
+    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom)
+    return expand(
+        rules.quilt_run_mspbwt.output, zip, start=starts, end=ends, allow_missing=True
+    )
+
+
 def get_quilt_output_mspbwt(wildcards):
     starts, ends = get_regions_list_per_chrom(
         wildcards.chrom, config["quilt"]["chunksize"]
     )
     return expand(
         rules.quilt_run_mspbwt.output, zip, start=starts, end=ends, allow_missing=True
+    )
+
+
+def get_quilt_output_zilong2(wildcards):
+    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom)
+    return expand(
+        rules.quilt_run_zilong.output, zip, start=starts, end=ends, allow_missing=True
     )
 
 
