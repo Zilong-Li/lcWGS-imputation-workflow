@@ -1,16 +1,6 @@
 
 snakemake@source("common.R")
 
-# d1: quilt2, d2:glimpse2, d3:quilt1, d4:glimpse1
-acc_r2_by_af <- function(d0, d1, d2, d3, d4, af, bins) {
-  id <- intersect(rownames(d0), rownames(d1))
-  res1 <- r2_by_freq(breaks = bins, af[id], truthG = d0[id,], testDS = d1[id,])
-  res2 <- r2_by_freq(breaks = bins, af[id], truthG = d0[id,], testDS = d2[id,])
-  res3 <- r2_by_freq(breaks = bins, af[id], truthG = d0[id,], testDS = d3[id,])
-  res4 <- r2_by_freq(breaks = bins, af[id], truthG = d0[id,], testDS = d4[id,])
-  as.data.frame(cbind(bin = bins[-1], quilt2 = res1[, "simple"], glimpse2 = res2[, "simple"], quilt1 = res3[, "simple"], glimpse1 = res4[, "simple"]))
-}
-
 
 groups <- as.numeric(snakemake@config[["downsample"]])
 

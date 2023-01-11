@@ -14,6 +14,8 @@ r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip = FAL
         truthG <- truthG[which_snps,]
         testDS <- testDS[which_snps,]
     }
+    truthG <- as.matrix(truthG)
+    testDS <- as.matrix(testDS)
     x <- cut(af, breaks = breaks)
     if (ncol(truthG) > 1 && per_snp) {
         # for multiple sample, calculate r2 per snp then average them
@@ -43,6 +45,16 @@ r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip = FAL
         a
     }))
     return(cors_per_af)
+}
+
+# d1: quilt2, d2:glimpse2, d3:quilt1, d4:glimpse1
+acc_r2_by_af <- function(d0, d1, d2, d3, d4, af, bins) {
+  id <- intersect(rownames(d0), rownames(d1))
+  res1 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d1, which_snps = id)
+  res2 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d2, which_snps = id)
+  res3 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d3, which_snps = id)
+  res4 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d4, which_snps = id)
+  as.data.frame(cbind(bin = bins[-1], quilt2 = res1[, "simple"], glimpse2 = res2[, "simple"], quilt1 = res3[, "simple"], glimpse1 = res4[, "simple"]))
 }
 
 quilt_r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip = FALSE) {
