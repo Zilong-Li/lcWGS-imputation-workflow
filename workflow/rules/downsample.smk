@@ -1,5 +1,5 @@
 
-
+## samtools depth -a $bam | awk '{s+=\$3;} END{print s/NR}'
 rule downsample_bam:
     output:
         os.path.join(OUTDIR_DOWNSAMPLE, "{sample}_{depth}x_{chrom}.bam"),

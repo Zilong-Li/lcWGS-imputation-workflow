@@ -18,6 +18,7 @@ rule quilt_prepare_regular:
         N="quilt_prepare_regular",
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
+        lowram=config["quilt"]["lowram"],
         gmap=if_use_quilt_map_in_refpanel,
         outdir=lambda wildcards, output: os.path.dirname(output[0])[:-5],
     log:
@@ -46,6 +47,7 @@ rule quilt_prepare_regular:
             --regionEnd={wildcards.end} \
             --buffer={params.buffer} \
             --nGen={params.nGen} \
+            --use_hapMatcherR={params.lowram} \
             --use_pbwt_index=FALSE \
             --use_mspbwt=FALSE \
             --outputdir={params.outdir} \
@@ -58,6 +60,7 @@ rule quilt_prepare_regular:
             --regionStart={wildcards.start} \
             --regionEnd={wildcards.end} \
             --buffer={params.buffer} \
+            --use_hapMatcherR={params.lowram} \
             --nGen={params.nGen} \
             --use_pbwt_index=FALSE \
             --use_mspbwt=FALSE \
@@ -87,6 +90,7 @@ rule quilt_prepare_mspbwt:
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
         gmap=if_use_quilt_map_in_refpanel,
+        lowram=config["quilt"]["lowram"],
         nindices=config["quilt"]["mspbwt-nindices"],
         outdir=lambda wildcards, output: os.path.dirname(output[0])[:-5],
     log:
@@ -113,6 +117,7 @@ rule quilt_prepare_mspbwt:
             --chr={wildcards.chrom} \
             --regionStart={wildcards.start} \
             --regionEnd={wildcards.end} \
+            --use_hapMatcherR={params.lowram} \
             --buffer={params.buffer} \
             --nGen={params.nGen} \
             --use_pbwt_index=FALSE \
@@ -128,6 +133,7 @@ rule quilt_prepare_mspbwt:
             --regionStart={wildcards.start} \
             --regionEnd={wildcards.end} \
             --buffer={params.buffer} \
+            --use_hapMatcherR={params.lowram} \
             --nGen={params.nGen} \
             --use_pbwt_index=FALSE \
             --use_mspbwt=TRUE \
@@ -157,6 +163,7 @@ rule quilt_prepare_zilong:
         N="quilt_prepare_zilong",
         nGen=config["quilt"]["nGen"],
         buffer=config["quilt"]["buffer"],
+        lowram=config["quilt"]["lowram"],
         gmap=if_use_quilt_map_in_refpanel,
         nindices=config["quilt"]["mspbwt-nindices"],
         outdir=lambda wildcards, output: os.path.dirname(output[0])[:-5],
@@ -185,6 +192,7 @@ rule quilt_prepare_zilong:
             --regionStart={wildcards.start} \
             --regionEnd={wildcards.end} \
             --buffer={params.buffer} \
+            --use_hapMatcherR={params.lowram} \
             --nGen={params.nGen} \
             --use_pbwt_index=TRUE \
             --use_mspbwt=FALSE \
@@ -199,6 +207,7 @@ rule quilt_prepare_zilong:
             --regionStart={wildcards.start} \
             --regionEnd={wildcards.end} \
             --buffer={params.buffer} \
+            --use_hapMatcherR={params.lowram} \
             --nGen={params.nGen} \
             --use_pbwt_index=TRUE \
             --use_mspbwt=FALSE \
@@ -232,6 +241,7 @@ rule quilt_run_regular:
         buffer=config["quilt"]["buffer"],
         Ksubset=config["quilt"]["Ksubset"],
         nGibbsSamples=config["quilt"]["nGibbsSamples"],
+        lowram=config["quilt"]["lowram"],
         n_seek_its=config["quilt"]["n_seek_its"],
         n_burnin_its=config["quilt"]["n_burn_in_seek_its"],
         block_gibbs=config["quilt"]["small_ref_panel_block_gibbs_iterations"],
@@ -264,6 +274,7 @@ rule quilt_run_regular:
             --Ksubset={params.Ksubset} \
             --Knew={params.Ksubset} \
             --nGibbsSamples={params.nGibbsSamples} \
+            --use_hapMatcherR={params.lowram} \
             --n_seek_its={params.n_seek_its} \
             --n_burn_in_seek_its={params.n_burnin_its} \
             --small_ref_panel_block_gibbs_iterations='{params.block_gibbs}' \
@@ -336,6 +347,7 @@ rule quilt_run_mspbwt:
         nGibbsSamples=config["quilt"]["nGibbsSamples"],
         n_seek_its=config["quilt"]["n_seek_its"],
         n_burnin_its=config["quilt"]["n_burn_in_seek_its"],
+        lowram=config["quilt"]["lowram"],
         block_gibbs=config["quilt"]["small_ref_panel_block_gibbs_iterations"],
         gibbs_iters=config["quilt"]["small_ref_panel_gibbs_iterations"],
     log:
@@ -356,6 +368,7 @@ rule quilt_run_mspbwt:
             --reference_legend_file={input.leg} \
             --prepared_reference_filename={input.rdata} \
             --bamlist={input.bams} \
+            --use_hapMatcherR={params.lowram} \
             --chr={wildcards.chrom} \
             --regionStart={wildcards.start} \
             --regionEnd={wildcards.end} \
@@ -440,6 +453,7 @@ rule quilt_run_zilong:
         Ksubset=config["quilt"]["Ksubset"],
         nGibbsSamples=config["quilt"]["nGibbsSamples"],
         n_seek_its=config["quilt"]["n_seek_its"],
+        lowram=config["quilt"]["lowram"],
         n_burnin_its=config["quilt"]["n_burn_in_seek_its"],
         block_gibbs=config["quilt"]["small_ref_panel_block_gibbs_iterations"],
         gibbs_iters=config["quilt"]["small_ref_panel_gibbs_iterations"],
@@ -461,6 +475,7 @@ rule quilt_run_zilong:
             --reference_legend_file={input.leg} \
             --prepared_reference_filename={input.rdata} \
             --bamlist={input.bams} \
+            --use_hapMatcherR={params.lowram} \
             --chr={wildcards.chrom} \
             --regionStart={wildcards.start} \
             --regionEnd={wildcards.end} \
