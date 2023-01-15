@@ -28,9 +28,9 @@ quilt:
   small_ref_panel_block_gibbs_iterations: c(3,6,9)
   small_ref_panel_gibbs_iterations: 20
   lowram: 'TRUE'
-  pbwtL: 32
-  pbwtS: 1
-  pbwtM: 2
+  mspbwtB: 64
+  mspbwtL: 40
+  mspbwtM: 1
   mspbwt-nindices: 4
 
 glimpse:
