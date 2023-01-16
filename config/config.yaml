@@ -2,17 +2,17 @@
 samples: config/samples.tsv
 
 genome:
-  fasta: /gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/fasta/Ovis_aries.Oar_v3.1.dna.toplevel.fa
-  species: sheep
-  build: Oar_v3.1
+  fasta: data/human/GRCh38_full_analysis_set_plus_decoy_hla.fa
+  species: human
+  build: GRCh38
   refpanel: config/refpanel.tsv
 
-downsample: [0.1, 0.25, 0.5, 1.0, 2.0]
+downsample: [0.1, 1.0]
 
 # refsize: [0, 100, 200, 300, 400]
 refsize: [0]
 
-chroms: ['21']
+chroms: ['chr20']
 
 #'all', 'speed', 'accuracy', 'quilt1', 'glimpse1', 'quilt2', 'glimpse2'
 scenario: 'all'

@@ -1,27 +1,2 @@
-chr	vcf	start	end	truth
-1	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr1_sheep_impute.vcf.gz	7	275612851	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr1_sheep_impute.vcf.gz
-2	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr2_sheep_impute.vcf.gz	114	248993778	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr2_sheep_impute.vcf.gz
-3	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr3_sheep_impute.vcf.gz	1712	224283226	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr3_sheep_impute.vcf.gz
-4	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr4_sheep_impute.vcf.gz	48351	119255622	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr4_sheep_impute.vcf.gz
-5	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr5_sheep_impute.vcf.gz	522	107901665	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr5_sheep_impute.vcf.gz
-6	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr6_sheep_impute.vcf.gz	575	117031419	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr6_sheep_impute.vcf.gz
-7	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr7_sheep_impute.vcf.gz	32	100079502	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr7_sheep_impute.vcf.gz
-8	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr8_sheep_impute.vcf.gz	216	90693969	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr8_sheep_impute.vcf.gz
-9	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr9_sheep_impute.vcf.gz	293	94726750	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr9_sheep_impute.vcf.gz
-10	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr10_sheep_impute.vcf.gz	95	86447125	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr10_sheep_impute.vcf.gz
-11	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr11_sheep_impute.vcf.gz	34	62247976	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr11_sheep_impute.vcf.gz
-12	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr12_sheep_impute.vcf.gz	9285	79094565	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr12_sheep_impute.vcf.gz
-13	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr13_sheep_impute.vcf.gz	135	83079079	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr13_sheep_impute.vcf.gz
-14	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr14_sheep_impute.vcf.gz	51	62722594	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr14_sheep_impute.vcf.gz
-15	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr15_sheep_impute.vcf.gz	7296	80923132	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr15_sheep_impute.vcf.gz
-16	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr16_sheep_impute.vcf.gz	3271	71719576	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr16_sheep_impute.vcf.gz
-17	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr17_sheep_impute.vcf.gz	1216	72284977	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr17_sheep_impute.vcf.gz
-18	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr18_sheep_impute.vcf.gz	350	68604370	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr18_sheep_impute.vcf.gz
-19	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr19_sheep_impute.vcf.gz	233	60464251	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr19_sheep_impute.vcf.gz
-20	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr20_sheep_impute.vcf.gz	12393	51176829	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr20_sheep_impute.vcf.gz
-21	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr21_sheep_impute.vcf.gz	1362	50058016	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr21_sheep_impute.vcf.gz
-22	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr22_sheep_impute.vcf.gz	9449	50832471	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr22_sheep_impute.vcf.gz
-23	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr23_sheep_impute.vcf.gz	165	62330618	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr23_sheep_impute.vcf.gz
-24	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr24_sheep_impute.vcf.gz	1189	42034617	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr24_sheep_impute.vcf.gz
-25	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr25_sheep_impute.vcf.gz	303	45366891	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr25_sheep_impute.vcf.gz
-26	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr26_sheep_impute.vcf.gz	32	44077499	/gpfs3/well/davies/users/xxd908/pipelines/animal/sheep/data/refpanel/chr26_sheep_impute.vcf.gz
+chr	vcf	start	end	truth	region	af
+chr20	data/refpanel/chr20.vcf.gz	82590	64283878	data/refpanel/chr20.vcf.gz	10000000-15000000	data/refpanel/af.txt

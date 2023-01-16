@@ -7,8 +7,9 @@ This workflow is for imputation using low coverage whole genome sequencing data 
 
 ## Dependencies
 
-- QUILT v2.0.0
-- GLIMPSE v1.1.1
+- QUILT (QUILT_prepare_reference.R, QUILT.R)
+- GLIMPSE v2.0 (GLIMPSE2_split_reference, GLIMPSE2_phase, GLIMPSE2_ligate)
+- GLIMPSE v1.1.1 (GLIMPSE_chunk, GLIMPSE_phase, GLIMPSE_ligate)
 - samtools
 - bcftools
 
