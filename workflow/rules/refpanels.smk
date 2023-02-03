@@ -19,9 +19,10 @@ rule subset_refpanel:
     input:
         rules.subset_sample_list.output.samples,
     output:
-        vcf=os.path.join(OUTDIR_PANEL, "{chrom}.size{size}.bcf"),
-        hap=os.path.join(OUTDIR_PANEL, "{chrom}.size{size}.hap.gz"),
-        leg=os.path.join(OUTDIR_PANEL, "{chrom}.size{size}.legend.gz"),
+        vcf=os.path.join(OUTDIR_PANEL, "{chrom}.size{size}.vcf.gz"),
+        csi=os.path.join(OUTDIR_PANEL, "{chrom}.size{size}.vcf.gz.csi"),
+        hap=os.path.join(OUTDIR_PANEL, "{chrom}.size{size}.vcf.hap.gz"),
+        leg=os.path.join(OUTDIR_PANEL, "{chrom}.size{size}.vcf.legend.gz"),
         sites=os.path.join(OUTDIR_PANEL, "{chrom}.size{size}.sites.vcf.gz"),
         tsv=os.path.join(OUTDIR_PANEL, "{chrom}.size{size}.sites.tsv.gz"),
     params:
@@ -36,6 +37,7 @@ rule subset_refpanel:
         """
         ( \
             bcftools view -v snps -m2 -M2 --samples-file {input} --threads 4 {params.vcf}| bcftools norm - -d snps -Ob -o {output.vcf} --threads 4 && bcftools index -f {output.vcf} && \
+            touch -m {output.vcf}.csi && \
             bcftools convert --haplegendsample {params.prefix} {output.vcf} && \
             bcftools view -G {output.vcf} -Oz -o {output.sites} --threads 4 && tabix -f {output.sites} && \
             bcftools query -f'%CHROM\t%POS\t%REF,%ALT\n' {output.sites} | bgzip -c > {output.tsv} && tabix -s1 -b2 -e2 {output.tsv} \

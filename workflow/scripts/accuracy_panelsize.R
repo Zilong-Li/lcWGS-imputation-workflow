@@ -48,7 +48,7 @@ ymin <- min(sapply(accuracy_by_af, function(d) {
 }))
 
 par(mfrow = c(2, 1))
-plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.90, 1.0), ylab = "Aggregated R2 within each MAF bin", xlab = "Minor Allele Frequency")
+plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.90, 1.0), ylab = "Aggregated R2 within each AF bin", xlab = "Allele Frequency")
 for (i in 1:nd) {
   d <- accuracy_by_af[[i]]
   y <- rmna(d$QUILT2)
@@ -64,7 +64,7 @@ axis(side = 1, at = x, labels = labels)
 axis(side = 2)
 legend("bottomleft", legend = c("QUILT2", "GLIMPSE2", "QUILT1", "GLIMPSE1"), col = mycols, pch = 1, lwd = 1.5, cex = 1.0, xjust = 0, yjust = 1, bty = "n")
 
-plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.9 * ymin, 1.0), ylab = "Aggregated R2 within each MAF bin", xlab = "Minor Allele Frequency")
+plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.9 * ymin, 1.0), ylab = "Aggregated R2 within each AF bin", xlab = "Allele Frequency")
 nd <- length(groups)
 for (i in 1:nd) {
   d <- accuracy_by_af[[i]]
