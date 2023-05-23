@@ -294,7 +294,7 @@ def get_quilt_output_regular2(wildcards):
 
 def get_quilt_output_regular(wildcards):
     starts, ends = get_regions_list_per_chrom(
-        wildcards.chrom, config["quilt"]["chunksize"]
+        wildcards.chrom, config["quilt1"]["chunksize"]
     )
     return expand(
         rules.quilt_run_regular.output, zip, start=starts, end=ends, allow_missing=True
@@ -310,7 +310,7 @@ def get_quilt_output_mspbwt2(wildcards):
 
 def get_quilt_output_mspbwt(wildcards):
     starts, ends = get_regions_list_per_chrom(
-        wildcards.chrom, config["quilt"]["chunksize"]
+        wildcards.chrom, config["quilt2"]["chunksize"]
     )
     return expand(
         rules.quilt_run_mspbwt.output, zip, start=starts, end=ends, allow_missing=True
@@ -326,7 +326,7 @@ def get_quilt_output_zilong2(wildcards):
 
 def get_quilt_output_zilong(wildcards):
     starts, ends = get_regions_list_per_chrom(
-        wildcards.chrom, config["quilt"]["chunksize"]
+        wildcards.chrom, config["quilt2"]["chunksize"]
     )
     return expand(
         rules.quilt_run_zilong.output, zip, start=starts, end=ends, allow_missing=True
@@ -378,7 +378,7 @@ def get_glimpse2_phase_outputs(wildcards):
 
 def collect_quilt_log_regular(wildcards):
     starts, ends = get_regions_list_per_chrom(
-        wildcards.chrom, config["quilt"]["chunksize"]
+        wildcards.chrom, config["quilt1"]["chunksize"]
     )
     return expand(
         rules.quilt_run_regular.log, zip, start=starts, end=ends, allow_missing=True
@@ -387,7 +387,7 @@ def collect_quilt_log_regular(wildcards):
 
 def collect_quilt_log_mspbwt(wildcards):
     starts, ends = get_regions_list_per_chrom(
-        wildcards.chrom, config["quilt"]["chunksize"]
+        wildcards.chrom, config["quilt2"]["chunksize"]
     )
     return expand(
         rules.quilt_run_mspbwt.log, zip, start=starts, end=ends, allow_missing=True
@@ -396,7 +396,7 @@ def collect_quilt_log_mspbwt(wildcards):
 
 def collect_quilt_log_zilong(wildcards):
     starts, ends = get_regions_list_per_chrom(
-        wildcards.chrom, config["quilt"]["chunksize"]
+        wildcards.chrom, config["quilt2"]["chunksize"]
     )
     return expand(
         rules.quilt_run_zilong.log, zip, start=starts, end=ends, allow_missing=True

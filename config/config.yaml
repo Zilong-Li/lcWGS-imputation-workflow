@@ -17,7 +17,23 @@ chroms: ['chr20']
 #'all', 'speed', 'accuracy', 'quilt1', 'glimpse1', 'quilt2', 'glimpse2'
 scenario: 'all'
 
-quilt:
+quilt2:
+  chunksize: 2000000
+  nGen: 100
+  buffer: 500000
+  Ksubset: 1000
+  nGibbsSamples: 7
+  n_seek_its: 5
+  n_burn_in_seek_its: 2
+  small_ref_panel_block_gibbs_iterations: c(3,6,9)
+  small_ref_panel_gibbs_iterations: 20
+  lowram: 'TRUE'
+  mspbwtB: 64
+  mspbwtL: 64
+  mspbwtM: 3
+  mspbwt-nindices: 4
+
+quilt1:
   chunksize: 2000000
   nGen: 100
   buffer: 500000
@@ -28,10 +44,6 @@ quilt:
   small_ref_panel_block_gibbs_iterations: c(3,6,9)
   small_ref_panel_gibbs_iterations: 20
   lowram: 'TRUE'
-  mspbwtB: 64
-  mspbwtL: 40
-  mspbwtM: 1
-  mspbwt-nindices: 4
 
 glimpse:
   chunksize: 2000000
