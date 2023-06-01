@@ -32,6 +32,7 @@ quilt2:
   mspbwtL: 64
   mspbwtM: 3
   mspbwt-nindices: 4
+  mspbwtMAF: 0.0
 
 quilt1:
   chunksize: 2000000

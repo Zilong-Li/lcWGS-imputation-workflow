@@ -163,6 +163,7 @@ rule quilt_prepare_zilong:
         gmap=if_use_quilt_map_in_refpanel,
         nindices=config["quilt2"]["mspbwt-nindices"],
         mspbwtB=config["quilt2"]["mspbwtB"],
+        mspbwtMAF=config["quilt2"]["mspbwtMAF"],
         outdir=lambda wildcards, output: os.path.dirname(output[0])[:-5],
     log:
         os.path.join(
@@ -195,6 +196,7 @@ rule quilt_prepare_zilong:
             --use_mspbwt=FALSE \
             --mspbwt_nindices={params.nindices} \
             --mspbwtB={params.mspbwtB} \
+            --mspbwtMAF={params.mspbwtMAF} \
             --outputdir={params.outdir} \
         ; else \
         {params.time} -v QUILT_prepare_reference.R \
@@ -211,6 +213,7 @@ rule quilt_prepare_zilong:
             --use_mspbwt=FALSE \
             --mspbwt_nindices={params.nindices} \
             --mspbwtB={params.mspbwtB} \
+            --mspbwtMAF={params.mspbwtMAF} \
             --outputdir={params.outdir} \
         ; fi \
         ) &> {log}
