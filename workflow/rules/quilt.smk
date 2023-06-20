@@ -20,6 +20,7 @@ rule quilt_prepare_regular:
         buffer=config["quilt1"]["buffer"],
         lowram=config["quilt1"]["lowram"],
         impute_rare_common=config["quilt1"]["impute_rare_common"],
+        rare_af_threshold=config["quilt1"]["rare_af_threshold"],
         gmap=if_use_quilt_map_in_refpanel,
         outdir=lambda wildcards, output: os.path.dirname(output[0])[:-5],
     log:
@@ -49,6 +50,7 @@ rule quilt_prepare_regular:
             --use_hapMatcherR={params.lowram} \
             --use_mspbwt=FALSE \
             --impute_rare_common={params.impute_rare_common} \
+            --rare_af_threshold={params.rare_af_threshold} \
             --outputdir={params.outdir} \
         ; else \
         {params.time} -v QUILT_prepare_reference.R \
@@ -61,6 +63,7 @@ rule quilt_prepare_regular:
             --nGen={params.nGen} \
             --use_mspbwt=FALSE \
             --impute_rare_common={params.impute_rare_common} \
+            --rare_af_threshold={params.rare_af_threshold} \
             --outputdir={params.outdir} \
         ; fi
         ) &> {log}
@@ -86,7 +89,8 @@ rule quilt_prepare_mspbwt:
         buffer=config["quilt2"]["buffer"],
         gmap=if_use_quilt_map_in_refpanel,
         lowram=config["quilt2"]["lowram"],
-        impute_rare_common=config["quilt1"]["impute_rare_common"],
+        impute_rare_common=config["quilt2"]["impute_rare_common"],
+        rare_af_threshold=config["quilt2"]["rare_af_threshold"],
         nindices=config["quilt2"]["mspbwt-nindices"],
         outdir=lambda wildcards, output: os.path.dirname(output[0])[:-5],
     log:
@@ -116,6 +120,7 @@ rule quilt_prepare_mspbwt:
             --nGen={params.nGen} \
             --use_mspbwt=TRUE \
             --impute_rare_common={params.impute_rare_common} \
+            --rare_af_threshold={params.rare_af_threshold} \
             --mspbwt_nindices={params.nindices} \
             --outputdir={params.outdir} \
         ; else \
@@ -128,6 +133,7 @@ rule quilt_prepare_mspbwt:
             --use_hapMatcherR={params.lowram} \
             --nGen={params.nGen} \
             --use_mspbwt=TRUE \
+            --rare_af_threshold={params.rare_af_threshold} \
             --impute_rare_common={params.impute_rare_common} \
             --mspbwt_nindices={params.nindices} \
             --outputdir={params.outdir} \
@@ -154,7 +160,8 @@ rule quilt_prepare_zilong:
         nGen=config["quilt2"]["nGen"],
         buffer=config["quilt2"]["buffer"],
         lowram=config["quilt2"]["lowram"],
-        impute_rare_common=config["quilt1"]["impute_rare_common"],
+        impute_rare_common=config["quilt2"]["impute_rare_common"],
+        rare_af_threshold=config["quilt2"]["rare_af_threshold"],
         gmap=if_use_quilt_map_in_refpanel,
         nindices=config["quilt2"]["mspbwt-nindices"],
         mspbwtB=config["quilt2"]["mspbwtB"],
@@ -185,6 +192,7 @@ rule quilt_prepare_zilong:
             --buffer={params.buffer} \
             --use_hapMatcherR={params.lowram} \
             --impute_rare_common={params.impute_rare_common} \
+            --rare_af_threshold={params.rare_af_threshold} \
             --nGen={params.nGen} \
             --use_zilong=TRUE \
             --use_mspbwt=FALSE \
@@ -201,6 +209,7 @@ rule quilt_prepare_zilong:
             --buffer={params.buffer} \
             --use_hapMatcherR={params.lowram} \
             --impute_rare_common={params.impute_rare_common} \
+            --rare_af_threshold={params.rare_af_threshold} \
             --nGen={params.nGen} \
             --use_zilong=TRUE \
             --use_mspbwt=FALSE \
@@ -339,7 +348,7 @@ rule quilt_run_mspbwt:
         n_seek_its=config["quilt2"]["n_seek_its"],
         n_burnin_its=config["quilt2"]["n_burn_in_seek_its"],
         lowram=config["quilt2"]["lowram"],
-        impute_rare_common=config["quilt1"]["impute_rare_common"],
+        impute_rare_common=config["quilt2"]["impute_rare_common"],
         block_gibbs=config["quilt2"]["small_ref_panel_block_gibbs_iterations"],
         gibbs_iters=config["quilt2"]["small_ref_panel_gibbs_iterations"],
     log:
@@ -442,7 +451,7 @@ rule quilt_run_zilong:
         nGibbsSamples=config["quilt2"]["nGibbsSamples"],
         n_seek_its=config["quilt2"]["n_seek_its"],
         lowram=config["quilt2"]["lowram"],
-        impute_rare_common=config["quilt1"]["impute_rare_common"],
+        impute_rare_common=config["quilt2"]["impute_rare_common"],
         n_burnin_its=config["quilt2"]["n_burn_in_seek_its"],
         block_gibbs=config["quilt2"]["small_ref_panel_block_gibbs_iterations"],
         gibbs_iters=config["quilt2"]["small_ref_panel_gibbs_iterations"],

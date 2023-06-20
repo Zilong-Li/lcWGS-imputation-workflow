@@ -33,7 +33,7 @@ quilt2:
   mspbwtL: 40
   mspbwtM: 1
   mspbwt-nindices: 4
-  mspbwtMAF: 0.0
+  rare_af_threshold: 0.0
 
 quilt1:
   chunksize: 2000000
@@ -47,6 +47,7 @@ quilt1:
   small_ref_panel_gibbs_iterations: 20
   lowram: 'TRUE'
   impute_rare_common: 'FALSE'
+  rare_af_threshold: 0.0
 
 glimpse:
   chunksize: 2000000
