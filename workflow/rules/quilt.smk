@@ -2,8 +2,8 @@
 rule quilt_prepare_regular:
     input:
         vcf=rules.subset_refpanel.output.vcf,
-        hap=rules.subset_refpanel.output.hap,
-        leg=rules.subset_refpanel.output.leg,
+        # hap=rules.subset_refpanel.output.hap,
+        # leg=rules.subset_refpanel.output.leg,
     output:
         os.path.join(
             OUTDIR_PANEL,
@@ -40,8 +40,6 @@ rule quilt_prepare_regular:
         {params.time} -v QUILT_prepare_reference.R \
             --genetic_map_file='{params.gmap}' \
             --reference_vcf_file={input.vcf} \
-            --reference_haplotype_file={input.hap} \
-            --reference_legend_file={input.leg} \
             --chr={wildcards.chrom} \
             --regionStart={wildcards.start} \
             --regionEnd={wildcards.end} \
@@ -53,8 +51,6 @@ rule quilt_prepare_regular:
         ; else \
         {params.time} -v QUILT_prepare_reference.R \
             --reference_vcf_file={input.vcf} \
-            --reference_haplotype_file={input.hap} \
-            --reference_legend_file={input.leg} \
             --chr={wildcards.chrom} \
             --regionStart={wildcards.start} \
             --regionEnd={wildcards.end} \
@@ -71,8 +67,6 @@ rule quilt_prepare_regular:
 rule quilt_prepare_mspbwt:
     input:
         vcf=rules.subset_refpanel.output.vcf,
-        hap=rules.subset_refpanel.output.hap,
-        leg=rules.subset_refpanel.output.leg,
     output:
         os.path.join(
             OUTDIR_PANEL,
@@ -110,8 +104,6 @@ rule quilt_prepare_mspbwt:
         {params.time} -v QUILT_prepare_reference.R \
             --genetic_map_file='{params.gmap}' \
             --reference_vcf_file={input.vcf} \
-            --reference_haplotype_file={input.hap} \
-            --reference_legend_file={input.leg} \
             --chr={wildcards.chrom} \
             --regionStart={wildcards.start} \
             --regionEnd={wildcards.end} \
@@ -124,8 +116,6 @@ rule quilt_prepare_mspbwt:
         ; else \
         {params.time} -v QUILT_prepare_reference.R \
             --reference_vcf_file={input.vcf} \
-            --reference_haplotype_file={input.hap} \
-            --reference_legend_file={input.leg} \
             --chr={wildcards.chrom} \
             --regionStart={wildcards.start} \
             --regionEnd={wildcards.end} \
@@ -143,8 +133,6 @@ rule quilt_prepare_mspbwt:
 rule quilt_prepare_zilong:
     input:
         vcf=rules.subset_refpanel.output.vcf,
-        hap=rules.subset_refpanel.output.hap,
-        leg=rules.subset_refpanel.output.leg,
     output:
         os.path.join(
             OUTDIR_PANEL,
@@ -184,8 +172,6 @@ rule quilt_prepare_zilong:
         {params.time} -v QUILT_prepare_reference.R \
             --genetic_map_file='{params.gmap}' \
             --reference_vcf_file={input.vcf} \
-            --reference_haplotype_file={input.hap} \
-            --reference_legend_file={input.leg} \
             --chr={wildcards.chrom} \
             --regionStart={wildcards.start} \
             --regionEnd={wildcards.end} \
@@ -196,13 +182,11 @@ rule quilt_prepare_zilong:
             --use_mspbwt=FALSE \
             --mspbwt_nindices={params.nindices} \
             --mspbwtB={params.mspbwtB} \
-            --mspbwtMAF={params.mspbwtMAF} \
+            --rare_af_threshold={params.mspbwtMAF} \
             --outputdir={params.outdir} \
         ; else \
         {params.time} -v QUILT_prepare_reference.R \
             --reference_vcf_file={input.vcf} \
-            --reference_haplotype_file={input.hap} \
-            --reference_legend_file={input.leg} \
             --chr={wildcards.chrom} \
             --regionStart={wildcards.start} \
             --regionEnd={wildcards.end} \
@@ -213,7 +197,7 @@ rule quilt_prepare_zilong:
             --use_mspbwt=FALSE \
             --mspbwt_nindices={params.nindices} \
             --mspbwtB={params.mspbwtB} \
-            --mspbwtMAF={params.mspbwtMAF} \
+            --rare_af_threshold={params.mspbwtMAF} \
             --outputdir={params.outdir} \
         ; fi \
         ) &> {log}
@@ -223,8 +207,6 @@ rule quilt_prepare_zilong:
 rule quilt_run_regular:
     input:
         vcf=rules.subset_refpanel.output.vcf,
-        hap=rules.subset_refpanel.output.hap,
-        leg=rules.subset_refpanel.output.leg,
         bams=rules.bamlist.output,
         rdata=rules.quilt_prepare_regular.output,
     output:
@@ -262,8 +244,6 @@ rule quilt_run_regular:
         """
         {params.time} -v QUILT.R \
             --reference_vcf_file={input.vcf} \
-            --reference_haplotype_file={input.hap} \
-            --reference_legend_file={input.leg} \
             --prepared_reference_filename={input.rdata} \
             --bamlist={input.bams} \
             --chr={wildcards.chrom} \
@@ -327,8 +307,6 @@ rule quilt_ligate_regular:
 rule quilt_run_mspbwt:
     input:
         vcf=rules.subset_refpanel.output.vcf,
-        hap=rules.subset_refpanel.output.hap,
-        leg=rules.subset_refpanel.output.leg,
         bams=rules.bamlist.output,
         rdata=rules.quilt_prepare_mspbwt.output,
     output:
@@ -366,8 +344,6 @@ rule quilt_run_mspbwt:
         """
         {params.time} -v QUILT.R \
             --reference_vcf_file={input.vcf} \
-            --reference_haplotype_file={input.hap} \
-            --reference_legend_file={input.leg} \
             --prepared_reference_filename={input.rdata} \
             --bamlist={input.bams} \
             --use_hapMatcherR={params.lowram} \
@@ -431,8 +407,6 @@ rule quilt_ligate_mspbwt:
 rule quilt_run_zilong:
     input:
         vcf=rules.subset_refpanel.output.vcf,
-        hap=rules.subset_refpanel.output.hap,
-        leg=rules.subset_refpanel.output.leg,
         bams=rules.bamlist.output,
         rdata=rules.quilt_prepare_zilong.output,
     output:
@@ -472,8 +446,6 @@ rule quilt_run_zilong:
         """
         {params.time} -v QUILT.R \
             --reference_vcf_file={input.vcf} \
-            --reference_haplotype_file={input.hap} \
-            --reference_legend_file={input.leg} \
             --prepared_reference_filename={input.rdata} \
             --bamlist={input.bams} \
             --use_hapMatcherR={params.lowram} \
