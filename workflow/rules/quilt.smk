@@ -242,6 +242,7 @@ rule quilt_run_regular:
         nGibbsSamples=config["quilt1"]["nGibbsSamples"],
         lowram=config["quilt1"]["lowram"],
         impute_rare_common=config["quilt1"]["impute_rare_common"],
+        rare_af_threshold=config["quilt1"]["rare_af_threshold"],
         n_seek_its=config["quilt1"]["n_seek_its"],
         n_burnin_its=config["quilt1"]["n_burn_in_seek_its"],
         block_gibbs=config["quilt1"]["small_ref_panel_block_gibbs_iterations"],
@@ -274,6 +275,7 @@ rule quilt_run_regular:
             --nGibbsSamples={params.nGibbsSamples} \
             --use_hapMatcherR={params.lowram} \
             --impute_rare_common={params.impute_rare_common} \
+            --rare_af_threshold={params.rare_af_threshold} \
             --n_seek_its={params.n_seek_its} \
             --n_burn_in_seek_its={params.n_burnin_its} \
             --small_ref_panel_block_gibbs_iterations='{params.block_gibbs}' \
@@ -345,6 +347,7 @@ rule quilt_run_mspbwt:
         n_seek_its=config["quilt2"]["n_seek_its"],
         n_burnin_its=config["quilt2"]["n_burn_in_seek_its"],
         lowram=config["quilt2"]["lowram"],
+        rare_af_threshold=config["quilt2"]["rare_af_threshold"],
         impute_rare_common=config["quilt2"]["impute_rare_common"],
         block_gibbs=config["quilt2"]["small_ref_panel_block_gibbs_iterations"],
         gibbs_iters=config["quilt2"]["small_ref_panel_gibbs_iterations"],
@@ -378,6 +381,7 @@ rule quilt_run_mspbwt:
             --nGibbsSamples={params.nGibbsSamples} \
             --n_seek_its={params.n_seek_its} \
             --n_burn_in_seek_its={params.n_burnin_its} \
+            --rare_af_threshold={params.rare_af_threshold} \
             --small_ref_panel_block_gibbs_iterations='{params.block_gibbs}' \
             --small_ref_panel_gibbs_iterations={params.gibbs_iters} \
             --output_filename={output} &> {log}
@@ -449,6 +453,7 @@ rule quilt_run_zilong:
         n_seek_its=config["quilt2"]["n_seek_its"],
         lowram=config["quilt2"]["lowram"],
         impute_rare_common=config["quilt2"]["impute_rare_common"],
+        rare_af_threshold=config["quilt2"]["rare_af_threshold"],
         n_burnin_its=config["quilt2"]["n_burn_in_seek_its"],
         block_gibbs=config["quilt2"]["small_ref_panel_block_gibbs_iterations"],
         gibbs_iters=config["quilt2"]["small_ref_panel_gibbs_iterations"],
@@ -484,6 +489,7 @@ rule quilt_run_zilong:
             --nGibbsSamples={params.nGibbsSamples} \
             --n_seek_its={params.n_seek_its} \
             --n_burn_in_seek_its={params.n_burnin_its} \
+            --rare_af_threshold={params.rare_af_threshold} \
             --small_ref_panel_block_gibbs_iterations='{params.block_gibbs}' \
             --small_ref_panel_gibbs_iterations={params.gibbs_iters} \
             --output_filename={output} &> {log}
