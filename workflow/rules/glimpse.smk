@@ -3,10 +3,10 @@ rule glimpse2_prepare_panel:
     input:
         refvcf=rules.subset_refpanel_by_region2.output.vcf,
     output:
-        os.path.join(OUTDIR_GLIMPSE2, "bin", "{chrom}.size{size}.chunks{chunkid}.bin"),
+        os.path.join(OUTDIR_GLIMPSE2, "bin", "refsize{size}.{chrom}.{start}.{end}.bin"),
     log:
         os.path.join(
-            OUTDIR_GLIMPSE2, "bin", "{chrom}.size{size}.chunks{chunkid}.bin.llog"
+            OUTDIR_GLIMPSE2, "bin", "refsize{size}.{chrom}.{start}.{end}.bin.llog"
         ),
     params:
         N="glimpse2_prepare_panel",
@@ -53,7 +53,7 @@ rule glimpse2_phase:
                 OUTDIR_GLIMPSE2,
                 "panelsize{size}",
                 "{chrom}",
-                "down{depth}x.{chrom}.chunks{chunkid}.bcf",
+                "down{depth}x.{chrom}.{start}.{end}.bcf",
             )
         ),
     log:
@@ -61,7 +61,7 @@ rule glimpse2_phase:
             OUTDIR_GLIMPSE2,
             "panelsize{size}",
             "{chrom}",
-            "down{depth}x.{chrom}.chunks{chunkid}.bcf.llog",
+            "down{depth}x.{chrom}.{start}.{end}.bcf.llog",
         ),
     params:
         N="glimpse2_phase",
@@ -110,14 +110,25 @@ rule glimpse2_ligate:
         get_glimpse2_phase_outputs,
     output:
         vcf=os.path.join(
-            OUTDIR_GLIMPSE2, "panelsize{size}", "{chrom}", "down{depth}x.{chrom}.vcf.gz"
+            OUTDIR_GLIMPSE2,
+            "panelsize{size}",
+            "{chrom}",
+            "down{depth}x.{chrom}.vcf.gz",
         ),
         sample=os.path.join(
-            OUTDIR_GLIMPSE2, "panelsize{size}", "{chrom}", "down{depth}x.{chrom}.vcf.gz.sample"
+            OUTDIR_GLIMPSE2,
+            "panelsize{size}",
+            "{chrom}",
+            "down{depth}x.{chrom}.vcf.gz.sample",
         ),
-        tmp=temp(os.path.join(
-            OUTDIR_GLIMPSE2, "panelsize{size}", "{chrom}", "stupid.down{depth}x.{chrom}.bcf"
-        )),
+        tmp=temp(
+            os.path.join(
+                OUTDIR_GLIMPSE2,
+                "panelsize{size}",
+                "{chrom}",
+                "stupid.down{depth}x.{chrom}.bcf",
+            )
+        ),
         lst=temp(
             os.path.join(
                 OUTDIR_GLIMPSE2,
@@ -192,7 +203,7 @@ rule glimpse_phase:
                 OUTDIR_GLIMPSE,
                 "panelsize{size}",
                 "{chrom}",
-                "down{depth}x.{chrom}.chunks{chunkid}.bcf",
+                "down{depth}x.{chrom}.{start}.{end}.bcf",
             )
         ),
     log:
@@ -200,7 +211,7 @@ rule glimpse_phase:
             OUTDIR_GLIMPSE,
             "panelsize{size}",
             "{chrom}",
-            "down{depth}x.{chrom}.chunks{chunkid}.bcf.llog",
+            "down{depth}x.{chrom}.{start}.{end}.bcf.llog",
         ),
     params:
         N="glimpse_phase",

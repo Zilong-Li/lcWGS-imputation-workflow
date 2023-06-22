@@ -337,7 +337,7 @@ def get_glimpse_chunks(wildcards):
     if REFPANEL[wildcards.chrom].get("region"):
         irg = f"{wildcards.chrom}:{REFPANEL[wildcards.chrom]['region']}"
         org = f"{wildcards.chrom}:{REFPANEL[wildcards.chrom]['region']}"
-        d["0"] = {"irg": irg, "org": org}
+        d[org] = {"irg": irg, "org": org}
     else:
         if not os.path.exists(OUTDIR_PANEL):
             os.makedirs(OUTDIR_PANEL)
@@ -350,28 +350,48 @@ def get_glimpse_chunks(wildcards):
             for row in f:
                 """0       chr20   chr20:82590-6074391     chr20:82590-5574162     5491573 1893"""
                 tmp = row.split("\t")
-                d[tmp[0]] = {"irg": tmp[2], "org": tmp[3]}
+                d[tmp[3]] = {"irg": tmp[2], "org": tmp[3]}
     return d
 
 
 def get_glimpse_chunki_irg(wildcards):
     d = get_glimpse_chunks(wildcards)
-    return d[wildcards.chunkid]["irg"]
+    k = f"{wildcards.chrom}:{wildcards.start}-{wildcards.end}"
+    return d[k]["irg"]
 
 
 def get_glimpse_chunki_org(wildcards):
     d = get_glimpse_chunks(wildcards)
-    return d[wildcards.chunkid]["org"]
+    k = f"{wildcards.chrom}:{wildcards.start}-{wildcards.end}"
+    return d[k]["org"]
 
 
 def get_glimpse_phase_outputs(wildcards):
-    d = get_glimpse_chunks(wildcards)
-    return expand(rules.glimpse_phase.output, chunkid=d.keys(), allow_missing=True)
+    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom)
+    return expand(
+        rules.glimpse_phase.output, zip, start=starts, end=ends, allow_missing=True
+    )
 
 
 def get_glimpse2_phase_outputs(wildcards):
-    d = get_glimpse_chunks(wildcards)
-    return expand(rules.glimpse2_phase.output, chunkid=d.keys(), allow_missing=True)
+    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom)
+    return expand(
+        rules.glimpse2_phase.output, zip, start=starts, end=ends, allow_missing=True
+    )
+
+
+def collect_glimpse2_log(wildcards):
+    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom)
+    return expand(
+        rules.glimpse2_phase.log, zip, start=starts, end=ends, allow_missing=True
+    )
+
+
+def collect_glimpse_log(wildcards):
+    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom)
+    return expand(
+        rules.glimpse_phase.log, zip, start=starts, end=ends, allow_missing=True
+    )
 
 
 def collect_quilt_log_regular_region1(wildcards):
@@ -420,13 +440,3 @@ def collect_quilt_log_zilong_region2(wildcards):
     return expand(
         rules.quilt_run_zilong.log, zip, start=starts, end=ends, allow_missing=True
     )
-
-
-def collect_glimpse2_log(wildcards):
-    d = get_glimpse_chunks(wildcards)
-    return expand(rules.glimpse2_phase.log, chunkid=d.keys(), allow_missing=True)
-
-
-def collect_glimpse_log(wildcards):
-    d = get_glimpse_chunks(wildcards)
-    return expand(rules.glimpse_phase.log, chunkid=d.keys(), allow_missing=True)
