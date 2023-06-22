@@ -160,12 +160,12 @@ rule glimpse_prepare_glvcf:
     input:
         bams=rules.bamlist.output,
         sites=lambda wildcards: expand(
-            rules.subset_refpanel_by_region2.output.sites,
+            rules.concat_refpanel_sites_by_region2.output.sites,
             size=config["refsize"],
             allow_missing=True,
         ),
         tsv=lambda wildcards: expand(
-            rules.subset_refpanel_by_region2.output.tsv,
+            rules.concat_refpanel_sites_by_region2.output.tsv,
             size=config["refsize"],
             allow_missing=True,
         ),
