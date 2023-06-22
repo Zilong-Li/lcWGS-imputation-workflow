@@ -84,10 +84,15 @@ rule subset_refpanel_by_region2:
         )  &> {log}
         """
 
+def get_subset_refpanel_by_region2(wildcards):
+    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom)
+    return expand(
+        rules.subset_refpanel_by_region2.output, zip, start=starts, end=ends, allow_missing=True
+    )
 
 rule concat_refpanel_sites_by_region2:
     input:
-        rules.subset_refpanel_by_region2.output.sites,
+        get_subset_refpanel_by_region2,
     output:
         sites=os.path.join(
             OUTDIR_PANEL,
