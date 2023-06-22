@@ -1,9 +1,9 @@
 
 rule quilt_prepare_regular:
     input:
-        vcf=rules.subset_refpanel.output.vcf,
-        # hap=rules.subset_refpanel.output.hap,
-        # leg=rules.subset_refpanel.output.leg,
+        vcf=rules.subset_refpanel_by_region2.output.vcf,
+        # hap=rules.subset_refpanel_by_region2.output.hap,
+        # leg=rules.subset_refpanel_by_region2.output.leg,
     output:
         os.path.join(
             OUTDIR_PANEL,
@@ -72,7 +72,7 @@ rule quilt_prepare_regular:
 
 rule quilt_prepare_mspbwt:
     input:
-        vcf=rules.subset_refpanel.output.vcf,
+        vcf=rules.subset_refpanel_by_region2.output.vcf,
     output:
         os.path.join(
             OUTDIR_PANEL,
@@ -144,7 +144,7 @@ rule quilt_prepare_mspbwt:
 
 rule quilt_prepare_zilong:
     input:
-        vcf=rules.subset_refpanel.output.vcf,
+        vcf=rules.subset_refpanel_by_region2.output.vcf,
     output:
         os.path.join(
             OUTDIR_PANEL,
@@ -221,7 +221,7 @@ rule quilt_prepare_zilong:
 
 rule quilt_run_regular:
     input:
-        vcf=rules.subset_refpanel.output.vcf,
+        vcf=rules.subset_refpanel_by_region2.output.vcf,
         bams=rules.bamlist.output,
         rdata=rules.quilt_prepare_regular.output,
     output:
@@ -325,7 +325,7 @@ rule quilt_ligate_regular:
 
 rule quilt_run_mspbwt:
     input:
-        vcf=rules.subset_refpanel.output.vcf,
+        vcf=rules.subset_refpanel_by_region2.output.vcf,
         bams=rules.bamlist.output,
         rdata=rules.quilt_prepare_mspbwt.output,
     output:
@@ -429,7 +429,7 @@ rule quilt_ligate_mspbwt:
 
 rule quilt_run_zilong:
     input:
-        vcf=rules.subset_refpanel.output.vcf,
+        vcf=rules.subset_refpanel_by_region2.output.vcf,
         bams=rules.bamlist.output,
         rdata=rules.quilt_prepare_zilong.output,
     output:

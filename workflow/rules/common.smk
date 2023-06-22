@@ -54,7 +54,7 @@ def get_all_results():
 
 def get_subset_refs():
     return expand(
-        rules.subset_refpanel.output,
+        rules.subset_refpanel_by_region2.output,
         chrom=config["chroms"],
         size=config["refsize"],
     )

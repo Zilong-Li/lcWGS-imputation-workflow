@@ -1,7 +1,7 @@
 
 rule glimpse2_prepare_panel:
     input:
-        refvcf=rules.subset_refpanel.output.vcf,
+        refvcf=rules.subset_refpanel_by_region2.output.vcf,
     output:
         os.path.join(OUTDIR_GLIMPSE2, "bin", "{chrom}.size{size}.chunks{chunkid}.bin"),
     log:
@@ -149,12 +149,12 @@ rule glimpse_prepare_glvcf:
     input:
         bams=rules.bamlist.output,
         sites=lambda wildcards: expand(
-            rules.subset_refpanel.output.sites,
+            rules.subset_refpanel_by_region2.output.sites,
             size=config["refsize"],
             allow_missing=True,
         ),
         tsv=lambda wildcards: expand(
-            rules.subset_refpanel.output.tsv,
+            rules.subset_refpanel_by_region2.output.tsv,
             size=config["refsize"],
             allow_missing=True,
         ),
@@ -184,7 +184,7 @@ rule glimpse_prepare_glvcf:
 
 rule glimpse_phase:
     input:
-        refvcf=rules.subset_refpanel.output.vcf,
+        refvcf=rules.subset_refpanel_by_region2.output.vcf,
         glvcf=rules.glimpse_prepare_glvcf.output.vcf,
     output:
         temp(

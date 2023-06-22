@@ -2,11 +2,7 @@
 rule collect_truth_gts:
     """would be better to use sites in subrefs"""
     input:
-        sites=lambda wildcards: expand(
-            rules.subset_refpanel.output.sites,
-            size=config["refsize"],
-            allow_missing=True,
-        ),
+        sites=rules.concat_refpanel_sites_by_region2.output.sites,
     output:
         gt=os.path.join(OUTDIR_PANEL, "truth.gts.{chrom}.txt"),
         af=os.path.join(OUTDIR_PANEL, "af.input.panel.{chrom}.txt"),
