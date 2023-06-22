@@ -66,8 +66,10 @@ rule subset_refpanel_by_region2:
         N="subset_refpanel_by_region2",
         prefix=lambda wildcards, output: os.path.splitext(output[0])[0],
         vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
-        start=lambda wildcards: max(1, wildcards.start - config["glimpse"]["buffer"]),
-        end=lambda wildcards: wildcards.end + config["glimpse"]["buffer"],
+        start=lambda wildcards: max(
+            1, int(wildcards.start) - int(config["glimpse"]["buffer"])
+        ),
+        end=lambda wildcards: int(wildcards.end) + int(config["glimpse"]["buffer"]),
     log:
         os.path.join(
             OUTDIR_PANEL, "panelsize{size}", "vcfs" "{chrom}.{start}.{end}.vcf.gz.llog"
@@ -84,11 +86,17 @@ rule subset_refpanel_by_region2:
         )  &> {log}
         """
 
+
 def get_subset_refpanel_by_region2(wildcards):
     starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom)
     return expand(
-        rules.subset_refpanel_by_region2.output, zip, start=starts, end=ends, allow_missing=True
+        rules.subset_refpanel_by_region2.output,
+        zip,
+        start=starts,
+        end=ends,
+        allow_missing=True,
     )
+
 
 rule concat_refpanel_sites_by_region2:
     input:
