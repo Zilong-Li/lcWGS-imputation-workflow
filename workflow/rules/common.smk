@@ -33,10 +33,8 @@ def get_all_results():
     if RUN == "all":
         return (
             get_speed_all_plots(),
-            get_quilt_regular_accuracy(),
-            get_quilt_zilong_accuracy(),
-            get_glimpse_accuracy(),
-            get_glimpse2_accuracy(),
+            get_accuracy_panelsize_plots(),
+            get_accuracy_depth_plots(),
         )
     elif RUN == "accuracy":
         return get_accuracy_panelsize_plots(), get_accuracy_depth_plots()
