@@ -286,7 +286,7 @@ rule quilt_run_regular:
 
 rule quilt_ligate_regular:
     input:
-        get_quilt_output_regular2,
+        get_quilt_output_regular_region2,
     output:
         vcf=os.path.join(
             OUTDIR_QUILT,
@@ -390,7 +390,7 @@ rule quilt_run_mspbwt:
 
 rule quilt_ligate_mspbwt:
     input:
-        get_quilt_output_mspbwt2,
+        get_quilt_output_mspbwt_region2,
     output:
         vcf=os.path.join(
             OUTDIR_QUILT,
@@ -498,7 +498,7 @@ rule quilt_run_zilong:
 
 rule quilt_ligate_zilong:
     input:
-        get_quilt_output_zilong2,
+        get_quilt_output_zilong_region2,
     output:
         vcf=os.path.join(
             OUTDIR_QUILT,

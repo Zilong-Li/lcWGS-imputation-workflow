@@ -1,7 +1,7 @@
 
 rule collect_quilt_regular_speed_log:
     input:
-        collect_quilt_log_regular,
+        collect_quilt_log_regular_region2,
     output:
         os.path.join(
             OUTDIR_SUMMARY,
@@ -24,7 +24,7 @@ rule collect_quilt_regular_speed_log:
 
 rule collect_quilt_mspbwt_speed_log:
     input:
-        collect_quilt_log_mspbwt,
+        collect_quilt_log_mspbwt_region2,
     output:
         os.path.join(
             OUTDIR_SUMMARY,
@@ -47,7 +47,7 @@ rule collect_quilt_mspbwt_speed_log:
 
 rule collect_quilt_zilong_speed_log:
     input:
-        collect_quilt_log_zilong,
+        collect_quilt_log_zilong_region2,
     output:
         os.path.join(
             OUTDIR_SUMMARY,
