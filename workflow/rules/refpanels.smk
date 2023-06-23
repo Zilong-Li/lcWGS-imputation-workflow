@@ -49,10 +49,10 @@ rule subset_refpanel_by_region2:
         rules.subset_sample_list.output.samples,
     output:
         vcf=os.path.join(
-            OUTDIR_PANEL, "panelsize{size}", "vcfs" "{chrom}.{start}.{end}.vcf.gz"
+            OUTDIR_PANEL, "panelsize{size}", "vcfs", "{chrom}.{start}.{end}.vcf.gz"
         ),
         csi=os.path.join(
-            OUTDIR_PANEL, "panelsize{size}", "vcfs" "{chrom}.{start}.{end}.vcf.gz.csi"
+            OUTDIR_PANEL, "panelsize{size}", "vcfs", "{chrom}.{start}.{end}.vcf.gz.csi"
         ),
         sites=os.path.join(
             OUTDIR_PANEL,
@@ -60,7 +60,7 @@ rule subset_refpanel_by_region2:
             "vcfs" "{chrom}.{start}.{end}.sites.vcf.gz",
         ),
         tsv=os.path.join(
-            OUTDIR_PANEL, "panelsize{size}", "vcfs" "{chrom}.{start}.{end}.tsv.vcf.gz"
+            OUTDIR_PANEL, "panelsize{size}", "vcfs", "{chrom}.{start}.{end}.tsv.vcf.gz"
         ),
     params:
         N="subset_refpanel_by_region2",
@@ -72,7 +72,10 @@ rule subset_refpanel_by_region2:
         end=lambda wildcards: int(wildcards.end) + int(config["glimpse"]["buffer"]),
     log:
         os.path.join(
-            OUTDIR_PANEL, "panelsize{size}", "vcfs" "{chrom}.{start}.{end}.vcf.gz.llog"
+            OUTDIR_PANEL,
+            "panelsize{size}",
+            "vcfs",
+            "{chrom}.{start}.{end}.vcf.gz.llog",
         ),
     conda:
         "../envs/pandas.yaml"
@@ -105,12 +108,13 @@ rule concat_refpanel_sites_by_region2:
         sites=os.path.join(
             OUTDIR_PANEL,
             "panelsize{size}",
-            "vcfs" "{chrom}.sites.vcf.gz",
+            "vcfs",
+            "{chrom}.sites.vcf.gz",
         ),
-        tsv=os.path.join(OUTDIR_PANEL, "panelsize{size}", "vcfs" "{chrom}.tsv.vcf.gz"),
+        tsv=os.path.join(OUTDIR_PANEL, "panelsize{size}", "vcfs", "{chrom}.tsv.vcf.gz"),
     log:
         os.path.join(
-            OUTDIR_PANEL, "panelsize{size}", "vcfs" "{chrom}.sites.vcf.gz.llog"
+            OUTDIR_PANEL, "panelsize{size}", "vcfs", "{chrom}.sites.vcf.gz.llog"
         ),
     conda:
         "../envs/pandas.yaml"

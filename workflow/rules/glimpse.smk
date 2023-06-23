@@ -3,10 +3,10 @@ rule glimpse2_prepare_panel:
     input:
         refvcf=rules.subset_refpanel_by_region2.output.vcf,
     output:
-        os.path.join(OUTDIR_GLIMPSE2, "bin", "refsize{size}.{chrom}.{start}.{end}.bin"),
+        os.path.join(OUTDIR_GLIMPSE2, "refsize{size}", "{chrom}.{start}.{end}.spbwt"),
     log:
         os.path.join(
-            OUTDIR_GLIMPSE2, "bin", "refsize{size}.{chrom}.{start}.{end}.bin.llog"
+            OUTDIR_GLIMPSE2, "refsize{size}", "{chrom}.{start}.{end}.spbwt.llog"
         ),
     params:
         N="glimpse2_prepare_panel",
@@ -28,7 +28,7 @@ rule glimpse2_prepare_panel:
             --output-region {params.org} \
             --output {output} \
             --threads 4 && \
-            mv {output}.binary.*.bin {output} \
+            mv {output}_*.bin {output} \
         ; else \
             {params.time} -v GLIMPSE2_split_reference \
             --keep-monomorphic-ref-sites \
