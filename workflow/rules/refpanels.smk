@@ -49,19 +49,19 @@ rule subset_refpanel_by_region2:
         rules.subset_sample_list.output.samples,
     output:
         vcf=os.path.join(
-            OUTDIR_PANEL, "panelsize{size}", "vcfs", "{chrom}.{start}.{end}.vcf.gz"
+            OUTDIR_PANEL, "refsize{size}", "vcfs", "{chrom}.{start}.{end}.vcf.gz"
         ),
         csi=os.path.join(
-            OUTDIR_PANEL, "panelsize{size}", "vcfs", "{chrom}.{start}.{end}.vcf.gz.csi"
+            OUTDIR_PANEL, "refsize{size}", "vcfs", "{chrom}.{start}.{end}.vcf.gz.csi"
         ),
         sites=os.path.join(
             OUTDIR_PANEL,
-            "panelsize{size}",
+            "refsize{size}",
             "vcfs",
             "{chrom}.{start}.{end}.sites.vcf.gz",
         ),
         tsv=os.path.join(
-            OUTDIR_PANEL, "panelsize{size}", "vcfs", "{chrom}.{start}.{end}.tsv.vcf.gz"
+            OUTDIR_PANEL, "refsize{size}", "vcfs", "{chrom}.{start}.{end}.tsv.vcf.gz"
         ),
     params:
         N="subset_refpanel_by_region2",
@@ -74,7 +74,7 @@ rule subset_refpanel_by_region2:
     log:
         os.path.join(
             OUTDIR_PANEL,
-            "panelsize{size}",
+            "refsize{size}",
             "vcfs",
             "{chrom}.{start}.{end}.vcf.gz.llog",
         ),
@@ -108,15 +108,13 @@ rule concat_refpanel_sites_by_region2:
     output:
         sites=os.path.join(
             OUTDIR_PANEL,
-            "panelsize{size}",
+            "refsize{size}",
             "vcfs",
             "{chrom}.sites.vcf.gz",
         ),
-        tsv=os.path.join(OUTDIR_PANEL, "panelsize{size}", "vcfs", "{chrom}.tsv.vcf.gz"),
+        tsv=os.path.join(OUTDIR_PANEL, "refsize{size}", "vcfs", "{chrom}.tsv.vcf.gz"),
     log:
-        os.path.join(
-            OUTDIR_PANEL, "panelsize{size}", "vcfs", "{chrom}.sites.vcf.gz.llog"
-        ),
+        os.path.join(OUTDIR_PANEL, "refsize{size}", "vcfs", "{chrom}.sites.vcf.gz.llog"),
     conda:
         "../envs/pandas.yaml"
     shell:

@@ -18,9 +18,10 @@ REFPANEL = (
 
 OUTDIR = "results"
 OUTDIR_DOWNSAMPLE = os.path.join(OUTDIR, "downsample", "")
-OUTDIR_PANEL = os.path.join(OUTDIR, "subrefs", "")
-OUTDIR_QUILT = os.path.join(OUTDIR, "quilt", "")
-OUTDIR_GLIMPSE = os.path.join(OUTDIR, "glimpse", "")
+OUTDIR_PANEL = os.path.join(OUTDIR, "refpanels", "")
+OUTDIR_QUILT1 = os.path.join(OUTDIR, "quilt1", "")
+OUTDIR_QUILT2 = os.path.join(OUTDIR, "quilt2", "")
+OUTDIR_GLIMPSE = os.path.join(OUTDIR, "glimpse1", "")
 OUTDIR_GLIMPSE2 = os.path.join(OUTDIR, "glimpse2", "")
 OUTDIR_SUMMARY = os.path.join(OUTDIR, "summary", "")
 OUTDIR_REPORT = os.path.join(OUTDIR, "report", "")

@@ -2,12 +2,10 @@
 rule quilt_prepare_regular:
     input:
         vcf=rules.subset_refpanel_by_region2.output.vcf,
-        # hap=rules.subset_refpanel_by_region2.output.hap,
-        # leg=rules.subset_refpanel_by_region2.output.leg,
     output:
         os.path.join(
-            OUTDIR_PANEL,
-            "panelsize{size}",
+            OUTDIR_QUILT1,
+            "refsize{size}",
             "{chrom}",
             "prep_regular",
             "RData",
@@ -25,8 +23,8 @@ rule quilt_prepare_regular:
         outdir=lambda wildcards, output: os.path.dirname(output[0])[:-5],
     log:
         os.path.join(
-            OUTDIR_PANEL,
-            "panelsize{size}",
+            OUTDIR_QUILT1,
+            "refsize{size}",
             "{chrom}",
             "prep_regular",
             "RData",
@@ -75,8 +73,8 @@ rule quilt_prepare_mspbwt:
         vcf=rules.subset_refpanel_by_region2.output.vcf,
     output:
         os.path.join(
-            OUTDIR_PANEL,
-            "panelsize{size}",
+            OUTDIR_QUILT2,
+            "refsize{size}",
             "{chrom}",
             "prep_mspbwt",
             "RData",
@@ -95,8 +93,8 @@ rule quilt_prepare_mspbwt:
         outdir=lambda wildcards, output: os.path.dirname(output[0])[:-5],
     log:
         os.path.join(
-            OUTDIR_PANEL,
-            "panelsize{size}",
+            OUTDIR_QUILT2,
+            "refsize{size}",
             "{chrom}",
             "prep_mspbwt",
             "RData",
@@ -147,8 +145,8 @@ rule quilt_prepare_zilong:
         vcf=rules.subset_refpanel_by_region2.output.vcf,
     output:
         os.path.join(
-            OUTDIR_PANEL,
-            "panelsize{size}",
+            OUTDIR_QUILT2,
+            "refsize{size}",
             "{chrom}",
             "prep_zilong",
             "RData",
@@ -168,8 +166,8 @@ rule quilt_prepare_zilong:
         outdir=lambda wildcards, output: os.path.dirname(output[0])[:-5],
     log:
         os.path.join(
-            OUTDIR_PANEL,
-            "panelsize{size}",
+            OUTDIR_QUILT2,
+            "refsize{size}",
             "{chrom}",
             "prep_zilong",
             "RData",
@@ -227,8 +225,8 @@ rule quilt_run_regular:
     output:
         temp(
             os.path.join(
-                OUTDIR_QUILT,
-                "panelsize{size}",
+                OUTDIR_QUILT1,
+                "refsize{size}",
                 "{chrom}",
                 "quilt.down{depth}x.regular.{chrom}.{start}.{end}.vcf.gz",
             )
@@ -249,8 +247,8 @@ rule quilt_run_regular:
         gibbs_iters=config["quilt1"]["small_ref_panel_gibbs_iterations"],
     log:
         os.path.join(
-            OUTDIR_QUILT,
-            "panelsize{size}",
+            OUTDIR_QUILT1,
+            "refsize{size}",
             "{chrom}",
             "quilt.down{depth}x.regular.{chrom}.{start}.{end}.vcf.gz.llog",
         ),
@@ -289,15 +287,15 @@ rule quilt_ligate_regular:
         get_quilt_output_regular_region2,
     output:
         vcf=os.path.join(
-            OUTDIR_QUILT,
-            "panelsize{size}",
+            OUTDIR_QUILT1,
+            "refsize{size}",
             "{chrom}",
             "quilt.down{depth}x.regular.{chrom}.bcf.gz",
         ),
         lst=temp(
             os.path.join(
-                OUTDIR_QUILT,
-                "panelsize{size}",
+                OUTDIR_QUILT1,
+                "refsize{size}",
                 "{chrom}",
                 "quilt.down{depth}x.regular.{chrom}.vcf.list",
             )
@@ -305,7 +303,7 @@ rule quilt_ligate_regular:
     log:
         os.path.join(
             OUTDIR_QUILT,
-            "panelsize{size}",
+            "refsize{size}",
             "{chrom}",
             "quilt.down{depth}x.regular.{chrom}.bcf.gz.llog",
         ),
@@ -331,8 +329,8 @@ rule quilt_run_mspbwt:
     output:
         temp(
             os.path.join(
-                OUTDIR_QUILT,
-                "panelsize{size}",
+                OUTDIR_QUILT2,
+                "refsize{size}",
                 "{chrom}",
                 "quilt.down{depth}x.mspbwt.{chrom}.{start}.{end}.vcf.gz",
             )
@@ -353,8 +351,8 @@ rule quilt_run_mspbwt:
         gibbs_iters=config["quilt2"]["small_ref_panel_gibbs_iterations"],
     log:
         os.path.join(
-            OUTDIR_QUILT,
-            "panelsize{size}",
+            OUTDIR_QUILT2,
+            "refsize{size}",
             "{chrom}",
             "quilt.down{depth}x.mspbwt.{chrom}.{start}.{end}.vcf.gz.llog",
         ),
@@ -393,23 +391,23 @@ rule quilt_ligate_mspbwt:
         get_quilt_output_mspbwt_region2,
     output:
         vcf=os.path.join(
-            OUTDIR_QUILT,
-            "panelsize{size}",
+            OUTDIR_QUILT2,
+            "refsize{size}",
             "{chrom}",
             "quilt.down{depth}x.mspbwt.{chrom}.bcf.gz",
         ),
         lst=temp(
             os.path.join(
-                OUTDIR_QUILT,
-                "panelsize{size}",
+                OUTDIR_QUILT2,
+                "refsize{size}",
                 "{chrom}",
                 "quilt.down{depth}x.mspbwt.{chrom}.vcf.list",
             )
         ),
     log:
         os.path.join(
-            OUTDIR_QUILT,
-            "panelsize{size}",
+            OUTDIR_QUILT2,
+            "refsize{size}",
             "{chrom}",
             "quilt.down{depth}x.mspbwt.{chrom}.bcf.gz.llog",
         ),
@@ -435,8 +433,8 @@ rule quilt_run_zilong:
     output:
         temp(
             os.path.join(
-                OUTDIR_QUILT,
-                "panelsize{size}",
+                OUTDIR_QUILT2,
+                "refsize{size}",
                 "{chrom}",
                 "quilt.down{depth}x.zilong.{chrom}.{start}.{end}.vcf.gz",
             )
@@ -459,8 +457,8 @@ rule quilt_run_zilong:
         gibbs_iters=config["quilt2"]["small_ref_panel_gibbs_iterations"],
     log:
         os.path.join(
-            OUTDIR_QUILT,
-            "panelsize{size}",
+            OUTDIR_QUILT2,
+            "refsize{size}",
             "{chrom}",
             "quilt.down{depth}x.zilong.{chrom}.{start}.{end}.vcf.gz.llog",
         ),
@@ -501,23 +499,23 @@ rule quilt_ligate_zilong:
         get_quilt_output_zilong_region2,
     output:
         vcf=os.path.join(
-            OUTDIR_QUILT,
-            "panelsize{size}",
+            OUTDIR_QUILT2,
+            "refsize{size}",
             "{chrom}",
             "quilt.down{depth}x.zilong.{chrom}.bcf.gz",
         ),
         lst=temp(
             os.path.join(
-                OUTDIR_QUILT,
-                "panelsize{size}",
+                OUTDIR_QUILT2,
+                "refsize{size}",
                 "{chrom}",
                 "quilt.down{depth}x.zilong.{chrom}.vcf.list",
             )
         ),
     log:
         os.path.join(
-            OUTDIR_QUILT,
-            "panelsize{size}",
+            OUTDIR_QUILT2,
+            "refsize{size}",
             "{chrom}",
             "quilt.down{depth}x.zilong.{chrom}.bcf.gz.llog",
         ),
