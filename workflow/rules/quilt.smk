@@ -302,7 +302,7 @@ rule quilt_ligate_regular:
         ),
     log:
         os.path.join(
-            OUTDIR_QUILT,
+            OUTDIR_QUILT1,
             "refsize{size}",
             "{chrom}",
             "quilt.down{depth}x.regular.{chrom}.bcf.gz.llog",
