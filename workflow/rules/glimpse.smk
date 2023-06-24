@@ -3,10 +3,10 @@ rule glimpse2_prepare_panel:
     input:
         refvcf=rules.subset_refpanel_by_region2.output.vcf,
     output:
-        os.path.join(OUTDIR_GLIMPSE2, "refsize{size}", "{chrom}.{start}.{end}.spbwt"),
+        os.path.join(OUTDIR_GLIMPSE2, "binary{size}", "{chrom}.{start}.{end}.spbwt"),
     log:
         os.path.join(
-            OUTDIR_GLIMPSE2, "refsize{size}", "{chrom}.{start}.{end}.spbwt.llog"
+            OUTDIR_GLIMPSE2, "binary{size}", "{chrom}.{start}.{end}.spbwt.llog"
         ),
     params:
         N="glimpse2_prepare_panel",
@@ -51,7 +51,7 @@ rule glimpse2_phase:
         temp(
             os.path.join(
                 OUTDIR_GLIMPSE2,
-                "panelsize{size}",
+                "refsize{size}",
                 "{chrom}",
                 "down{depth}x.{chrom}.{start}.{end}.bcf",
             )
@@ -59,7 +59,7 @@ rule glimpse2_phase:
     log:
         os.path.join(
             OUTDIR_GLIMPSE2,
-            "panelsize{size}",
+            "refsize{size}",
             "{chrom}",
             "down{depth}x.{chrom}.{start}.{end}.bcf.llog",
         ),
@@ -97,20 +97,20 @@ rule glimpse2_ligate:
     output:
         vcf=os.path.join(
             OUTDIR_GLIMPSE2,
-            "panelsize{size}",
+            "refsize{size}",
             "{chrom}",
             "down{depth}x.{chrom}.vcf.gz",
         ),
         sample=os.path.join(
             OUTDIR_GLIMPSE2,
-            "panelsize{size}",
+            "refsize{size}",
             "{chrom}",
             "down{depth}x.{chrom}.vcf.gz.sample",
         ),
         tmp=temp(
             os.path.join(
                 OUTDIR_GLIMPSE2,
-                "panelsize{size}",
+                "refsize{size}",
                 "{chrom}",
                 "stupid.down{depth}x.{chrom}.bcf",
             )
@@ -118,14 +118,14 @@ rule glimpse2_ligate:
         lst=temp(
             os.path.join(
                 OUTDIR_GLIMPSE2,
-                "panelsize{size}",
+                "refsize{size}",
                 "{chrom}",
                 "down{depth}x.{chrom}.vcf.list",
             ),
         ),
     log:
         os.path.join(
-            OUTDIR_GLIMPSE2, "panelsize{size}", "{chrom}", "down{depth}x.{chrom}.llog"
+            OUTDIR_GLIMPSE2, "refsize{size}", "{chrom}", "down{depth}x.{chrom}.llog"
         ),
     params:
         N="glimpse2_ligate",
@@ -187,7 +187,7 @@ rule glimpse_phase:
         temp(
             os.path.join(
                 OUTDIR_GLIMPSE,
-                "panelsize{size}",
+                "refsize{size}",
                 "{chrom}",
                 "down{depth}x.{chrom}.{start}.{end}.bcf",
             )
@@ -195,7 +195,7 @@ rule glimpse_phase:
     log:
         os.path.join(
             OUTDIR_GLIMPSE,
-            "panelsize{size}",
+            "refsize{size}",
             "{chrom}",
             "down{depth}x.{chrom}.{start}.{end}.bcf.llog",
         ),
@@ -252,19 +252,19 @@ rule glimpse_ligate:
         get_glimpse_phase_outputs,
     output:
         vcf=os.path.join(
-            OUTDIR_GLIMPSE, "panelsize{size}", "{chrom}", "down{depth}x.{chrom}.bcf"
+            OUTDIR_GLIMPSE, "refsize{size}", "{chrom}", "down{depth}x.{chrom}.bcf"
         ),
         lst=temp(
             os.path.join(
                 OUTDIR_GLIMPSE,
-                "panelsize{size}",
+                "refsize{size}",
                 "{chrom}",
                 "down{depth}x.{chrom}.vcf.list",
             ),
         ),
     log:
         os.path.join(
-            OUTDIR_GLIMPSE, "panelsize{size}", "{chrom}", "down{depth}x.{chrom}.llog"
+            OUTDIR_GLIMPSE, "refsize{size}", "{chrom}", "down{depth}x.{chrom}.llog"
         ),
     params:
         N="glimpse_ligate",
