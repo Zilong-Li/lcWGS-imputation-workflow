@@ -66,7 +66,6 @@ rule glimpse2_phase:
     params:
         N="glimpse2_phase",
         time=config["time"],
-        gmap=if_use_glimpse_map_in_refpanel,
         irg=get_glimpse_chunki_irg,
         org=get_glimpse_chunki_org,
         burnin=config["glimpse"]["burnin"],
@@ -83,7 +82,6 @@ rule glimpse2_phase:
             {params.time} -v GLIMPSE2_phase \
             --bam-list {input.bams} \
             --reference {input.refbin} \
-            --map '{params.gmap}' \
             --burnin {params.burnin} \
             --main {params.main} \
             --pbwt-depth {params.pbwtL} \
