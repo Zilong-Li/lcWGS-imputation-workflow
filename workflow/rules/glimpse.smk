@@ -173,8 +173,8 @@ rule glimpse_prepare_glvcf:
     shell:
         """
         (
-        {params.time} -v bcftools mpileup -q {params.bq} -Q {params.mq} -f {params.fasta} -I -E -A -a 'FORMAT/DP' -r {wildcards.chrom} -T {input.sites[0]} -b {input.bams} -Ou \
-        | bcftools call -Aim -C alleles -T {input.tsv[0]} -Ob -o {output.vcf} && bcftools index -f {output.vcf} \
+        {params.time} -v bcftools mpileup -q {params.bq} -Q {params.mq} -f {params.fasta} -I -E -A -a 'FORMAT/DP' -r {wildcards.chrom} -T {input.sites[0]} -b {input.bams} -Ou | \
+            bcftools call -Aim -C alleles -T {input.tsv[0]} -Ob -o {output.vcf} && bcftools index -f {output.vcf} \
         ) &> {log}
         """
 
