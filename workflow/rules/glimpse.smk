@@ -78,7 +78,6 @@ rule glimpse2_phase:
     shell:
         """
         (
-        if [ -s {params.gmap} ];then \
             {params.time} -v GLIMPSE2_phase \
             --bam-list {input.bams} \
             --reference {input.refbin} \
@@ -88,17 +87,6 @@ rule glimpse2_phase:
             --pbwt-modulo {params.pbwtS} \
             --ne {params.ne} \
             --output {output} \
-        ; else \
-            {params.time} -v GLIMPSE2_phase \
-            --bam-list {input.bams} \
-            --reference {input.refbin} \
-            --burnin {params.burnin} \
-            --main {params.main} \
-            --pbwt-depth {params.pbwtL} \
-            --pbwt-modulo {params.pbwtS} \
-            --ne {params.ne} \
-            --output {output} \
-        ; fi \
         ) &> {log}
         """
 
