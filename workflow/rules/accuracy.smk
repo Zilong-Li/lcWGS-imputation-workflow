@@ -32,7 +32,7 @@ rule collect_truth_gts:
         (
         if [ -s {params.af} ];then perl -lane 'print join(":",@F[0..3])."\\t$F[4]"' {params.af} > {output.tmp}; \
         else \
-            bcftools +fill-tags {params.ref} -- -t AF |  bcftools query -f '{params.ql1}' > {output.tmp}; \
+            bcftools +fill-tags {input.sites[0]} -- -t AF |  bcftools query -f '{params.ql1}' > {output.tmp}; \
         fi
         awk '{params.awk}' <(bcftools query -f '{params.ql0}' {input.sites[0]}) {output.tmp} >{output.af}
         bcftools view -s {params.samples} {params.truth} | bcftools query -f '{params.ql2}' | sed -E 's/\/|\|/\\t/g' > {output.tmp2}

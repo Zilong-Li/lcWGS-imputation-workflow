@@ -57,7 +57,8 @@ rule subset_refpanel_by_region2:
         sites=os.path.join(
             OUTDIR_PANEL,
             "panelsize{size}",
-            "vcfs" "{chrom}.{start}.{end}.sites.vcf.gz",
+            "vcfs",
+            "{chrom}.{start}.{end}.sites.vcf.gz",
         ),
         tsv=os.path.join(
             OUTDIR_PANEL, "panelsize{size}", "vcfs", "{chrom}.{start}.{end}.tsv.vcf.gz"
@@ -90,10 +91,10 @@ rule subset_refpanel_by_region2:
         """
 
 
-def get_subset_refpanel_by_region2(wildcards):
+def get_sites_subset_refpanel_by_region2(wildcards):
     starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom)
     return expand(
-        rules.subset_refpanel_by_region2.output,
+        rules.subset_refpanel_by_region2.output.sites,
         zip,
         start=starts,
         end=ends,
@@ -103,7 +104,7 @@ def get_subset_refpanel_by_region2(wildcards):
 
 rule concat_refpanel_sites_by_region2:
     input:
-        get_subset_refpanel_by_region2,
+        get_sites_subset_refpanel_by_region2,
     output:
         sites=os.path.join(
             OUTDIR_PANEL,
@@ -121,7 +122,7 @@ rule concat_refpanel_sites_by_region2:
     shell:
         """
         ( \
-            bcftools concat -D --threads 4 -Oz -o {output.sites} {input} && bcftools index -f {output.sites} \
+            bcftools concat -Da --threads 4 -Oz -o {output.sites} {input} && tabix -f {output.sites} \
             bcftools query -f'%CHROM\t%POS\t%REF,%ALT\n' {output.sites} | bgzip -c > {output.tsv} && tabix -s1 -b2 -e2 {output.tsv}
         ) & > {log}
         """
