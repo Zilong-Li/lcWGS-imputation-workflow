@@ -357,7 +357,6 @@ rule plot_accuracy_panelsize:
             allow_missing=True,
         ),
     output:
-        pdf=os.path.join(OUTDIR_SUMMARY, "all.accuracy.down{depth}x.{chrom}.pdf"),
         rds=os.path.join(OUTDIR_SUMMARY, "all.accuracy.down{depth}x.{chrom}.rds"),
     log:
         os.path.join(OUTDIR_SUMMARY, "all.accuracy.down{depth}x.{chrom}.llog"),
@@ -394,7 +393,6 @@ rule plot_accuracy_depth:
             allow_missing=True,
         ),
     output:
-        pdf=os.path.join(OUTDIR_SUMMARY, "all.accuracy.panelsize{size}.{chrom}.pdf"),
         rds=os.path.join(OUTDIR_SUMMARY, "all.accuracy.panelsize{size}.{chrom}.rds"),
     log:
         os.path.join(OUTDIR_SUMMARY, "all.accuracy.panelsize{size}.{chrom}.pdf.llog"),

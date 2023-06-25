@@ -226,7 +226,7 @@ rule plot_speed_glimpse:
         "../scripts/speed_single.R"
 
 
-rule plot_speed_all:
+rule plot_speed_by_panelsize:
     input:
         glimpse1=expand(
             rules.collect_glimpse_speed_log.output,
@@ -249,13 +249,46 @@ rule plot_speed_all:
             allow_missing=True,
         ),
     output:
-        pdf=os.path.join(OUTDIR_SUMMARY, "all.speed.down{depth}x.{chrom}.pdf"),
         rds=os.path.join(OUTDIR_SUMMARY, "all.speed.down{depth}x.{chrom}.rds"),
     log:
         os.path.join(OUTDIR_SUMMARY, "all.speed.down{depth}x.{chrom}.pdf.llog"),
     params:
-        N="plot_speed_all",
+        N="plot_speed_by_panelsize",
     conda:
         "../envs/quilt.yaml"
     script:
         "../scripts/speed_panelsize.R"
+
+
+rule plot_speed_by_depth:
+    input:
+        glimpse1=expand(
+            rules.collect_glimpse_speed_log.output,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+        glimpse2=expand(
+            rules.collect_glimpse2_speed_log.output,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+        regular=expand(
+            rules.collect_quilt_regular_speed_log.output,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+        zilong=expand(
+            rules.collect_quilt_zilong_speed_log.output,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+    output:
+        rds=os.path.join(OUTDIR_SUMMARY, "all.speed.refsize{size}.{chrom}.rds"),
+    log:
+        os.path.join(OUTDIR_SUMMARY, "all.speed.refsize{size}.{chrom}.pdf.llog"),
+    params:
+        N="plot_speed_by_depth",
+    conda:
+        "../envs/quilt.yaml"
+    script:
+        "../scripts/speed_depth.R"

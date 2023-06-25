@@ -36,7 +36,7 @@ saveRDS(accuracy_by_af, snakemake@output[["rds"]])
 wong <- c("#e69f00", "#d55e00", "#56b4e9", "#cc79a7", "#009e73", "#0072b2", "#f0e442")
 mycols <- wong
 
-pdf(snakemake@output[["pdf"]], w = 8, h = 12)
+pdf(paste0(snakemake@output[["rds"]], ".pdf"), w = 12, h = 6)
 a1 <- accuracy_by_af[[1]]
 x <- a1$bin[!sapply(a1[, 2], is.na)]
 x <- log10(as.numeric(x))

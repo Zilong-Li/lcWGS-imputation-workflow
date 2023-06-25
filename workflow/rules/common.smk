@@ -63,7 +63,13 @@ def get_subset_refs():
 
 def get_speed_all_plots():
     return expand(
-        rules.plot_speed_all.output, chrom=config["chroms"], depth=config["downsample"]
+        rules.plot_speed_by_panelsize.output,
+        chrom=config["chroms"],
+        depth=config["downsample"],
+    ), expand(
+        rules.plot_speed_by_depth.output,
+        chrom=config["chroms"],
+        size=config["refsize"],
     )
 
 
