@@ -14,40 +14,40 @@ refsize: [0]
 
 chroms: ['chr20']
 
-#'all', 'speed', 'accuracy', 'quilt1', 'glimpse1', 'quilt2', 'glimpse2'
+#'all', 'speed', 'accuracy', 'quilt','glimpse','quilt1', 'quilt2', 'glimpse1',  'glimpse2'
 scenario: 'all'
 
 quilt2:
   chunksize: 2000000
   nGen: 100
   buffer: 500000
-  Ksubset: 1000
   nGibbsSamples: 7
-  n_seek_its: 5
   n_burn_in_seek_its: 2
   small_ref_panel_block_gibbs_iterations: c(3,6,9)
   small_ref_panel_gibbs_iterations: 20
   lowram: 'TRUE'
-  impute_rare_common: 'FALSE'
+  Ksubset: 400
+  n_seek_its: 3
+  impute_rare_common: 'TRUE'
   mspbwtB: 64
   mspbwtL: 40
-  mspbwtM: 1
+  mspbwtM: 3
   mspbwt-nindices: 4
-  rare_af_threshold: 0.0
+  rare_af_threshold: 0.001
 
 quilt1:
   chunksize: 2000000
   nGen: 100
   buffer: 500000
-  Ksubset: 400
   nGibbsSamples: 7
-  n_seek_its: 3
   n_burn_in_seek_its: 2
   small_ref_panel_block_gibbs_iterations: c(3,6,9)
   small_ref_panel_gibbs_iterations: 20
   lowram: 'TRUE'
-  impute_rare_common: 'FALSE'
-  rare_af_threshold: 0.0
+  Ksubset: 400
+  n_seek_its: 3
+  impute_rare_common: 'TRUE'
+  rare_af_threshold: 0.001
 
 glimpse:
   chunksize: 2000000

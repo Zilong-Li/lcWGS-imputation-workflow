@@ -41,6 +41,20 @@ def get_all_results():
         return get_accuracy_panelsize_plots(), get_accuracy_depth_plots()
     elif RUN == "speed":
         return get_speed_all_plots()
+    elif RUN == "quilt":
+        return (
+            get_quilt_regular_accuracy(),
+            get_speed_quilt_regular_plots(),
+            get_quilt_zilong_accuracy(),
+            get_speed_quilt_zilong_plots(),
+        )
+    elif RUN == "glimpse":
+        return (
+            get_glimpse_accuracy(),
+            get_speed_glimpse_plots(),
+            get_glimpse2_accuracy(),
+            get_speed_glimpse2_plots(),
+        )
     elif RUN == "quilt1":
         return get_quilt_regular_accuracy(), get_speed_quilt_regular_plots()
     elif RUN == "quilt2":
@@ -50,7 +64,7 @@ def get_all_results():
     elif RUN == "glimpse2":
         return get_glimpse2_accuracy(), get_speed_glimpse2_plots()
     else:
-        pass
+        raise RuntimeError("this is an invalid scenario!")
 
 
 def get_subset_refs():
@@ -275,7 +289,9 @@ def get_regions_list_from_glimpse_chunk(chrom):
         if not os.path.exists(OUTDIR_PANEL):
             os.makedirs(OUTDIR_PANEL)
         fn = os.path.join(OUTDIR_PANEL, f"{chrom}.glimpse.chunks")
-        if not os.path.isfile(fn):
+        if REFPANEL[chrom].get("glimpse_chunk"):
+            fn = REFPANEL[chrom].get("glimpse_chunk")
+        elif not os.path.isfile(fn):
             os.system(
                 f"GLIMPSE_chunk --input {REFPANEL[chrom]['vcf']} --region {chrom} --window-size {config['glimpse']['chunksize']} --buffer-size {config['glimpse']['buffer']} --output {fn} "
             )
