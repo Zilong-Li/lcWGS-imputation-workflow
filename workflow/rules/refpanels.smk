@@ -120,7 +120,8 @@ rule concat_refpanel_sites_by_region2:
     shell:
         """
         ( \
-            bcftools concat -Da --threads 4 -Oz -o {output.sites} {input} && tabix -f {output.sites} && \
+            echo {input} | tr ' ' '\n' > {output.sites}.list && \
+            bcftools concat -f {output.sites}.list -Da --threads 4 -Oz -o {output.sites} && tabix -f {output.sites} && \
             bcftools query -f'%CHROM\t%POS\t%REF,%ALT\n' {output.sites} | bgzip -c > {output.tsv} && tabix -s1 -b2 -e2 {output.tsv}
         ) & > {log}
         """
