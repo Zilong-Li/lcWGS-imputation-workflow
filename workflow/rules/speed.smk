@@ -254,6 +254,7 @@ rule plot_speed_by_panelsize:
         os.path.join(OUTDIR_SUMMARY, "all.speed.down{depth}x.{chrom}.pdf.llog"),
     params:
         N="plot_speed_by_panelsize",
+        vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
     conda:
         "../envs/quilt.yaml"
     script:

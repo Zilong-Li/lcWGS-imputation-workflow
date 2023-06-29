@@ -2,7 +2,10 @@
 snakemake@source("common.R")
 
 
+refsize0 <- as.integer(system(paste("bcftools query -l", snakemake@params$vcf, "|", "wc", "-l"), intern = TRUE))
 groups <- as.numeric(snakemake@config[["refsize"]])
+groups[groups == 0] <- refsize0
+groups <- groups * 2
 nd <- length(groups)
 
 df.truth <- read.table(snakemake@input[["truth"]])
@@ -31,12 +34,13 @@ accuracy_by_af <- lapply(seq(length(groups)), function(i) {
   d
 })
 
+names(accuracy_by_af) <- paste0("refsize", as.character(groups))
 saveRDS(accuracy_by_af, snakemake@output[["rds"]])
 
 wong <- c("#e69f00", "#d55e00", "#56b4e9", "#cc79a7", "#009e73", "#0072b2", "#f0e442")
 mycols <- wong
 
-pdf(paste0(snakemake@output[["rds"]], ".pdf"), w = 12, h = 6)
+pdf(paste0(snakemake@output[["rds"]], ".pdf"), w = 6, h = 12)
 a1 <- accuracy_by_af[[1]]
 x <- a1$bin[!sapply(a1[, 2], is.na)]
 x <- log10(as.numeric(x))

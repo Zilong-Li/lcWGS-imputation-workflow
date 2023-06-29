@@ -362,6 +362,7 @@ rule plot_accuracy_panelsize:
         os.path.join(OUTDIR_SUMMARY, "all.accuracy.down{depth}x.{chrom}.llog"),
     params:
         N="plot_accuracy_panelsize",
+        vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
     conda:
         "../envs/quilt.yaml"
     script:

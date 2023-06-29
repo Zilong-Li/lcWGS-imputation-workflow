@@ -29,7 +29,11 @@ accuracy_by_af <- lapply(seq(length(groups)), function(i) {
   colnames(d) <- c("bin","QUILT2", "GLIMPSE2", "QUILT1", "GLIMPSE1")
   d
 })
+
+names(accuracy_by_af) <- paste0(as.character(groups), "x")
 saveRDS(accuracy_by_af, snakemake@output[["rds"]])
+
+## (rds <- readRDS("/maps/projects/alab/people/rlk420/quilt2/human/UKBB_GEL_CEU/bench-speed/results/summary/all.accuracy.panelsize0.chr20.rds"))
 
 wong <- c("#e69f00", "#d55e00", "#56b4e9", "#cc79a7", "#009e73", "#0072b2", "#f0e442")
 mycols <- wong

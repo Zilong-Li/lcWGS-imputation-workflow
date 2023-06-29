@@ -22,15 +22,17 @@ gunram <- function(dl) {
 
 groups <- as.numeric(snakemake@config[["downsample"]])
 nd <- length(groups)
-print(groups)
 
 dl.regular <- lapply(snakemake@input[["regular"]], read.table)
 dl.zilong <- lapply(snakemake@input[["zilong"]], read.table)
 dl.glimpse1 <- lapply(snakemake@input[["glimpse1"]], read.table)
 dl.glimpse2 <- lapply(snakemake@input[["glimpse2"]], read.table)
-saveRDS(list(QUILT2 = dl.zilong, GLIMPSE2 = dl.glimpse2, QUILT1 = dl.regular, GLIMPSE1 = dl.glimpse1), snakemake@output[["rds"]])
+rds <- list(QUILT2 = dl.zilong, GLIMPSE2 = dl.glimpse2, QUILT1 = dl.regular, GLIMPSE1 = dl.glimpse1)
+rds <- lapply(rds,function(l) {names(l) <- paste0("depth=",groups,"x"); l} )
 
+saveRDS(rds, snakemake@output[["rds"]])
 rds <- readRDS(snakemake@output[["rds"]])
+
 
 times <- data.frame(QUILT2 = gnutime(rds$QUILT2), GLIMPSE2 = gnutime(rds$GLIMPSE2), QUILT1 = gnutime(rds$QUILT1), GLIMPSE1 = gnutime(rds$GLIMPSE1))
 rownames(times) <- groups
