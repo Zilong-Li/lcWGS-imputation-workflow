@@ -399,6 +399,7 @@ rule plot_accuracy_depth:
         os.path.join(OUTDIR_SUMMARY, "all.accuracy.panelsize{size}.{chrom}.pdf.llog"),
     params:
         N="plot_accuracy_depth",
+        chunks=lambda wildcards: REFPANEL[wildcards.chrom]["glimpse_chunk"],
     conda:
         "../envs/quilt.yaml"
     script:

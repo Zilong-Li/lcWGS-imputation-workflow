@@ -47,9 +47,16 @@ r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip = FAL
     return(cors_per_af)
 }
 
-# d1: quilt2, d2:glimpse2, d3:quilt1, d4:glimpse1
+## acc_r2_by_af <- function(d0, d1, af, bins) {
+##   id <- intersect(intersect(rownames(d0), rownames(d1)), names(af))
+##   res <- r2_by_freq(breaks = bins, af[id], truthG = d0[id,], testDS = d1[id,])
+##   as.data.frame(cbind(bin = bins[-1], single = res[, "simple"], orphan = res[, "simple"]))
+## }
+
+# d0:truth, d1: quilt2, d2:glimpse2, d3:quilt1, d4:glimpse1
 acc_r2_by_af <- function(d0, d1, d2, d3, d4, af, bins) {
-  id <- intersect(rownames(d0), rownames(d1))
+  id <- intersect(intersect(intersect(intersect(rownames(d0), rownames(d1)), rownames(d2)), rownames(d3)), rownames(d4))
+  id <- intersect(id, names(af))
   res1 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d1, which_snps = id)
   res2 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d2, which_snps = id)
   res3 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d3, which_snps = id)
@@ -104,3 +111,5 @@ parse.quilt.gts <- function(fn) {
   rownames(d1) <- id
   return(d1)
 }
+
+mycols <- c(QUILT2 = "#e69f00", GLIMPSE2 = "#d55e00", QUILT1 = "#56b4e9", GLIMPSE1 = "#cc79a7")

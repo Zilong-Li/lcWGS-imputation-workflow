@@ -44,7 +44,7 @@ palette(mycols)
 
 pdf(paste0(snakemake@output[["rds"]], ".pdf"), w = 12, h = 6)
 par(mfrow = c(1, 2))
-barplot(t(times), beside = T, col = 1:4, ylab = "Runtime in Seconds", xlab = "Sequencing depth")
+barplot(t(times) / 60, beside = T, col = 1:4, ylab = "Runtime in Minutes", xlab = "Sequencing depth")
 legend("topleft", legend = colnames(times), fill =  1:4)
 barplot(t(rams) / 1024, beside = T, col = 1:4, ylab = "Maximun RAM in GBs", xlab = "Sequencing depth")
 dev.off()

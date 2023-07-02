@@ -365,7 +365,9 @@ def get_glimpse_chunks(wildcards):
         if not os.path.exists(OUTDIR_PANEL):
             os.makedirs(OUTDIR_PANEL)
         fn = os.path.join(OUTDIR_PANEL, f"{wildcards.chrom}.glimpse.chunks")
-        if not os.path.isfile(fn):
+        if REFPANEL[wildcards.chrom].get("glimpse_chunk"):
+            fn = REFPANEL[wildcards.chrom].get("glimpse_chunk")
+        elif not os.path.isfile(fn):
             os.system(
                 f"GLIMPSE_chunk --input {REFPANEL[wildcards.chrom]['vcf']} --region {wildcards.chrom} --window-size {config['glimpse']['chunksize']} --buffer-size {config['glimpse']['buffer']} --output {fn} "
             )
