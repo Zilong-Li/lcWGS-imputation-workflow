@@ -41,6 +41,8 @@ def get_all_results():
         return get_accuracy_panelsize_plots(), get_accuracy_depth_plots()
     elif RUN == "speed":
         return get_speed_all_plots()
+    elif RUN == "test":
+        return get_quilt_accuracy()
     elif RUN == "quilt":
         return (
             get_quilt_regular_accuracy(),

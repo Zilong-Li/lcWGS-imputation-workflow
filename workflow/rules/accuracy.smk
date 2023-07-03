@@ -164,7 +164,7 @@ rule plot_quilt_zilong:
         ),
     log:
         os.path.join(
-            OUTDIR_SUMMARY, "quilt.accuracy.zilong.panelsize{size}.{chrom}.pdf.llog"
+            OUTDIR_SUMMARY, "quilt.accuracy.zilong.panelsize{size}.{chrom}.rds.llog"
         ),
     conda:
         "../envs/quilt.yaml"
@@ -192,7 +192,7 @@ rule plot_quilt_mspbwt:
         ),
     log:
         os.path.join(
-            OUTDIR_SUMMARY, "quilt.accuracy.mspbwt.panelsize{size}.{chrom}.pdf.llog"
+            OUTDIR_SUMMARY, "quilt.accuracy.mspbwt.panelsize{size}.{chrom}.rds.llog"
         ),
     conda:
         "../envs/quilt.yaml"
@@ -222,10 +222,9 @@ rule plot_quilt_accuracy:
     params:
         N="plot_quilt_accuracy",
     output:
-        pdf=os.path.join(OUTDIR_SUMMARY, "quilt.accuracy.panelsize{size}.{chrom}.pdf"),
         rds=os.path.join(OUTDIR_SUMMARY, "quilt.accuracy.panelsize{size}.{chrom}.rds"),
     log:
-        os.path.join(OUTDIR_SUMMARY, "quilt.accuracy.panelsize{size}.{chrom}.pdf.llog"),
+        os.path.join(OUTDIR_SUMMARY, "quilt.accuracy.panelsize{size}.{chrom}.rds.llog"),
     conda:
         "../envs/quilt.yaml"
     script:
@@ -300,7 +299,7 @@ rule plot_glimpse2_accuracy:
         ),
     log:
         os.path.join(
-            OUTDIR_SUMMARY, "glimpse2.accuracy.panelsize{size}.{chrom}.pdf.llog"
+            OUTDIR_SUMMARY, "glimpse2.accuracy.panelsize{size}.{chrom}.rds.llog"
         ),
     conda:
         "../envs/quilt.yaml"
@@ -324,7 +323,7 @@ rule plot_glimpse_accuracy:
         rds=os.path.join(OUTDIR_SUMMARY, "glimpse.accuracy.panelsize{size}.{chrom}.rds"),
     log:
         os.path.join(
-            OUTDIR_SUMMARY, "glimpse.accuracy.panelsize{size}.{chrom}.pdf.llog"
+            OUTDIR_SUMMARY, "glimpse.accuracy.panelsize{size}.{chrom}.rds.llog"
         ),
     conda:
         "../envs/quilt.yaml"
@@ -359,7 +358,7 @@ rule plot_accuracy_panelsize:
     output:
         rds=os.path.join(OUTDIR_SUMMARY, "all.accuracy.down{depth}x.{chrom}.rds"),
     log:
-        os.path.join(OUTDIR_SUMMARY, "all.accuracy.down{depth}x.{chrom}.llog"),
+        os.path.join(OUTDIR_SUMMARY, "all.accuracy.down{depth}x.{chrom}.rds.llog"),
     params:
         N="plot_accuracy_panelsize",
         vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
@@ -396,7 +395,7 @@ rule plot_accuracy_depth:
     output:
         rds=os.path.join(OUTDIR_SUMMARY, "all.accuracy.panelsize{size}.{chrom}.rds"),
     log:
-        os.path.join(OUTDIR_SUMMARY, "all.accuracy.panelsize{size}.{chrom}.pdf.llog"),
+        os.path.join(OUTDIR_SUMMARY, "all.accuracy.panelsize{size}.{chrom}.rds.llog"),
     params:
         N="plot_accuracy_depth",
         chunks=lambda wildcards: REFPANEL[wildcards.chrom]["glimpse_chunk"],

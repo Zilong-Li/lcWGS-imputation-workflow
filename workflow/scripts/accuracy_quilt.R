@@ -2,19 +2,19 @@
 snakemake@source("common.R")
 
 acc_r2_all <- function(d0, d1, d2, d3) {
-  ## todo match rownames
-  id <- intersect(rownames(d0), rownames(d1))
+  id <- intersect(intersect(intersect(rownames(d0), rownames(d1)), rownames(d2)), rownames(d3))
   y1 <- cor(as.vector(d0[id,]), as.vector(d1[id,]), use = "pairwise.complete")**2
   y2 <- cor(as.vector(d0[id,]), as.vector(d2[id,]), use = "pairwise.complete")**2
   y3 <- cor(as.vector(d0[id,]), as.vector(d3[id,]), use = "pairwise.complete")**2
   c(y1, y2, y3)
 }
 
-acc_r2_by_af <- function(d0, d1, d2, d3, af, bins) {
-  id <- intersect(rownames(d0), rownames(d1))
-  res1 <- r2_by_freq(breaks = bins, af[id], truthG = d0[id,], testDS = d1[id,])
-  res2 <- r2_by_freq(breaks = bins, af[id], truthG = d0[id,], testDS = d2[id,])
-  res3 <- r2_by_freq(breaks = bins, af[id], truthG = d0[id,], testDS = d3[id,])
+local_r2_by_af <- function(d0, d1, d2, d3, af, bins) {
+  id <- intersect(intersect(intersect(rownames(d0), rownames(d1)), rownames(d2)), rownames(d3))
+  id <- intersect(id, names(af))
+  res1 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d1, which_snps = id)
+  res2 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d2, which_snps = id)
+  res3 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d3, which_snps = id)
   as.data.frame(cbind(bin = bins[-1], regular = res1[, "simple"], mspbwt = res2[, "simple"], zilong = res3[, "simple"]))
 }
 
@@ -27,6 +27,8 @@ df.truth <- sapply(seq(1, dim(df.truth)[2] - 1, 2), function(i) {
 rownames(df.truth) <- read.table(snakemake@input[["truth"]])[,1]
 af <- as.numeric(read.table(snakemake@input[["af"]])[, 2])
 names(af) <- read.table(snakemake@input[["af"]])[, 1]
+
+groups <- as.numeric(snakemake@config[["downsample"]])
 
 dl.regular <- lapply(snakemake@input[["regular"]], parse.quilt.gts)
 dl.mspbwt <- lapply(snakemake@input[["mspbwt"]], parse.quilt.gts)
@@ -45,19 +47,24 @@ accuracy <- matrix(sapply(1:length(groups), function(i) {
 
 
 accuracy_by_af <- lapply(1:length(groups), function(i) {
-  d <- acc_r2_by_af(df.truth, dl.regular[[i]], dl.mspbwt[[i]], dl.zilong[[i]], af, bins)
-  colnames(d) <- c("bin", "QUILT-regular", "QUILT-mspbwt", "QUILT-zilong" )
+  d <- local_r2_by_af(df.truth, dl.regular[[i]], dl.mspbwt[[i]], dl.zilong[[i]], af, bins)
+  colnames(d) <- c("bin", "regular", "mspbwt", "zilong" )
+  d
 })
+names(accuracy_by_af) <- paste0(as.character(groups), "x")
 saveRDS(accuracy_by_af, snakemake@output[["rds"]])
 
-wong <- c("#e69f00", "#d55e00", "#56b4e9", "#cc79a7", "#009e73", "#0072b2", "#f0e442")
-mycols <- wong
+## accuracy_by_af <- readRDS("/maps/projects/alab/people/rlk420/quilt2/human/HRC_CEU/quilt-rare-common/results/summary/quilt.accuracy.panelsize0.chr20.rds" )
 
-pdf(snakemake@output[["pdf"]], w = 12, h = 6)
+wong <- c("#e69f00", "#d55e00", "#56b4e9", "#cc79a7", "#009e73", "#0072b2", "#f0e442")
+
+pdf(paste0(snakemake@output[["rds"]], ".pdf"), w = 12, h = 6)
+
 par(mfrow = c(1, 2))
-plot(groups, accuracy[1, ], type = "b", lwd = 1.0, pch = 1, col = mycols[1], ylab = "Aggregated R2 for the chromosome", xlab = "Samples sequencing depth", ylim = c(0.9 * min(accuracy), 1.0))
-lines(groups, accuracy[2, ], type = "b", lwd = 1.0, pch = 1, col = mycols[2])
-lines(groups, accuracy[3, ], type = "b", lwd = 1.0, pch = 1, col = mycols[3])
+
+plot(groups, accuracy[1, ], type = "b", lwd = 1.0, pch = 1, col = wong[1], ylab = "Aggregated R2 for the chromosome", xlab = "Samples sequencing depth", ylim = c(0.9 * min(accuracy), 1.0))
+lines(groups, accuracy[2, ], type = "b", lwd = 1.0, pch = 1, col = wong[2])
+lines(groups, accuracy[3, ], type = "b", lwd = 1.0, pch = 1, col = wong[3])
 legend("bottomright", legend = c("QUILT-regular", "QUILT-mspbwt", "QUILT-zilong"), col = mycols, pch = 1, lwd = 1.5, cex = 1.1, xjust = 0, yjust = 1, bty = "n")
 
 a1 <- accuracy_by_af[[1]]
@@ -71,18 +78,20 @@ ymin <- min(sapply(accuracy_by_af, function(d) {
 }))
 
 plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0, 1.0), ylab = "Aggregated R2 within each MAF bin", xlab = "Minor Allele Frequency")
+
 nd <- length(groups)
 for (i in 1:nd) {
   d <- accuracy_by_af[[i]]
   y <- rmna(d$regular)
-  lines(x, y, type = "l", lty = nd - i + 1, pch = 1, col = mycols[1])
+  lines(x, y, type = "l", lty = nd - i + 1, pch = 1, col = wong[1])
   y <- rmna(d$mspbwt)
-  lines(x, y, type = "l", lty = nd - i + 1, pch = 1, col = mycols[2])
+  lines(x, y, type = "l", lty = nd - i + 1, pch = 1, col = wong[2])
   y <- rmna(d$zilong)
-  lines(x, y, type = "l", lty = nd - i + 1, pch = 1, col = mycols[3])
+  lines(x, y, type = "l", lty = nd - i + 1, pch = 1, col = wong[3])
 }
 axis(side = 1, at = x, labels = labels)
 axis(side = 2)
+
 legend("bottomright", legend = paste0(groups, "x"), lwd = (1:nd) * 2.5 / nd, bty = "n")
 
 dev.off()
