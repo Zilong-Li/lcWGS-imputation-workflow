@@ -65,7 +65,6 @@ par(mfrow = c(1, 2))
 plot(groups, accuracy[1, ], type = "b", lwd = 1.0, pch = 1, col = wong[1], ylab = "Aggregated R2 for the chromosome", xlab = "Samples sequencing depth", ylim = c(0.9 * min(accuracy), 1.0))
 lines(groups, accuracy[2, ], type = "b", lwd = 1.0, pch = 1, col = wong[2])
 lines(groups, accuracy[3, ], type = "b", lwd = 1.0, pch = 1, col = wong[3])
-legend("bottomright", legend = c("QUILT-regular", "QUILT-mspbwt", "QUILT-zilong"), col = mycols, pch = 1, lwd = 1.5, cex = 1.1, xjust = 0, yjust = 1, bty = "n")
 
 a1 <- accuracy_by_af[[1]]
 x <- a1$bin[!sapply(a1[, 2], is.na)] # remove AF bin with NULL results
@@ -92,6 +91,45 @@ for (i in 1:nd) {
 axis(side = 1, at = x, labels = labels)
 axis(side = 2)
 
+legend("topleft", legend = c("QUILT-regular", "QUILT-mspbwt", "QUILT-zilong"), col = mycols, pch = 1, lwd = 1.5, cex = 1.1, xjust = 0, yjust = 1, bty = "n")
 legend("bottomright", legend = paste0(groups, "x"), lwd = (1:nd) * 2.5 / nd, bty = "n")
+
+chunkfile <- snakemake@params[["chunks"]]
+chunk.names <- read.table(chunkfile)[,4]
+chunk <- lapply(strsplit(gsub(".*:","",chunk.names),"-"), as.integer)
+pos <- as.integer(sapply(strsplit(names(af),":"),"[[",2))
+chunk_af <- lapply(chunk, function(c) {
+  af[which(pos > c[1] & pos < c[2])]
+})
+names(chunk_af) <- chunk.names
+
+accuracy_by_af_chunk <- lapply(chunk_af, function(af) {
+  all <- lapply(seq(length(groups)), function(i) {
+    d <- local_r2_by_af(df.truth, dl.regular[[i]], dl.mspbwt[[i]], dl.zilong[[i]], af, bins)
+    colnames(d) <- c("bin", "regular", "mspbwt", "zilong" )
+    d
+  })
+  names(all) <- paste0(as.character(groups), "x")
+  all
+})
+
+for(c in 1:length(chunk.names)) {
+  if(c %% 2 == 1) par(mfrow = c(1, 2))
+  title <- paste(names(chunk_af)[c], "#", length(chunk_af[[c]]))
+  acc_chunk <- accuracy_by_af_chunk[[c]]
+  plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0, 1.0), ylab = "Aggregated R2 within each AF bin", xlab = "Allele Frequency",main = title)
+  for (i in 1:nd) {
+    d <- acc_chunk[[i]]
+    y <- rmna(d$regular)
+    lines(x, y, type = "l", lty = nd - i + 1, pch = 1, col = wong[1])
+    y <- rmna(d$mspbwt)
+    lines(x, y, type = "l", lty = nd - i + 1, pch = 1, col = wong[2])
+    y <- rmna(d$zilong)
+    lines(x, y, type = "l", lty = nd - i + 1, pch = 1, col = wong[3])
+  }
+  axis(side = 1, at = x, labels = labels)
+  axis(side = 2, at = seq(0, 1, 0.2))
+  legend("bottomright", legend = paste0(groups, "x"), lwd = (1:nd) * 2.5 / nd, bty = "n")
+}
 
 dev.off()

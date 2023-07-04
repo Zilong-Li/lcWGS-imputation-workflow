@@ -221,6 +221,7 @@ rule plot_quilt_accuracy:
         ),
     params:
         N="plot_quilt_accuracy",
+        chunks=lambda wildcards: REFPANEL[wildcards.chrom]["glimpse_chunk"],
     output:
         rds=os.path.join(OUTDIR_SUMMARY, "quilt.accuracy.panelsize{size}.{chrom}.rds"),
     log:
