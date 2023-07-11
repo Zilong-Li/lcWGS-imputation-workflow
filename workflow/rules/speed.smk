@@ -244,7 +244,7 @@ rule plot_speed_by_panelsize:
             allow_missing=True,
         ),
         zilong=expand(
-            rules.collect_quilt_zilong_speed_log.output,
+            rules.collect_quilt_mspbwt_speed_log.output,
             size=config["refsize"],
             allow_missing=True,
         ),
@@ -279,7 +279,7 @@ rule plot_speed_by_depth:
             allow_missing=True,
         ),
         zilong=expand(
-            rules.collect_quilt_zilong_speed_log.output,
+            rules.collect_quilt_mspbwt_speed_log.output,
             depth=config["downsample"],
             allow_missing=True,
         ),

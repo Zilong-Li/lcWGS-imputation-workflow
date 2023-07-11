@@ -290,7 +290,7 @@ rule quilt_ligate_regular:
             OUTDIR_QUILT1,
             "refsize{size}",
             "{chrom}",
-            "quilt.down{depth}x.regular.{chrom}.bcf.gz",
+            "quilt.down{depth}x.regular.{chrom}.vcf.gz",
         ),
         lst=temp(
             os.path.join(
@@ -305,7 +305,7 @@ rule quilt_ligate_regular:
             OUTDIR_QUILT1,
             "refsize{size}",
             "{chrom}",
-            "quilt.down{depth}x.regular.{chrom}.bcf.gz.llog",
+            "quilt.down{depth}x.regular.{chrom}.vcf.gz.llog",
         ),
     params:
         N="quilt_ligate_regular",
@@ -315,7 +315,7 @@ rule quilt_ligate_regular:
         """
         ( \
            echo {input} | tr ' ' '\n' > {output.lst} && \
-           bcftools concat --file-list {output.lst} --output-type b --threads 4 -o {output.vcf} && \
+           bcftools concat --file-list {output.lst} --output-type z --threads 4 -o {output.vcf} && \
            bcftools index -f {output.vcf} \
         ) &> {log}
         """
@@ -394,7 +394,7 @@ rule quilt_ligate_mspbwt:
             OUTDIR_QUILT2,
             "refsize{size}",
             "{chrom}",
-            "quilt.down{depth}x.mspbwt.{chrom}.bcf.gz",
+            "quilt.down{depth}x.mspbwt.{chrom}.vcf.gz",
         ),
         lst=temp(
             os.path.join(
@@ -409,7 +409,7 @@ rule quilt_ligate_mspbwt:
             OUTDIR_QUILT2,
             "refsize{size}",
             "{chrom}",
-            "quilt.down{depth}x.mspbwt.{chrom}.bcf.gz.llog",
+            "quilt.down{depth}x.mspbwt.{chrom}.vcf.gz.llog",
         ),
     params:
         N="quilt_ligate_mspbwt",
@@ -419,7 +419,7 @@ rule quilt_ligate_mspbwt:
         """
         ( \
            echo {input} | tr ' ' '\n' > {output.lst} && \
-           bcftools concat --file-list {output.lst} --output-type b --threads 4 -o {output.vcf} && \
+           bcftools concat --file-list {output.lst} --output-type z --threads 4 -o {output.vcf} && \
            bcftools index -f {output.vcf} \
         ) &> {log}
         """
@@ -502,7 +502,7 @@ rule quilt_ligate_zilong:
             OUTDIR_QUILT2,
             "refsize{size}",
             "{chrom}",
-            "quilt.down{depth}x.zilong.{chrom}.bcf.gz",
+            "quilt.down{depth}x.zilong.{chrom}.vcf.gz",
         ),
         lst=temp(
             os.path.join(
@@ -517,7 +517,7 @@ rule quilt_ligate_zilong:
             OUTDIR_QUILT2,
             "refsize{size}",
             "{chrom}",
-            "quilt.down{depth}x.zilong.{chrom}.bcf.gz.llog",
+            "quilt.down{depth}x.zilong.{chrom}.vcf.gz.llog",
         ),
     params:
         N="quilt_ligate_zilong",
@@ -527,7 +527,7 @@ rule quilt_ligate_zilong:
         """
         ( \
            echo {input} | tr ' ' '\n' > {output.lst} && \
-           bcftools concat --file-list {output.lst} --output-type b --threads 4 -o {output.vcf} && \
+           bcftools concat --ligate --file-list {output.lst} --output-type z --threads 4 -o {output.vcf} && \
            bcftools index -f {output.vcf} \
         ) &> {log}
         """

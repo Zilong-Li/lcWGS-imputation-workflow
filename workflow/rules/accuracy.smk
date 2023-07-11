@@ -352,7 +352,7 @@ rule plot_accuracy_panelsize:
             allow_missing=True,
         ),
         zilong=expand(
-            rules.collect_quilt_zilong_imputed_gts.output,
+            rules.collect_quilt_mspbwt_imputed_gts.output,
             size=config["refsize"],
             allow_missing=True,
         ),
@@ -389,7 +389,7 @@ rule plot_accuracy_depth:
             allow_missing=True,
         ),
         zilong=expand(
-            rules.collect_quilt_zilong_imputed_gts.output,
+            rules.collect_quilt_mspbwt_imputed_gts.output,
             depth=config["downsample"],
             allow_missing=True,
         ),
