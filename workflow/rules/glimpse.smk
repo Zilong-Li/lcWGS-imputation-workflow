@@ -48,13 +48,11 @@ rule glimpse2_phase:
         refbin=rules.glimpse2_prepare_panel.output,
         bams=rules.bamlist.output,
     output:
-        temp(
-            os.path.join(
-                OUTDIR_GLIMPSE2,
-                "refsize{size}",
-                "{chrom}",
-                "down{depth}x.{chrom}.{start}.{end}.bcf",
-            )
+        os.path.join(
+            OUTDIR_GLIMPSE2,
+            "refsize{size}",
+            "{chrom}",
+            "down{depth}x.{chrom}.{start}.{end}.bcf",
         ),
     log:
         os.path.join(
@@ -107,21 +105,17 @@ rule glimpse2_ligate:
             "{chrom}",
             "down{depth}x.{chrom}.vcf.gz.sample",
         ),
-        tmp=temp(
-            os.path.join(
-                OUTDIR_GLIMPSE2,
-                "refsize{size}",
-                "{chrom}",
-                "stupid.down{depth}x.{chrom}.bcf",
-            )
+        tmp=os.path.join(
+            OUTDIR_GLIMPSE2,
+            "refsize{size}",
+            "{chrom}",
+            "stupid.down{depth}x.{chrom}.bcf",
         ),
-        lst=temp(
-            os.path.join(
-                OUTDIR_GLIMPSE2,
-                "refsize{size}",
-                "{chrom}",
-                "down{depth}x.{chrom}.vcf.list",
-            ),
+        lst=os.path.join(
+            OUTDIR_GLIMPSE2,
+            "refsize{size}",
+            "{chrom}",
+            "down{depth}x.{chrom}.vcf.list",
         ),
     log:
         os.path.join(
@@ -184,13 +178,11 @@ rule glimpse_phase:
         refvcf=rules.subset_refpanel_by_region2.output.vcf,
         glvcf=rules.glimpse_prepare_glvcf.output.vcf,
     output:
-        temp(
-            os.path.join(
-                OUTDIR_GLIMPSE,
-                "refsize{size}",
-                "{chrom}",
-                "down{depth}x.{chrom}.{start}.{end}.bcf",
-            )
+        os.path.join(
+            OUTDIR_GLIMPSE,
+            "refsize{size}",
+            "{chrom}",
+            "down{depth}x.{chrom}.{start}.{end}.bcf",
         ),
     log:
         os.path.join(
@@ -254,13 +246,11 @@ rule glimpse_ligate:
         vcf=os.path.join(
             OUTDIR_GLIMPSE, "refsize{size}", "{chrom}", "down{depth}x.{chrom}.bcf"
         ),
-        lst=temp(
-            os.path.join(
-                OUTDIR_GLIMPSE,
-                "refsize{size}",
-                "{chrom}",
-                "down{depth}x.{chrom}.vcf.list",
-            ),
+        lst=os.path.join(
+            OUTDIR_GLIMPSE,
+            "refsize{size}",
+            "{chrom}",
+            "down{depth}x.{chrom}.vcf.list",
         ),
     log:
         os.path.join(
@@ -273,5 +263,6 @@ rule glimpse_ligate:
     shell:
         """
         echo {input} | tr ' ' '\\n' > {output.lst}
-        GLIMPSE_ligate --input {output.lst} --output {output.vcf} && bcftools index -f {output.vcf}
+        GLIMPSE_ligate --input {output.lst} --output {output.vcf}.bcf && bcftools index -f {output.vcf}.bcf
+        GLIMPSE_sample --input {output.vcf}.bcf --solve --output {output.vcf} && bcftools index -f {output.vcf}
         """

@@ -11,9 +11,6 @@ groups <- groups * 2
 nd <- length(groups)
 
 truth <- fread(snakemake@input[["truth"]], data.table = F)
-
-# nsamples <- (ncol(truth)-1)/2
-
 ds.truth <- sapply(seq(1, dim(truth)[2] - 1, 2), function(i) {
   rowSums(truth[, (i + 1):(i + 2)])
 }) # dosage matrix: nsnps x nsamples
@@ -21,8 +18,11 @@ rownames(ds.truth) <- truth[,1]
 truth <- truth[,-1] ## remove first id column
 rownames(truth) <- rownames(ds.truth)
 
-af <- as.numeric(read.table(snakemake@input[["af"]])[, 2])
-names(af) <- read.table(snakemake@input[["af"]])[, 1]
+d.af <- read.table(snakemake@input[["af"]])
+af <- as.numeric(d.af[, 2])
+names(af) <- d.af[, 1]
+rm(d.af)
+## af <- ifelse(af > 0.5,1-af,af) ## turn af into maf
 
 dl.quilt1 <- lapply(snakemake@input[["regular"]], parse.imputed.gts2)
 dl.quilt2 <- lapply(snakemake@input[["zilong"]], parse.imputed.gts2)
@@ -54,7 +54,9 @@ r2_dosage_by_af <- lapply(seq(length(groups)), function(i) {
   quilt2 <- dl.quilt2[[i]][,seq(3, n, by = 3 )] # get dosage
   quilt1 <- dl.quilt1[[i]][,seq(3, n, by = 3 )] # get dosage
   glimpse2 <- dl.glimpse2[[i]][,seq(3, n, by = 3 )] # get dosage
-  glimpse1 <- dl.glimpse1[[i]][,seq(3, n, by = 3 )] # get dosage
+  gt.glimpse1 <- dl.glimpse1[[i]][,-seq(3, n, by = 3 )] # get phased gt
+  n <- ncol(gt.glimpse1)
+  glimpse1 <- gt.glimpse1[,seq(1, n, 2)] + gt.glimpse1[,seq(2,n,2)]
   d <- acc_r2_by_af(ds.truth, quilt2 , glimpse2, quilt1, glimpse1, af, bins)
   colnames(d) <- c("bin","QUILT2", "GLIMPSE2", "QUILT1", "GLIMPSE1")
   d
@@ -64,10 +66,8 @@ names(r2_dosage_by_af) <- paste0("refsize", as.character(groups))
 
 saveRDS(list(r2_dosage_by_af, phasing_errors), snakemake@output[["rds"]])
 
-wong <- c("#e69f00", "#d55e00", "#56b4e9", "#cc79a7", "#009e73", "#0072b2", "#f0e442")
-mycols <- wong
-
 pdf(paste0(snakemake@output[["rds"]], ".pdf"), w = 12, h = 6)
+
 a1 <- r2_dosage_by_af[[1]]
 x <- a1$bin[!sapply(a1[, 2], is.na)]
 x <- log10(as.numeric(x))

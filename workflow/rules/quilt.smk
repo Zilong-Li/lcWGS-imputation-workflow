@@ -223,13 +223,11 @@ rule quilt_run_regular:
         bams=rules.bamlist.output,
         rdata=rules.quilt_prepare_regular.output,
     output:
-        temp(
-            os.path.join(
-                OUTDIR_QUILT1,
-                "refsize{size}",
-                "{chrom}",
-                "quilt.down{depth}x.regular.{chrom}.{start}.{end}.vcf.gz",
-            )
+        os.path.join(
+            OUTDIR_QUILT1,
+            "refsize{size}",
+            "{chrom}",
+            "quilt.down{depth}x.regular.{chrom}.{start}.{end}.vcf.gz",
         ),
     params:
         time=config["time"],
@@ -315,7 +313,7 @@ rule quilt_ligate_regular:
         """
         ( \
            echo {input} | tr ' ' '\n' > {output.lst} && \
-           bcftools concat --file-list {output.lst} --output-type z --threads 4 -o {output.vcf} && \
+           bcftools concat --ligate --file-list {output.lst} --output-type z --threads 4 -o {output.vcf} && \
            bcftools index -f {output.vcf} \
         ) &> {log}
         """
@@ -327,13 +325,11 @@ rule quilt_run_mspbwt:
         bams=rules.bamlist.output,
         rdata=rules.quilt_prepare_mspbwt.output,
     output:
-        temp(
-            os.path.join(
-                OUTDIR_QUILT2,
-                "refsize{size}",
-                "{chrom}",
-                "quilt.down{depth}x.mspbwt.{chrom}.{start}.{end}.vcf.gz",
-            )
+        os.path.join(
+            OUTDIR_QUILT2,
+            "refsize{size}",
+            "{chrom}",
+            "quilt.down{depth}x.mspbwt.{chrom}.{start}.{end}.vcf.gz",
         ),
     params:
         time=config["time"],
@@ -419,7 +415,7 @@ rule quilt_ligate_mspbwt:
         """
         ( \
            echo {input} | tr ' ' '\n' > {output.lst} && \
-           bcftools concat --file-list {output.lst} --output-type z --threads 4 -o {output.vcf} && \
+           bcftools concat --ligate --file-list {output.lst} --output-type z --threads 4 -o {output.vcf} && \
            bcftools index -f {output.vcf} \
         ) &> {log}
         """
@@ -431,13 +427,11 @@ rule quilt_run_zilong:
         bams=rules.bamlist.output,
         rdata=rules.quilt_prepare_zilong.output,
     output:
-        temp(
-            os.path.join(
-                OUTDIR_QUILT2,
-                "refsize{size}",
-                "{chrom}",
-                "quilt.down{depth}x.zilong.{chrom}.{start}.{end}.vcf.gz",
-            )
+        os.path.join(
+            OUTDIR_QUILT2,
+            "refsize{size}",
+            "{chrom}",
+            "quilt.down{depth}x.zilong.{chrom}.{start}.{end}.vcf.gz",
         ),
     params:
         time=config["time"],
