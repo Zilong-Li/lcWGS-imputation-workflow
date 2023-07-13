@@ -35,12 +35,11 @@ rule subset_refpanel_by_chrom:
         "../envs/pandas.yaml"
     shell:
         """
-        ( \
-            bcftools view -v snps -m2 -M2 -g het --samples-file {input} --threads 4 {params.vcf}| bcftools norm - -d snps -Ob -o {output.vcf} --threads 4 && bcftools index -f {output.vcf} && \
-            touch -m {output.vcf}.csi && \
-            bcftools view -G {output.vcf} -Oz -o {output.sites} --threads 4 && tabix -f {output.sites} && \
-            bcftools query -f'%CHROM\t%POS\t%REF,%ALT\n' {output.sites} | bgzip -c > {output.tsv} && tabix -s1 -b2 -e2 {output.tsv}
-        )  &> {log}
+        bcftools view -v snps -m2 -M2 -g het --samples-file {input} --threads 4 {params.vcf}| bcftools norm - -d snps -Ob -o {output.vcf} --threads 4 && bcftools index -f {output.vcf} && \
+        touch -m {output.vcf}.csi && \
+        bcftools view -G {output.vcf} -Oz -o {output.sites} --threads 4 && tabix -f {output.sites} && \
+        bcftools query -f'%CHROM\t%POS\t%REF,%ALT\n' {output.sites} | bgzip -c > {output.tsv} && \
+        tabix -s1 -b2 -e2 {output.tsv} &> {log}
         """
 
 
@@ -82,12 +81,11 @@ rule subset_refpanel_by_region2:
         "../envs/pandas.yaml"
     shell:
         """
-        ( \
-            bcftools view -v snps -m2 -M2 --samples-file {input} --threads 4 {params.vcf} {wildcards.chrom}:{params.start}-{params.end}| bcftools norm - -d snps -Ob -o {output.vcf} --threads 4 && bcftools index -f {output.vcf} && \
-            touch -m {output.vcf}.csi && \
-            bcftools view -G {output.vcf} -Oz -o {output.sites} --threads 4 && tabix -f {output.sites} && \
-            bcftools query -f'%CHROM\t%POS\t%REF,%ALT\n' {output.sites} | bgzip -c > {output.tsv} && tabix -s1 -b2 -e2 {output.tsv}
-        )  &> {log}
+        bcftools view -v snps -m2 -M2 --samples-file {input} --threads 4 {params.vcf} {wildcards.chrom}:{params.start}-{params.end} | bcftools norm - -d snps -Ob -o {output.vcf} --threads 4 && bcftools index -f {output.vcf} && \
+        touch -m {output.vcf}.csi && \
+        bcftools view -G {output.vcf} -Oz -o {output.sites} --threads 4 && tabix -f {output.sites} && \
+        bcftools query -f'%CHROM\t%POS\t%REF,%ALT\n' {output.sites} | bgzip -c > {output.tsv} && \
+        tabix -s1 -b2 -e2 {output.tsv} &> {log}
         """
 
 
@@ -119,9 +117,9 @@ rule concat_refpanel_sites_by_region2:
         "../envs/pandas.yaml"
     shell:
         """
-        ( \
-            echo {input} | tr ' ' '\n' > {output.sites}.list && \
-            bcftools concat -f {output.sites}.list -Da --threads 4 -Oz -o {output.sites} && tabix -f {output.sites} && \
-            bcftools query -f'%CHROM\t%POS\t%REF,%ALT\n' {output.sites} | bgzip -c > {output.tsv} && tabix -s1 -b2 -e2 {output.tsv}
-        ) & > {log}
+        echo {input} | tr ' ' '\n' > {output.sites}.list && \
+        bcftools concat -f {output.sites}.list -Da --threads 4 -Oz -o {output.sites} && \
+        bcftools index -f {output.sites} && \
+        bcftools query -f'%CHROM\t%POS\t%REF,%ALT\n' {output.sites} | bgzip -c > {output.tsv} && \
+        tabix -s1 -b2 -e2 {output.tsv} &> {log}
         """

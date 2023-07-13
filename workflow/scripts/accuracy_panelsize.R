@@ -99,6 +99,14 @@ legend("bottomright", legend = paste0("N=", groups), lty = nd:1, bty = "n")
 legend("topleft", legend = c("QUILT2", "GLIMPSE2", "QUILT1", "GLIMPSE1"), col = mycols, pch = 1, lwd = 1.5, cex = 1.0, xjust = 0, yjust = 1, bty = "n")
 
 
-boxplot(phasing_errors[[1]], col = mycols[1:4], ylab = "PSE", main = paste("Ref Panel Size: N=", groups[1]))
+## boxplot(phasing_errors[[1]], col = mycols[1:4], ylab = "PSE %", main = paste("Ref Panel Size: N=", groups[1]))
+
+boxplot(phasing_errors[[1]], ylab = "PSE %", main = paste("Ref Panel Size: N=", groups[1]))
+nsamples <- nrow(phasing_errors[[1]])
+for(i in 1:4) {
+  vals <- phasing_errors[[1]][,i]
+  j <- jitter(rep(i, nsamples), amount=1/4)
+  points(j,  vals,  col = mycols[i],pch = 20)
+}
 
 dev.off()
