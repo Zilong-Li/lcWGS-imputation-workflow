@@ -1,12 +1,16 @@
 
 snakemake@source("common.R")
 
-## saveRDS(snakemake, snakemake@output[["rds"]])
-## q()
+# saveRDS(snakemake, snakemake@output[["rds"]])
+# q()
+# snakemake <- readRDS("/maps/projects/alab/people/rlk420/quilt2/human/HRC_CEU/quilt-rare-common/results/summary/all.accuracy.panelsize0.chr20.rds")
+# setwd("/maps/projects/alab/people/rlk420/quilt2/human/HRC_CEU/quilt-rare-common/")
+# groups = c("1")
 
 groups <- as.numeric(snakemake@config[["downsample"]])
 
 truth <- fread(snakemake@input[["truth"]], data.table = F)
+
 ds.truth <- sapply(seq(1, dim(truth)[2] - 1, 2), function(i) {
   rowSums(truth[, (i + 1):(i + 2)])
 }) # dosage matrix: nsnps x nsamples
@@ -26,6 +30,7 @@ dl.quilt1 <- lapply(snakemake@input[["regular"]], parse.imputed.gts2)
 dl.quilt2 <- lapply(snakemake@input[["zilong"]], parse.imputed.gts2)
 dl.glimpse1 <- lapply(snakemake@input[["glimpse1"]], parse.imputed.gts2)
 dl.glimpse2 <- lapply(snakemake@input[["glimpse2"]], parse.imputed.gts2)
+
 
 bins <- sort(unique(c(
   c(0, 0.01 / 100, 0.02 / 100, 0.05 / 100),

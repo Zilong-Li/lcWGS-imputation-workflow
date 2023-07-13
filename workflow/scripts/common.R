@@ -250,11 +250,22 @@ parse.quilt.gts <- function(fn) {
   return(d1)
 }
 
+## https://stackoverflow.com/questions/14984989/how-to-avoid-warning-when-introducing-nas-by-coercion
+## as.num(c("1", "2", "X"), na.strings="X")
+as.num <- function(x, na.strings = "NA") {
+        # stopifnot(is.character(x))
+        na = x %in% na.strings
+        x[na] = "0"
+        x = as.numeric(x)
+        x[na] = NA_real_
+        x
+}
+
 ## (gt0, gt1, ds) x nsamples
 parse.imputed.gts2 <- function(fn) {
   d1 <- fread(fn, data.table = F)
   id <- d1[, 1]
-  d1 <- as.matrix(sapply(d1[, -1], as.numeric))
+  d1 <- as.matrix(suppressWarnings(sapply(d1[, -1], as.numeric)))
   rownames(d1) <- id
   return(d1)
 }

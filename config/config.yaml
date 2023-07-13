@@ -17,6 +17,9 @@ chroms: ['chr20']
 #'all', 'speed', 'accuracy', 'quilt','glimpse','quilt1', 'quilt2', 'glimpse1',  'glimpse2'
 scenario: 'all'
 
+## we wanna output some extra variants in buffer for ligation
+extra_buffer_in_quilt: 100000
+
 quilt2:
   chunksize: 2000000
   nGen: 100

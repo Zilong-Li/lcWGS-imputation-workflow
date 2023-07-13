@@ -280,7 +280,7 @@ def get_regions_list_per_chrom(chrom, chunksize):
     return starts, ends
 
 
-def get_regions_list_from_glimpse_chunk(chrom):
+def get_regions_list_from_glimpse_chunk(chrom, quilt=False):
     """split chr into chunks given chunksize; return a list of '[start,end]' pairs"""
     starts, ends = [], []
     if REFPANEL[chrom].get("region"):
@@ -303,13 +303,20 @@ def get_regions_list_from_glimpse_chunk(chrom):
                 tmp = row.split("\t")
                 tmp3 = tmp[3].split(":")[1]
                 rg = tmp3.split("-")
-                starts.append(int(rg[0]))
-                ends.append(int(rg[1]))
+                if quilt:
+                    ## we wanna output some extra variants in buffer for ligation
+                    starts.append(
+                        max(int(rg[0]) - int(config["extra_buffer_in_quilt"]), 1)
+                    )
+                    ends.append(int(rg[1]) + int(config["extra_buffer_in_quilt"]))
+                else:
+                    starts.append(int(rg[0]))
+                    ends.append(int(rg[1]))
     return starts, ends
 
 
 def get_quilt_output_regular_region2(wildcards):
-    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom)
+    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom, True)
     return expand(
         rules.quilt_run_regular.output, zip, start=starts, end=ends, allow_missing=True
     )
@@ -325,7 +332,7 @@ def get_quilt_output_regular_region1(wildcards):
 
 
 def get_quilt_output_mspbwt_region2(wildcards):
-    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom)
+    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom, True)
     return expand(
         rules.quilt_run_mspbwt.output, zip, start=starts, end=ends, allow_missing=True
     )
@@ -341,7 +348,7 @@ def get_quilt_output_mspbwt_region1(wildcards):
 
 
 def get_quilt_output_zilong_region2(wildcards):
-    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom)
+    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom, True)
     return expand(
         rules.quilt_run_zilong.output, zip, start=starts, end=ends, allow_missing=True
     )
@@ -431,7 +438,7 @@ def collect_quilt_log_regular_region1(wildcards):
 
 
 def collect_quilt_log_regular_region2(wildcards):
-    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom)
+    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom, True)
     return expand(
         rules.quilt_run_regular.log, zip, start=starts, end=ends, allow_missing=True
     )
@@ -447,7 +454,7 @@ def collect_quilt_log_mspbwt_region1(wildcards):
 
 
 def collect_quilt_log_mspbwt_region2(wildcards):
-    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom)
+    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom, True)
     return expand(
         rules.quilt_run_mspbwt.log, zip, start=starts, end=ends, allow_missing=True
     )
@@ -463,7 +470,7 @@ def collect_quilt_log_zilong_region1(wildcards):
 
 
 def collect_quilt_log_zilong_region2(wildcards):
-    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom)
+    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom, True)
     return expand(
         rules.quilt_run_zilong.log, zip, start=starts, end=ends, allow_missing=True
     )
