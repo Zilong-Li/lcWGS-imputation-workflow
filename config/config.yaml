@@ -52,7 +52,19 @@ quilt1:
   impute_rare_common: 'TRUE'
   rare_af_threshold: 0.001
 
-glimpse:
+glimpse2:
+  chunksize: 2000000
+  buffer: 500000
+  bq: 20
+  mq: 20
+  burnin: 5
+  main: 15
+  pbwt-depth: 12
+  pbwt-modulo-cm: 0.1
+  ne: 100000
+
+
+glimpse1:
   chunksize: 2000000
   buffer: 500000
   bq: 20
@@ -62,7 +74,6 @@ glimpse:
   pbwt-depth: 2
   pbwt-modulo: 8
   ne: 20000
-
 
 # global programs
 time: "/usr/bin/time"

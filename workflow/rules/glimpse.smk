@@ -66,11 +66,11 @@ rule glimpse2_phase:
         time=config["time"],
         irg=get_glimpse_chunki_irg,
         org=get_glimpse_chunki_org,
-        burnin=config["glimpse"]["burnin"],
-        main=config["glimpse"]["main"],
-        pbwtL=config["glimpse"]["pbwt-depth"],
-        pbwtS=config["glimpse"]["pbwt-modulo"],
-        ne=config["glimpse"]["ne"],
+        burnin=config["glimpse2"]["burnin"],
+        main=config["glimpse2"]["main"],
+        pbwtL=config["glimpse2"]["pbwt-depth"],
+        pbwtS=config["glimpse2"]["pbwt-modulo-cm"],
+        ne=config["glimpse2"]["ne"],
     conda:
         "../envs/pandas.yaml"
     shell:
@@ -82,7 +82,7 @@ rule glimpse2_phase:
             --burnin {params.burnin} \
             --main {params.main} \
             --pbwt-depth {params.pbwtL} \
-            --pbwt-modulo {params.pbwtS} \
+            --pbwt-modulo-cm {params.pbwtS} \
             --ne {params.ne} \
             --output {output} \
         ) &> {log}
@@ -199,11 +199,11 @@ rule glimpse_phase:
         gmap=if_use_glimpse_map_in_refpanel,
         irg=get_glimpse_chunki_irg,
         org=get_glimpse_chunki_org,
-        burnin=config["glimpse"]["burnin"],
-        main=config["glimpse"]["main"],
-        pbwtL=config["glimpse"]["pbwt-depth"],
-        pbwtS=config["glimpse"]["pbwt-modulo"],
-        ne=config["glimpse"]["ne"],
+        burnin=config["glimpse1"]["burnin"],
+        main=config["glimpse1"]["main"],
+        pbwtL=config["glimpse1"]["pbwt-depth"],
+        pbwtS=config["glimpse1"]["pbwt-modulo"],
+        ne=config["glimpse1"]["ne"],
     conda:
         "../envs/pandas.yaml"
     shell:
