@@ -67,9 +67,9 @@ rule subset_refpanel_by_region2:
         prefix=lambda wildcards, output: os.path.splitext(output[0])[0],
         vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
         start=lambda wildcards: max(
-            1, int(wildcards.start) - int(config["glimpse"]["buffer"])
+            1, int(wildcards.start) - int(config["glimpse1"]["buffer"])
         ),
-        end=lambda wildcards: int(wildcards.end) + int(config["glimpse"]["buffer"]),
+        end=lambda wildcards: int(wildcards.end) + int(config["glimpse1"]["buffer"]),
     log:
         os.path.join(
             OUTDIR_PANEL,
