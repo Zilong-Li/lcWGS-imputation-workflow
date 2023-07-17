@@ -4,10 +4,9 @@ snakemake@source("common.R")
 ## saveRDS(snakemake, snakemake@output[["rds"]])
 ## q()
 
-refsize0 <- as.integer(system(paste("bcftools query -l", snakemake@params$vcf, "|", "wc", "-l"), intern = TRUE))
-groups <- as.numeric(snakemake@config[["refsize"]])
+groups <- as.numeric(snakemake@config[["refsize"]]) * 2
+refsize0 <- 2 * as.integer(system(paste("bcftools query -l", snakemake@params$vcf, "|", "wc", "-l"), intern = TRUE))
 groups[groups == 0] <- refsize0
-groups <- groups * 2
 nd <- length(groups)
 
 truth <- fread(snakemake@input[["truth"]], data.table = F)
@@ -22,7 +21,6 @@ d.af <- read.table(snakemake@input[["af"]])
 af <- as.numeric(d.af[, 2])
 names(af) <- d.af[, 1]
 rm(d.af)
-## af <- ifelse(af > 0.5,1-af,af) ## turn af into maf
 
 dl.quilt1 <- lapply(snakemake@input[["regular"]], parse.imputed.gts2)
 dl.quilt2 <- lapply(snakemake@input[["zilong"]], parse.imputed.gts2)
@@ -36,6 +34,17 @@ bins <- sort(unique(c(
   seq(0.1, 0.5, length.out = 5)
 )))
 
+if(refsize0 %/% 1e3 > 500)
+{
+  bins <- sort(unique(c(
+    c(0, 0.01, 0.02 , 0.05 ) / 1e4,
+    c(0, 0.01, 0.02 , 0.05 ) / 1e3,
+    c(0, 0.01, 0.02 , 0.05 ) / 1e2,
+    c(0, 0.01, 0.02 , 0.05 ) / 1e1,
+    c(0, 0.01, 0.02 , 0.05 ) / 1e0,
+    seq(0.1, 0.5, length.out = 5)
+  )))
+}
 
 phasing_errors <- lapply(seq(length(groups)), function(i) {
   n <- ncol(dl.quilt1[[i]])
@@ -54,11 +63,9 @@ r2_dosage_by_af <- lapply(seq(length(groups)), function(i) {
   quilt2 <- dl.quilt2[[i]][,seq(3, n, by = 3 )] # get dosage
   quilt1 <- dl.quilt1[[i]][,seq(3, n, by = 3 )] # get dosage
   glimpse2 <- dl.glimpse2[[i]][,seq(3, n, by = 3 )] # get dosage
-  gt.glimpse1 <- dl.glimpse1[[i]][,-seq(3, n, by = 3 )] # get phased gt
-  n <- ncol(gt.glimpse1)
-  glimpse1 <- gt.glimpse1[,seq(1, n, 2)] + gt.glimpse1[,seq(2,n,2)]
+  glimpse1 <- dl.glimpse1[[i]][,seq(3, n, by = 3 )] # get dosage
   d <- acc_r2_by_af(ds.truth, quilt2 , glimpse2, quilt1, glimpse1, af, bins)
-  colnames(d) <- c("bin","QUILT2", "GLIMPSE2", "QUILT1", "GLIMPSE1")
+  colnames(d) <- c("bin","nsnps","QUILT2", "GLIMPSE2", "QUILT1", "GLIMPSE1")
   d
 })
 
@@ -80,7 +87,7 @@ ymin <- min(sapply(r2_dosage_by_af, function(d) {
 
 par(mfrow = c(1, 2))
 
-plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.9 * ymin, 1.0), ylab = "Aggregated R2 within each AF bin", xlab = "Allele Frequency")
+plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.9 * ymin, 1.0), ylab = "Aggregated R2 within each MAF bin", xlab = "Minor Allele Frequency")
 nd <- length(groups)
 for (i in 1:nd) {
   d <- r2_dosage_by_af[[i]]

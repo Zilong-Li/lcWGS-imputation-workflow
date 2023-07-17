@@ -137,12 +137,6 @@ acc_phasing <- function(d0, d1, d2, d3, d4) {
 
 ## input is matrix
 r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip = FALSE, per_snp = FALSE) {
-  if (flip) {
-    w <- af > 0.5
-    af[w] <- 1 - af[w]
-    truthG[w, ] <- 2 - truthG[w, ]
-    testDS[w, ] <- 2 - testDS[w, ]
-  }
   if (!is.null(which_snps)) {
     af <- af[which_snps]
     truthG <- truthG[which_snps, ]
@@ -150,6 +144,13 @@ r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip = FAL
   }
   truthG <- as.matrix(truthG)
   testDS <- as.matrix(testDS)
+  af <- as.numeric(af)
+  if (flip) {
+    w <- af > 0.5
+    af[w] <- 1 - af[w]
+    truthG[w, ] <- 2 - truthG[w, ]
+    testDS[w, ] <- 2 - testDS[w, ]
+  }
   x <- cut(af, breaks = breaks)
   if (ncol(truthG) > 1 && per_snp) {
     # for multiple sample, calculate r2 per snp then average them
@@ -192,14 +193,14 @@ r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip = FAL
 ## }
 
 # d0:truth, d1: quilt2, d2:glimpse2, d3:quilt1, d4:glimpse1
-acc_r2_by_af <- function(d0, d1, d2, d3, d4, af, bins) {
+acc_r2_by_af <- function(d0, d1, d2, d3, d4, af, bins, flip = TRUE, per_snp = FALSE) {
   id <- intersect(intersect(intersect(intersect(rownames(d0), rownames(d1)), rownames(d2)), rownames(d3)), rownames(d4))
   id <- intersect(id, names(af))
-  res1 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d1, which_snps = id)
-  res2 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d2, which_snps = id)
-  res3 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d3, which_snps = id)
-  res4 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d4, which_snps = id)
-  as.data.frame(cbind(bin = bins[-1], quilt2 = res1[, "simple"], glimpse2 = res2[, "simple"], quilt1 = res3[, "simple"], glimpse1 = res4[, "simple"]))
+  res1 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d1, which_snps = id, flip = flip, per_snp = per_snp)
+  res2 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d2, which_snps = id, flip = flip, per_snp = per_snp)
+  res3 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d3, which_snps = id, flip = flip, per_snp = per_snp)
+  res4 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d4, which_snps = id, flip = flip, per_snp = per_snp)
+  as.data.frame(cbind(bin = bins[-1], nsnps = res1[, "n"], quilt2 = res1[, "simple"], glimpse2 = res2[, "simple"], quilt1 = res3[, "simple"], glimpse1 = res4[, "simple"]))
 }
 
 quilt_r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip = FALSE) {
@@ -271,4 +272,3 @@ parse.imputed.gts2 <- function(fn) {
 }
 
 mycols <- c(QUILT2 = "#e69f00", GLIMPSE2 = "#d55e00", QUILT1 = "#56b4e9", GLIMPSE1 = "#cc79a7")
-

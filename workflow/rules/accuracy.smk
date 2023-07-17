@@ -252,7 +252,9 @@ rule collect_glimpse_imputed_gts:
         "../envs/quilt.yaml"
     shell:
         """
-        bcftools query -f '{params.ql2}' -s {params.samples} {input} | sed -E 's/\/|\|/\\t/g' > {output}
+        bcftools query -f '{params.ql2}' -s {params.samples} {input}.bcf | sed -E 's/\/|\|/\\t/g' > {output}.ds
+        bcftools query -f '{params.ql2}' -s {params.samples} {input} | sed -E 's/\/|\|/\\t/g' > {output}.phase
+        Rscript -e "args=commandArgs(trailingOnly=TRUE);library(data.table);d1=fread(args[1],data.table=F);d2=fread(args[2],data.table=F);n=ncol(d1);c=seq(1,n,3)[-1];d1[d1[,1]%in%d2[,1], c]=d2[,c];write.table(d1,args[3],quote=F,row.names=F,col.names=F);" {output}.phase {output}.ds {output}
         """
 
 
@@ -400,6 +402,7 @@ rule plot_accuracy_depth:
     params:
         N="plot_accuracy_depth",
         chunks=lambda wildcards: REFPANEL[wildcards.chrom]["glimpse_chunk"],
+        vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
     conda:
         "../envs/quilt.yaml"
     script:

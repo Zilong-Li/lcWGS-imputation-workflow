@@ -1,13 +1,13 @@
 
 snakemake@source("common.R")
 
-# saveRDS(snakemake, snakemake@output[["rds"]])
-# q()
-# snakemake <- readRDS("/maps/projects/alab/people/rlk420/quilt2/human/HRC_CEU/quilt-rare-common/results/summary/all.accuracy.panelsize0.chr20.rds")
-# setwd("/maps/projects/alab/people/rlk420/quilt2/human/HRC_CEU/quilt-rare-common/")
-# groups = c("1")
+## saveRDS(snakemake, snakemake@output[["rds"]])
+## q()
+## snakemake <- readRDS("/maps/projects/alab/people/rlk420/quilt2/human/HRC_CEU/quilt-rare-common/results/summary/all.accuracy.panelsize0.chr20.rds")
+## setwd("/maps/projects/alab/people/rlk420/quilt2/human/HRC_CEU/quilt-rare-common/")
 
 groups <- as.numeric(snakemake@config[["downsample"]])
+refsize0 <- 2 * as.integer(system(paste("bcftools query -l", snakemake@params$vcf, "|", "wc", "-l"), intern = TRUE))
 
 truth <- fread(snakemake@input[["truth"]], data.table = F)
 
@@ -23,7 +23,6 @@ d.af <- read.table(snakemake@input[["af"]])
 af <- as.numeric(d.af[, 2])
 names(af) <- d.af[, 1]
 rm(d.af)
-## af <- ifelse(af > 0.5,1-af,af) ## turn af into maf
 
 
 dl.quilt1 <- lapply(snakemake@input[["regular"]], parse.imputed.gts2)
@@ -39,18 +38,30 @@ bins <- sort(unique(c(
   seq(0.1, 0.5, length.out = 5)
 )))
 
+if(refsize0 %/% 1e3 > 500)
+{
+  bins <- sort(unique(c(
+    c(0, 0.01, 0.02 , 0.05 ) / 1e4,
+    c(0, 0.01, 0.02 , 0.05 ) / 1e3,
+    c(0, 0.01, 0.02 , 0.05 ) / 1e2,
+    c(0, 0.01, 0.02 , 0.05 ) / 1e1,
+    c(0, 0.01, 0.02 , 0.05 ) / 1e0,
+    seq(0.1, 0.5, length.out = 5)
+  )))
+}
+
+
 r2_dosage_by_af <- lapply(seq(length(groups)), function(i) {
   n <- ncol(dl.quilt1[[i]])
   quilt2 <- dl.quilt2[[i]][,seq(3, n, by = 3 )] # get dosage
   quilt1 <- dl.quilt1[[i]][,seq(3, n, by = 3 )] # get dosage
   glimpse2 <- dl.glimpse2[[i]][,seq(3, n, by = 3 )] # get dosage
-  gt.glimpse1 <- dl.glimpse1[[i]][,-seq(3, n, by = 3 )] # get phased gt
-  n <- ncol(gt.glimpse1)
-  glimpse1 <- gt.glimpse1[,seq(1, n, 2)] + gt.glimpse1[,seq(2,n,2)]
+  glimpse1 <- dl.glimpse1[[i]][,seq(3, n, by = 3 )] # get dosage
   d <- acc_r2_by_af(ds.truth, quilt2 , glimpse2, quilt1, glimpse1, af, bins)
-  colnames(d) <- c("bin","QUILT2", "GLIMPSE2", "QUILT1", "GLIMPSE1")
+  colnames(d) <- c("bin","nsnps","QUILT2", "GLIMPSE2", "QUILT1", "GLIMPSE1")
   d
 })
+
 
 names(r2_dosage_by_af) <- paste0(as.character(groups), "x")
 
@@ -70,6 +81,7 @@ ymin <- min(sapply(r2_dosage_by_af, function(d) {
 
 
 par(mfrow = c(1, 2))
+
 plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.9 * ymin, 1.0), ylab = "Aggregated R2 within each AF bin", xlab = "Allele Frequency")
 nd <- length(groups)
 
@@ -85,11 +97,12 @@ for (i in 1:nd) {
   y <- rmna(d$GLIMPSE1)
   lines(x, y, type = "l", lwd = i / nd * 2.5, pch = 1, col = mycols["GLIMPSE1"])
 }
+
 axis(side = 1, at = x, labels = labels)
 axis(side = 2, at = seq(0, 1, 0.2))
 legend("bottomright", legend = paste0(groups, "x"), lwd = (1:nd) * 2.5 / nd, bty = "n")
 
-plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.90, 1.0), ylab = "Aggregated R2 within each AF bin", xlab = "Allele Frequency")
+plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.90, 1.0), ylab = "Aggregated R2 within each MAF bin", xlab = "Minor Allele Frequency")
 for (i in 1:nd) {
   d <- r2_dosage_by_af[[i]]
   y <- rmna(d$QUILT2)
@@ -122,11 +135,9 @@ r2_dosage_by_af_chunk <- lapply(chunk_af, function(af) {
     quilt2 <- dl.quilt2[[i]][,seq(3, n, by = 3 )] # get dosage
     quilt1 <- dl.quilt1[[i]][,seq(3, n, by = 3 )] # get dosage
     glimpse2 <- dl.glimpse2[[i]][,seq(3, n, by = 3 )] # get dosage
-    gt.glimpse1 <- dl.glimpse1[[i]][,-seq(3, n, by = 3 )] # get phased gt
-    n <- ncol(gt.glimpse1)
-    glimpse1 <- gt.glimpse1[,seq(1, n, 2)] + gt.glimpse1[,seq(2,n,2)]
+    glimpse1 <- dl.glimpse1[[i]][,seq(3, n, by = 3 )] # get dosage
     d <- acc_r2_by_af(ds.truth, quilt2 , glimpse2, quilt1, glimpse1, af, bins)
-    colnames(d) <- c("bin","QUILT2", "GLIMPSE2", "QUILT1", "GLIMPSE1")
+    colnames(d) <- c("bin","nsnps","QUILT2", "GLIMPSE2", "QUILT1", "GLIMPSE1")
     d
   })
   names(all) <- paste0(as.character(groups), "x")
@@ -137,7 +148,12 @@ for(c in 1:length(chunk.names)) {
   if(c %% 2 == 1) par(mfrow = c(1, 2))
   title <- paste(names(chunk_af)[c], "#", length(chunk_af[[c]]))
   acc_chunk <- r2_dosage_by_af_chunk[[c]]
-  plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0, 1.0), ylab = "Aggregated R2 within each AF bin", xlab = "Allele Frequency",main = title)
+  a1 <- acc_chunk[[1]]
+  x <- a1$bin[!sapply(a1[, 2], is.na)] # remove AF bin with NULL results
+  x <- log10(as.numeric(x))
+  labels <- 100 * bins[-1]
+  labels <- labels[!sapply(a1[, 2], is.na)]
+  plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0, 1.0), ylab = "Aggregated R2 within each MAF bin", xlab = "Minor Allele Frequency",main = title)
   for (i in 1:nd) {
     d <- acc_chunk[[i]]
     y <- rmna(d$QUILT2)
