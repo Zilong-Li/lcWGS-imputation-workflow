@@ -160,8 +160,8 @@ rule glimpse_prepare_glvcf:
         N="glimpse_prepare_glvcf",
         time=config["time"],
         fasta=config["genome"]["fasta"],
-        bq=config["glimpse"]["bq"],
-        mq=config["glimpse"]["mq"],
+        bq=config["glimpse1"]["bq"],
+        mq=config["glimpse1"]["mq"],
     conda:
         "../envs/pandas.yaml"
     shell:
