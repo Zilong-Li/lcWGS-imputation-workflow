@@ -23,9 +23,8 @@ extra_buffer_in_quilt: 100000
 quilt2:
   chunksize: 2000000
   nGen: 100
-  buffer: 500000
+  buffer: 400000
   nGibbsSamples: 7
-  n_burn_in_seek_its: 2
   small_ref_panel_block_gibbs_iterations: c(3,6,9)
   small_ref_panel_gibbs_iterations: 20
   lowram: 'TRUE'
@@ -41,9 +40,8 @@ quilt2:
 quilt1:
   chunksize: 2000000
   nGen: 100
-  buffer: 500000
+  buffer: 400000
   nGibbsSamples: 7
-  n_burn_in_seek_its: 2
   small_ref_panel_block_gibbs_iterations: c(3,6,9)
   small_ref_panel_gibbs_iterations: 20
   lowram: 'TRUE'

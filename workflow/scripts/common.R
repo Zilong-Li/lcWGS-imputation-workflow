@@ -113,8 +113,8 @@ modified_calculate_pse <- function(
 acc_phasing_single_matrix <- function(test,truth, id) {
   n <- ncol(truth)/2
   a <- sapply(1:n,function(i) {
-    t1 <- (as.matrix(test[id,1:2+(i-1)*2]))
-    t0 <- (as.matrix(truth[id,1:2+(i-1)*2]))
+    t1 <- as.matrix(test[id,1:2+(i-1)*2])
+    t0 <- as.matrix(truth[id,1:2+(i-1)*2])
     values <- modified_calculate_pse(t1, t0, id)$values
     pse <- values["phase_errors_def1"] / values["phase_sites_def1"]
     pse <- round(100 * pse, 1)

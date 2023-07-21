@@ -47,20 +47,22 @@ def get_all_results():
         return (
             get_quilt_regular_accuracy(),
             get_speed_quilt_regular_plots(),
-            get_quilt_zilong_accuracy(),
-            get_speed_quilt_zilong_plots(),
+            get_quilt_mspbwt_accuracy(),
+            get_speed_quilt_mspbwt_plots(),
         )
-    elif RUN == "glimpse":
+    elif RUN == "fast":
         return (
-            get_glimpse_accuracy(),
-            get_speed_glimpse_plots(),
+            get_quilt_regular_accuracy(),
+            get_speed_quilt_regular_plots(),
+            get_quilt_mspbwt_accuracy(),
+            get_speed_quilt_mspbwt_plots(),
             get_glimpse2_accuracy(),
             get_speed_glimpse2_plots(),
         )
     elif RUN == "quilt1":
         return get_quilt_regular_accuracy(), get_speed_quilt_regular_plots()
     elif RUN == "quilt2":
-        return get_quilt_zilong_accuracy(), get_speed_quilt_zilong_plots()
+        return get_quilt_mspbwt_accuracy(), get_speed_quilt_mspbwt_plots()
     elif RUN == "glimpse1":
         return get_glimpse_accuracy(), get_speed_glimpse_plots()
     elif RUN == "glimpse2":
