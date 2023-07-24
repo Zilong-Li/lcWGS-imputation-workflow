@@ -28,9 +28,9 @@ dl.glimpse1 <- lapply(snakemake@input[["glimpse1"]], parse.imputed.gts2)
 dl.glimpse2 <- lapply(snakemake@input[["glimpse2"]], parse.imputed.gts2)
 
 bins <- sort(unique(c(
-  c(0, 0.01 / 100, 0.02 / 100, 0.05 / 100),
-  c(0, 0.01 / 10, 0.02 / 10, 0.05 / 10),
-  c(0, 0.01 / 1, 0.02 / 1, 0.05 / 1),
+  c(0, 0.01, 0.02 , 0.05 ) / 1e2,
+  c(0, 0.01, 0.02 , 0.05 ) / 1e1,
+  c(0, 0.01, 0.02 , 0.05 ) / 1e0,
   seq(0.1, 0.5, length.out = 5)
 )))
 

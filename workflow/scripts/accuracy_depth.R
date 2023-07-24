@@ -32,9 +32,9 @@ dl.glimpse2 <- lapply(snakemake@input[["glimpse2"]], parse.imputed.gts2)
 
 
 bins <- sort(unique(c(
-  c(0, 0.01 / 100, 0.02 / 100, 0.05 / 100),
-  c(0, 0.01 / 10, 0.02 / 10, 0.05 / 10),
-  c(0, 0.01 / 1, 0.02 / 1, 0.05 / 1),
+  c(0, 0.01, 0.02 , 0.05 ) / 1e2,
+  c(0, 0.01, 0.02 , 0.05 ) / 1e1,
+  c(0, 0.01, 0.02 , 0.05 ) / 1e0,
   seq(0.1, 0.5, length.out = 5)
 )))
 
@@ -82,7 +82,7 @@ ymin <- min(sapply(r2_dosage_by_af, function(d) {
 
 par(mfrow = c(1, 2))
 
-plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.9 * ymin, 1.0), ylab = "Aggregated R2 within each AF bin", xlab = "Allele Frequency")
+plot(1, col = "transparent", axes = F, xlim = c(min(x), max(x)), ylim = c(0.9 * ymin, 1.0), ylab = "Aggregated R2 within each MAF bin", xlab = "Minor Allele Frequency")
 nd <- length(groups)
 
 for (i in 1:nd) {
