@@ -19,6 +19,7 @@ REFPANEL = (
 OUTDIR = "results"
 OUTDIR_DOWNSAMPLE = os.path.join(OUTDIR, "downsample", "")
 OUTDIR_PANEL = os.path.join(OUTDIR, "refpanels", "")
+OUTDIR_TRUTH = os.path.join(OUTDIR, "truth", "")
 OUTDIR_QUILT1 = os.path.join(OUTDIR, "quilt1", "")
 OUTDIR_QUILT2 = os.path.join(OUTDIR, "quilt2", "")
 OUTDIR_GLIMPSE = os.path.join(OUTDIR, "glimpse1", "")
