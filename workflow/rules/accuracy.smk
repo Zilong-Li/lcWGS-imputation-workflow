@@ -125,14 +125,14 @@ rule plot_quilt_regular:
         ),
     output:
         pdf=os.path.join(
-            OUTDIR_SUMMARY, "quilt.accuracy.regular.panelsize{size}.{chrom}.pdf"
+            OUTDIR_SUMMARY, "quilt.accuracy.regular.panelsize{size}.{chrom}.rds.pdf"
         ),
         rds=os.path.join(
             OUTDIR_SUMMARY, "quilt.accuracy.regular.panelsize{size}.{chrom}.rds"
         ),
     log:
         os.path.join(
-            OUTDIR_SUMMARY, "quilt.accuracy.regular.panelsize{size}.{chrom}.pdf.llog"
+            OUTDIR_SUMMARY, "quilt.accuracy.regular.panelsize{size}.{chrom}.rds.llog"
         ),
     params:
         N="plot_quilt_regular",
@@ -157,7 +157,7 @@ rule plot_quilt_zilong:
         N="plot_quilt_zilong",
     output:
         pdf=os.path.join(
-            OUTDIR_SUMMARY, "quilt.accuracy.zilong.panelsize{size}.{chrom}.pdf"
+            OUTDIR_SUMMARY, "quilt.accuracy.zilong.panelsize{size}.{chrom}.rds.pdf"
         ),
         rds=os.path.join(
             OUTDIR_SUMMARY, "quilt.accuracy.zilong.panelsize{size}.{chrom}.rds"
@@ -185,7 +185,7 @@ rule plot_quilt_mspbwt:
         N="plot_quilt_mspbwt",
     output:
         pdf=os.path.join(
-            OUTDIR_SUMMARY, "quilt.accuracy.mspbwt.panelsize{size}.{chrom}.pdf"
+            OUTDIR_SUMMARY, "quilt.accuracy.mspbwt.panelsize{size}.{chrom}.rds.pdf"
         ),
         rds=os.path.join(
             OUTDIR_SUMMARY, "quilt.accuracy.mspbwt.panelsize{size}.{chrom}.rds"
@@ -255,6 +255,7 @@ rule collect_glimpse_imputed_gts:
         bcftools query -f '{params.ql2}' -s {params.samples} {input}.bcf | sed -E 's/\/|\|/\\t/g' > {output}.ds
         bcftools query -f '{params.ql2}' -s {params.samples} {input} | sed -E 's/\/|\|/\\t/g' > {output}.phase
         Rscript -e "args=commandArgs(trailingOnly=TRUE);library(data.table);d1=fread(args[1],data.table=F);d2=fread(args[2],data.table=F);n=ncol(d1);c=seq(1,n,3)[-1];d1[d1[,1]%in%d2[,1], c]=d2[,c];write.table(d1,args[3],quote=F,row.names=F,col.names=F);" {output}.phase {output}.ds {output}
+        rm -f {output}.ds {output}.phase
         """
 
 
@@ -295,7 +296,7 @@ rule plot_glimpse2_accuracy:
         N="plot_glimpse_accuracy",
     output:
         pdf=os.path.join(
-            OUTDIR_SUMMARY, "glimpse2.accuracy.panelsize{size}.{chrom}.pdf"
+            OUTDIR_SUMMARY, "glimpse2.accuracy.panelsize{size}.{chrom}.rds.pdf"
         ),
         rds=os.path.join(
             OUTDIR_SUMMARY, "glimpse2.accuracy.panelsize{size}.{chrom}.rds"
@@ -322,7 +323,9 @@ rule plot_glimpse_accuracy:
     params:
         N="plot_glimpse_accuracy",
     output:
-        pdf=os.path.join(OUTDIR_SUMMARY, "glimpse.accuracy.panelsize{size}.{chrom}.pdf"),
+        pdf=os.path.join(
+            OUTDIR_SUMMARY, "glimpse.accuracy.panelsize{size}.{chrom}.rds.pdf"
+        ),
         rds=os.path.join(OUTDIR_SUMMARY, "glimpse.accuracy.panelsize{size}.{chrom}.rds"),
     log:
         os.path.join(
