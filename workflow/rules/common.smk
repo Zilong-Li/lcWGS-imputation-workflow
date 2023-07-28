@@ -298,7 +298,7 @@ def get_regions_list_from_glimpse_chunk(chrom, quilt=False):
             fn = REFPANEL[chrom].get("glimpse_chunk")
         elif not os.path.isfile(fn):
             os.system(
-                f"GLIMPSE_chunk --input {REFPANEL[chrom]['vcf']} --region {chrom} --window-size {config['glimpse']['chunksize']} --buffer-size {config['glimpse']['buffer']} --output {fn} "
+                f"GLIMPSE_chunk --input {REFPANEL[chrom]['vcf']} --region {chrom} --window-size {config['glimpse1']['chunksize']} --buffer-size {config['glimpse1']['buffer']} --output {fn} "
             )
         with open(fn) as f:
             for row in f:
@@ -381,7 +381,7 @@ def get_glimpse_chunks(wildcards):
             fn = REFPANEL[wildcards.chrom].get("glimpse_chunk")
         elif not os.path.isfile(fn):
             os.system(
-                f"GLIMPSE_chunk --input {REFPANEL[wildcards.chrom]['vcf']} --region {wildcards.chrom} --window-size {config['glimpse']['chunksize']} --buffer-size {config['glimpse']['buffer']} --output {fn} "
+                f"GLIMPSE_chunk --input {REFPANEL[wildcards.chrom]['vcf']} --region {wildcards.chrom} --window-size {config['glimpse1']['chunksize']} --buffer-size {config['glimpse1']['buffer']} --output {fn} "
             )
         with open(fn) as f:
             for row in f:
