@@ -21,6 +21,7 @@ d.af <- read.table(snakemake@input[["af"]])
 af <- as.numeric(d.af[, 2])
 names(af) <- d.af[, 1]
 rm(d.af)
+af <- af[!is.na(af)]
 
 dl.quilt1 <- lapply(snakemake@input[["regular"]], parse.imputed.gts2)
 dl.quilt2 <- lapply(snakemake@input[["zilong"]], parse.imputed.gts2)
@@ -46,15 +47,30 @@ if(refsize0 %/% 1e3 > 500)
   )))
 }
 
+if(refsize0 %/% 1e3 < 10)
+{
+  bins <- sort(unique(c(
+    c(0, 0.01, 0.02 , 0.05 ) / 1e1,
+    c(0, 0.01, 0.02 , 0.05 ) / 1e0,
+    seq(0.1, 0.5, length.out = 5)
+  )))
+}
+
 phasing_errors <- lapply(seq(length(groups)), function(i) {
   n <- ncol(dl.quilt1[[i]])
   quilt2 <- dl.quilt2[[i]][,-seq(3, n, by = 3 )] # get phased genotypes
   quilt1 <- dl.quilt1[[i]][,-seq(3, n, by = 3 )] # get phased genotypes
   glimpse2 <- dl.glimpse2[[i]][,-seq(3, n, by = 3 )] # get phased genotypes
   glimpse1 <- dl.glimpse1[[i]][,-seq(3, n, by = 3 )] # get phased genotypes
-  d <- acc_phasing(truth, quilt2 , glimpse2, quilt1, glimpse1)
-  colnames(d) <- c("QUILT2", "GLIMPSE2", "QUILT1", "GLIMPSE1")
-  d
+  ll <- acc_phasing(truth, quilt2 , glimpse2, quilt1, glimpse1)
+  ## names(ll) <- c("QUILT2", "GLIMPSE2", "QUILT1", "GLIMPSE1")
+  pse <- lapply(ll, function(ls) {
+    lapply(ls, "[[", "pse")
+  })
+  sites <- lapply(ll, function(ls) {
+    lapply(ls, "[[", "sites")
+  })
+  list(pse = pse, sites = sites)
 })
 
 

@@ -23,6 +23,7 @@ d.af <- read.table(snakemake@input[["af"]])
 af <- as.numeric(d.af[, 2])
 names(af) <- d.af[, 1]
 rm(d.af)
+af <- af[!is.na(af)]
 
 
 dl.quilt1 <- lapply(snakemake@input[["regular"]], parse.imputed.gts2)
@@ -44,6 +45,15 @@ if(refsize0 %/% 1e3 > 500)
     c(0, 0.01, 0.02 , 0.05 ) / 1e4,
     c(0, 0.01, 0.02 , 0.05 ) / 1e3,
     c(0, 0.01, 0.02 , 0.05 ) / 1e2,
+    c(0, 0.01, 0.02 , 0.05 ) / 1e1,
+    c(0, 0.01, 0.02 , 0.05 ) / 1e0,
+    seq(0.1, 0.5, length.out = 5)
+  )))
+}
+
+if(refsize0 %/% 1e3 < 10)
+{
+  bins <- sort(unique(c(
     c(0, 0.01, 0.02 , 0.05 ) / 1e1,
     c(0, 0.01, 0.02 , 0.05 ) / 1e0,
     seq(0.1, 0.5, length.out = 5)

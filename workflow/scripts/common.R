@@ -19,6 +19,7 @@ modified_calculate_pse <- function(
       rowSums(is.na(truth)) == 0
   truth <- truth[which_sites, ]
   test <- test[which_sites, ]
+  snps <- which_snps[which_sites,]
   if (nrow(test) == 0) {
     return(NA)
   }
@@ -48,6 +49,7 @@ modified_calculate_pse <- function(
     if (length(to_remove) > 0) {
       test <- test[-to_remove, ]
       truth <- truth[-to_remove, ]
+      snps <- snps[-to_remove]
     }
     ##
     if (i_option == 1) {
@@ -58,6 +60,7 @@ modified_calculate_pse <- function(
       }
       ## calculate number of differences
       w <- rowSums(test) == 1
+      snps <- snps[w]
       if (sum(w) == 0) {
         print("Test has no hets! possibly an error or homo over region, possibly no record dosages turned on in impute_all")
         switches1 <- cbind(i1 = NA, i2 = NA, l1 = NA, l2 = NA)
@@ -97,6 +100,7 @@ modified_calculate_pse <- function(
   return(
     list(
       values = c(
+        het_sites = snps,
         phase_errors_def1 = phase_errors_def1,
         phase_sites_def1 = phase_sites_def1,
         phase_errors_def2 = phase_errors_def2,
@@ -112,14 +116,15 @@ modified_calculate_pse <- function(
 
 acc_phasing_single_matrix <- function(test,truth, id) {
   n <- ncol(truth)/2
-  a <- sapply(1:n,function(i) {
+  a <- lapply(1:n,function(i) {
     t1 <- as.matrix(test[id,1:2+(i-1)*2])
     t0 <- as.matrix(truth[id,1:2+(i-1)*2])
     values <- modified_calculate_pse(t1, t0, id)$values
+    sites <- values["het_sites"]
     pse <- values["phase_errors_def1"] / values["phase_sites_def1"]
     pse <- round(100 * pse, 1)
     disc <- round(100 * values["disc_errors"] / values["dist_n"], 1)
-    return(pse)
+    list(pse = pse, sites = sites)
   })
   a
 }
@@ -131,7 +136,7 @@ acc_phasing <- function(d0, d1, d2, d3, d4) {
   glimpse2 <- acc_phasing_single_matrix(d2, d0, id)
   quilt1 <- acc_phasing_single_matrix(d3, d0, id)
   glimpse1 <- acc_phasing_single_matrix(d4, d0, id)
-  res <- data.frame(quilt2, glimpse2, quilt1, glimpse1 )
+  res <- list(QUILT2 = quilt2, GLIMPSE2 = glimpse2, QUILT1 = quilt1, GLIMPSE1 = glimpse1)
   res
 }
 
@@ -231,6 +236,16 @@ quilt_r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip
     a
   }))
   return(cors_per_af)
+}
+
+gettimes <- function(ss) {
+  sapply(strsplit(ss, ":"), function(s) {
+    s <- as.numeric(s)
+    n <- length(s)
+    sum(sapply(1:n, function(i) {
+      s[i] * 60^(n - i)
+    }))
+  })
 }
 
 rmnull <- function(l) {
