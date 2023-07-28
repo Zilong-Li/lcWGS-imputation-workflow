@@ -1,8 +1,11 @@
-
-snakemake@source("common.R")
-
 ## saveRDS(snakemake, snakemake@output[["rds"]])
 ## q()
+
+## curdir <- "/maps/projects/alab/people/rlk420/quilt2/human/Topmed_1KGP_CEU/test"
+## setwd(curdir)
+## snakemake <- readRDS("results/summary/all.accuracy.down0.1x.chr20.rds")
+
+snakemake@source("common.R")
 
 groups <- as.numeric(snakemake@config[["refsize"]]) * 2
 refsize0 <- 2 * as.integer(system(paste("bcftools query -l", snakemake@params$vcf, "|", "wc", "-l"), intern = TRUE))
@@ -17,7 +20,7 @@ rownames(ds.truth) <- truth[,1]
 truth <- truth[,-1] ## remove first id column
 rownames(truth) <- rownames(ds.truth)
 
-d.af <- read.table(snakemake@input[["af"]])
+d.af <- fread(snakemake@input[["af"]], data.table = F)
 af <- as.numeric(d.af[, 2])
 names(af) <- d.af[, 1]
 rm(d.af)
@@ -88,6 +91,12 @@ r2_dosage_by_af <- lapply(seq(length(groups)), function(i) {
 names(r2_dosage_by_af) <- paste0("refsize", as.character(groups))
 
 saveRDS(list(r2_dosage_by_af, phasing_errors), snakemake@output[["rds"]])
+
+## discard sites and re-assign
+phasing_errors <- lapply(phasing_errors, function(out) {
+  sapply(out[["pse"]], as.numeric)
+})
+
 
 pdf(paste0(snakemake@output[["rds"]], ".pdf"), w = 12, h = 6)
 

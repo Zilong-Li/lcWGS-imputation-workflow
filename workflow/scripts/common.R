@@ -19,7 +19,7 @@ modified_calculate_pse <- function(
       rowSums(is.na(truth)) == 0
   truth <- truth[which_sites, ]
   test <- test[which_sites, ]
-  snps <- which_snps[which_sites,]
+  snps <- which_snps[which_sites]
   if (nrow(test) == 0) {
     return(NA)
   }
@@ -100,7 +100,6 @@ modified_calculate_pse <- function(
   return(
     list(
       values = c(
-        het_sites = snps,
         phase_errors_def1 = phase_errors_def1,
         phase_sites_def1 = phase_sites_def1,
         phase_errors_def2 = phase_errors_def2,
@@ -108,6 +107,7 @@ modified_calculate_pse <- function(
         disc_errors = disc,
         dist_n = nrow(test)
       ),
+      sites = snps,
       switches1 = NULL
     )
   )
@@ -119,15 +119,17 @@ acc_phasing_single_matrix <- function(test,truth, id) {
   a <- lapply(1:n,function(i) {
     t1 <- as.matrix(test[id,1:2+(i-1)*2])
     t0 <- as.matrix(truth[id,1:2+(i-1)*2])
-    values <- modified_calculate_pse(t1, t0, id)$values
-    sites <- values["het_sites"]
+    out <- modified_calculate_pse(t1, t0, id)
+    values <- out$values
     pse <- values["phase_errors_def1"] / values["phase_sites_def1"]
     pse <- round(100 * pse, 1)
     disc <- round(100 * values["disc_errors"] / values["dist_n"], 1)
+    sites <- out$sites
     list(pse = pse, sites = sites)
   })
   a
 }
+
 
 # d0:truth, d1: quilt2, d2:glimpse2, d3:quilt1, d4:glimpse1
 acc_phasing <- function(d0, d1, d2, d3, d4) {

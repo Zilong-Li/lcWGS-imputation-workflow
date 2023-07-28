@@ -19,7 +19,7 @@ truth <- truth[,-1] ## remove first id column
 rownames(truth) <- rownames(ds.truth)
 
 
-d.af <- read.table(snakemake@input[["af"]])
+d.af <- fread(snakemake@input[["af"]], data.table = F)
 af <- as.numeric(d.af[, 2])
 names(af) <- d.af[, 1]
 rm(d.af)

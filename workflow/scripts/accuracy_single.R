@@ -14,18 +14,24 @@ acc_r2_by_af <- function(d0, d1, af, bins) {
 
 groups <- as.numeric(snakemake@config[["downsample"]])
 
-df.truth <- read.table(snakemake@input[["truth"]])
-df.truth <- sapply(seq(1, dim(df.truth)[2] - 1, 2), function(i) {
-  rowSums(df.truth[, (i + 1):(i + 2)])
-}) # matrix: nsnps x nsamples
-rownames(df.truth) <- read.table(snakemake@input[["truth"]])[,1]
-af <- as.numeric(read.table(snakemake@input[["af"]])[, 2])
-names(af) <- read.table(snakemake@input[["af"]])[, 1]
+truth <- fread(snakemake@input[["truth"]], data.table = F)
+df.truth <- sapply(seq(1, dim(truth)[2] - 1, 2), function(i) {
+  rowSums(truth[, (i + 1):(i + 2)])
+}) # dosage matrix: nsnps x nsamples
+rownames(df.truth) <- truth[,1]
+truth <- truth[,-1] ## remove first id column
+rownames(truth) <- rownames(df.truth)
+
+d.af <- fread(snakemake@input[["af"]], data.table = F)
+af <- as.numeric(d.af[, 2])
+names(af) <- d.af[, 1]
+rm(d.af)
+af <- af[!is.na(af)]
 
 ## SNPs with (1-af) > 0.0005 & (1-af) < 0.001 are all imputed hom ALT and truth hom ALT. but those are stupidly easy to impute and don’t tell you anything
 ## af <- ifelse(af>0.5, 1-af, af)
 
-dl.single <- lapply(snakemake@input[["single"]], parse.quilt.gts)
+dl.single <- lapply(snakemake@input[["single"]], parse.imputed.gts2)
 
 bins <- sort(unique(c(
   c(0, 0.01 / 100, 0.02 / 100, 0.05 / 100),
