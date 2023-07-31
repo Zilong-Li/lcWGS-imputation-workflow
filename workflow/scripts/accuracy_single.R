@@ -1,14 +1,9 @@
 
 snakemake@source("common.R")
 
-acc_r2_all <- function(d0, d1) {
-  id <- intersect(rownames(d0), rownames(d1))
-  y1 <- cor(as.vector(d0[id,]), as.vector(d1[id,]), use = "pairwise.complete")**2
-}
-
 acc_r2_by_af <- function(d0, d1, af, bins) {
-  id <- intersect(rownames(d0), rownames(d1))
-  res <- r2_by_freq(breaks = bins, af[id], truthG = d0[id,], testDS = d1[id,], flip = TRUE)
+  id <- intersect(intersect(rownames(d0), rownames(d1)), names(af))
+  res <- r2_by_freq(bins, af, d0, d1, which_snps = id, flip = TRUE)
   as.data.frame(cbind(bin = bins[-1], single = res[, "simple"], orphan = res[, "simple"]))
 }
 
@@ -50,8 +45,8 @@ phasing_errors <- lapply(seq(length(groups)), function(i) {
 
 accuracy_by_af <- lapply(1:length(groups), function(i) {
   n <- ncol(dl.single[[i]])
-  dl.single[[i]] <- dl.single[[i]][,seq(3, n, by = 3 )] # get dosages
-  acc_r2_by_af(df.truth, dl.single[[i]], af, bins)
+  single <- dl.single[[i]][,seq(3, n, by = 3 )] # get dosages
+  acc_r2_by_af(df.truth, single, af, bins)
 })
 
 saveRDS(list(accuracy_by_af,phasing_errors), snakemake@output[["rds"]])
@@ -62,11 +57,17 @@ mycols <- wong[1:4]
 pdf(snakemake@output[["pdf"]], w = 12, h = 6)
 par(mfrow = c(1, 2))
 
-phasing_errors <- matrix(sapply(phasing_errors, function(ls) {
+pse <- matrix(sapply(phasing_errors, function(ls) {
   as.numeric(sapply(ls, "[[", "pse"))
 }))
 
-boxplot(phasing_errors, ylab = "PSE %", main = paste("Ref Panel Size: N=", snakemake@params[["N"]]))
+boxplot(pse, ylab = "PSE %", main = paste("Ref Panel Size: N=", snakemake@params[["N"]]))
+nsamples <- nrow(pse)
+for(i in 1:ncol(pse)) {
+  vals <- pse[,i]
+  j <- jitter(rep(i, nsamples), amount=1/4)
+  points(j,  vals,  col = mycols[i],pch = 20)
+}
 
 a1 <- accuracy_by_af[[1]]
 x <- a1$bin[!sapply(a1[, 2], is.na)] # remove AF bin with NA results
