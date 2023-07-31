@@ -60,7 +60,6 @@ modified_calculate_pse <- function(
       }
       ## calculate number of differences
       w <- rowSums(test) == 1
-      snps <- snps[w]
       if (sum(w) == 0) {
         print("Test has no hets! possibly an error or homo over region, possibly no record dosages turned on in impute_all")
         switches1 <- cbind(i1 = NA, i2 = NA, l1 = NA, l2 = NA)
@@ -68,6 +67,7 @@ modified_calculate_pse <- function(
         phase_sites_def1 <- 0
       } else {
         y <- diff(abs(test[w, 1] - truth[w, 1])) != 0
+        snps <- snps[y]
         phase_errors_def1 <- sum(y)
         phase_sites_def1 <- sum(w) - 1
         ## we need rownames(test) <- 1:nrow(test) beforehand
