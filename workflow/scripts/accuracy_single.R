@@ -41,6 +41,7 @@ bins <- sort(unique(c(
 )))
 
 phasing_errors <- lapply(seq(length(groups)), function(i) {
+  n <- ncol(dl.single[[i]])
   id <- intersect(rownames(truth), rownames(dl.single[[i]]))
   single <- dl.single[[i]][,-seq(3, n, by = 3 )] # get phased genotypes
   ll <- acc_phasing_single_matrix(truth, single, id)
@@ -48,6 +49,7 @@ phasing_errors <- lapply(seq(length(groups)), function(i) {
 })
 
 accuracy_by_af <- lapply(1:length(groups), function(i) {
+  n <- ncol(dl.single[[i]])
   dl.single[[i]] <- dl.single[[i]][,seq(3, n, by = 3 )] # get dosages
   acc_r2_by_af(df.truth, dl.single[[i]], af, bins)
 })
