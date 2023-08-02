@@ -61,7 +61,7 @@ pse <- matrix(sapply(phasing_errors, function(ls) {
   as.numeric(sapply(ls, "[[", "pse"))
 }))
 
-boxplot(pse, ylab = "PSE %", main = paste("Ref Panel Size: N=", snakemake@params[["N"]]))
+boxplot(pse, ylab = "PSE %", main = paste("rule=", snakemake@params[["N"]]))
 nsamples <- nrow(pse)
 for(i in 1:ncol(pse)) {
   vals <- pse[,i]

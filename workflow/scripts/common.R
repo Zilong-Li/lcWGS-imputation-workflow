@@ -122,7 +122,7 @@ acc_phasing_single_matrix <- function(test,truth, id) {
     out <- modified_calculate_pse(t1, t0, id)
     values <- out$values
     pse <- values["phase_errors_def1"] / values["phase_sites_def1"]
-    pse <- round(100 * pse, 1)
+    pse <- round(100 * pse, 3)
     disc <- round(100 * values["disc_errors"] / values["dist_n"], 1)
     sites <- out$sites
     list(pse = pse, sites = sites)
