@@ -1,11 +1,12 @@
 
 rule subset_sample_list:
-    """put sample to be used in a file in case of arguments too long"""
+    """put sample to keep in a file in case of arguments too long"""
     output:
         samples=temp(os.path.join(OUTDIR_PANEL, "{chrom}.size{size}.kept.samples")),
     params:
         N="subset_sample_list",
         samples=SAMPLES.keys(),
+        exclude=if_exclude_samples_in_refpanel,
         vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
     log:
         os.path.join(OUTDIR_PANEL, "{chrom}.size{size}.kept.samples.llog"),

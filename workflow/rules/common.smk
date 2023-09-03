@@ -238,6 +238,12 @@ def get_glimpse_results():
     )
 
 
+def if_exclude_samples_in_refpanel(wildcards):
+    if REFPANEL[wildcards.chrom].get("exclude_samples"):
+        return REFPANEL[wildcards.chrom]["exclude_samples"]
+    else:
+        return "false"
+
 def if_use_af_in_refpanel(wildcards):
     if REFPANEL[wildcards.chrom].get("af"):
         # varify af file. 5 columns: chr pos ref alt af
