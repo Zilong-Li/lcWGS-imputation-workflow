@@ -410,3 +410,65 @@ rule plot_accuracy_depth:
         "../envs/quilt.yaml"
     script:
         "../scripts/accuracy_depth.R"
+
+rule plot_accuracy_v2:
+    input:
+        glimpse2=expand(
+            rules.glimpse2_ligate.output.vcf,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+        zilong=expand(
+            rules.quilt_ligate_mspbwt.output.vcf,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+    output:
+        rds=os.path.join(OUTDIR_SUMMARY, "all.accuracy.v2.panelsize{size}.{chrom}.rds"),
+    log:
+        os.path.join(OUTDIR_SUMMARY, "all.accuracy.v2.panelsize{size}.{chrom}.rds.llog"),
+    params:
+        samples=",".join(SAMPLES.keys()),
+        vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
+        truth=lambda wildcards: REFPANEL[wildcards.chrom]["truth"],
+    conda:
+        "../envs/quilt.yaml"
+    script:
+        "../scripts/accuracy_version2.R"
+
+rule plot_accuracy_f1:
+    input:
+        glimpse1=expand(
+            rules.glimpse_ligate.output.vcf,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+        glimpse2=expand(
+            rules.glimpse2_ligate.output.vcf,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+        regular=expand(
+            rules.quilt_ligate_regular.output.vcf,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+        zilong=expand(
+            rules.quilt_ligate_mspbwt.output.vcf,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+    output:
+        rds=os.path.join(OUTDIR_SUMMARY, "all.accuracy.f1.panelsize{size}.{chrom}.rds"),
+    log:
+        os.path.join(OUTDIR_SUMMARY, "all.accuracy.f1.panelsize{size}.{chrom}.rds.llog"),
+    params:
+        N="plot_accuracy_f1",
+        samples=",".join(SAMPLES.keys()),
+        vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
+        truth=lambda wildcards: REFPANEL[wildcards.chrom]["truth"],
+    conda:
+        "../envs/quilt.yaml"
+    threads: 4
+    script:
+        "../scripts/accuracy_f1score.R"

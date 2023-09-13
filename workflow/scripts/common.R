@@ -240,6 +240,32 @@ quilt_r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip
   return(cors_per_af)
 }
 
+##        0      1      2
+## 0      ignore FP     FP
+## 1      TN     TP     FP
+## 2      FN     FN     TP
+## f1 = 2 * TP / (2 * TP + FP + FN)
+
+F1 <- function(a, b) {
+  stopifnot(dim(a)==dim(b))
+  sapply(seq_len(ncol(a)), function(i) {
+    o <- table(a[,i], b[,i])
+    TP <- o[2,2] + o[3,3]
+    FP <- o[1,2] + o[1, 3] + o[2, 3]
+    FN <- o[3,1] + o[3,2]
+    2 * TP / (2 * TP + FP + FN)
+  })
+}
+
+acc_f1 <- function(truth, test) {
+  id <- intersect(truth$id, test$id)
+  w <- truth$id %in% id
+  a <- truth$gt[w,]
+  w <- test$id %in% id
+  b <- test$gt[w,]
+  F1(a, b)
+}
+
 gettimes <- function(ss) {
   sapply(strsplit(ss, ":"), function(s) {
     s <- as.numeric(s)

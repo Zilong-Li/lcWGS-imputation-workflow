@@ -40,6 +40,10 @@ def get_all_results():
         )
     elif RUN == "accuracy":
         return get_accuracy_panelsize_plots(), get_accuracy_depth_plots()
+    elif RUN == "F1":
+        return get_accuracy_f1_plots()
+    elif RUN == "V2":
+        return get_accuracy_v2_plots()
     elif RUN == "speed":
         return get_speed_all_plots()
     elif RUN == "test":
@@ -139,6 +143,16 @@ def get_accuracy_panelsize_plots():
         depth=config["downsample"],
     )
 
+
+def get_accuracy_f1_plots():
+    return expand(
+        rules.plot_accuracy_f1.output, chrom=config["chroms"], size=config["refsize"]
+    )
+
+def get_accuracy_v2_plots():
+    return expand(
+        rules.plot_accuracy_v2.output, chrom=config["chroms"], size=config["refsize"]
+    )
 
 def get_accuracy_depth_plots():
     return expand(

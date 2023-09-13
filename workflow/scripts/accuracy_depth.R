@@ -39,8 +39,7 @@ bins <- sort(unique(c(
   seq(0.1, 0.5, length.out = 5)
 )))
 
-if(refsize0 %/% 1e3 > 500)
-{
+if(refsize0 %/% 1e3 > 500) {
   bins <- sort(unique(c(
     c(0, 0.01, 0.02 , 0.05 ) / 1e4,
     c(0, 0.01, 0.02 , 0.05 ) / 1e3,
@@ -51,8 +50,7 @@ if(refsize0 %/% 1e3 > 500)
   )))
 }
 
-if(refsize0 %/% 1e3 < 10)
-{
+if(refsize0 %/% 1e3 < 10) {
   bins <- sort(unique(c(
     c(0, 0.01, 0.02 , 0.05 ) / 1e1,
     c(0, 0.01, 0.02 , 0.05 ) / 1e0,

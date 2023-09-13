@@ -97,13 +97,13 @@ rule glimpse2_ligate:
             OUTDIR_GLIMPSE2,
             "refsize{size}",
             "{chrom}",
-            "down{depth}x.{chrom}.vcf.gz",
+            "down{depth}x.{chrom}.bcf.gz",
         ),
         sample=os.path.join(
             OUTDIR_GLIMPSE2,
             "refsize{size}",
             "{chrom}",
-            "down{depth}x.{chrom}.vcf.gz.sample",
+            "down{depth}x.{chrom}.bcf.gz.sample",
         ),
         tmp=os.path.join(
             OUTDIR_GLIMPSE2,
