@@ -43,7 +43,7 @@ def get_all_results():
     elif RUN == "F1":
         return get_accuracy_f1_plots()
     elif RUN == "V2":
-        return get_accuracy_v2_plots()
+        return get_speed_glimpse2_plots(),get_speed_quilt_mspbwt_plots()
     elif RUN == "speed":
         return get_speed_all_plots()
     elif RUN == "test":

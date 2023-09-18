@@ -26,7 +26,9 @@ nd <- length(groups)
 
 dl.regular <- lapply(snakemake@input, read.table)
 times <- data.frame(gnutime(dl.regular))
+rownames(times) <- groups
 rams <- data.frame(gunram(dl.regular))
+rownames(rams) <- groups
 
 saveRDS(list(time = times, ram = rams), snakemake@output[["rds"]])
 

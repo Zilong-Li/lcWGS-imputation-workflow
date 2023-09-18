@@ -1,7 +1,7 @@
 ## saveRDS(snakemake, snakemake@output[["rds"]])
 ## q()
 
-## curdir <- "/maps/projects/alab/people/rlk420/quilt2/human/Topmed_1KGP_CEU/test"
+## curdir <- "/maps/projects/alab/people/rlk420/quilt2/human/UKBB_GEL_CEU/default5/"
 ## setwd(curdir)
 ## snakemake <- readRDS("results/summary/all.accuracy.down0.1x.chr20.rds")
 
@@ -11,6 +11,7 @@ groups <- as.numeric(snakemake@config[["refsize"]]) * 2
 refsize0 <- 2 * as.integer(system(paste("bcftools query -l", snakemake@params$vcf, "|", "wc", "-l"), intern = TRUE))
 groups[groups == 0] <- refsize0
 nd <- length(groups)
+
 
 truth <- fread(snakemake@input[["truth"]], data.table = F)
 ds.truth <- sapply(seq(1, dim(truth)[2] - 1, 2), function(i) {
@@ -38,8 +39,7 @@ bins <- sort(unique(c(
   seq(0.1, 0.5, length.out = 5)
 )))
 
-if(refsize0 %/% 1e3 > 500)
-{
+if(refsize0 %/% 1e3 > 500) {
   bins <- sort(unique(c(
     c(0, 0.01, 0.02 , 0.05 ) / 1e4,
     c(0, 0.01, 0.02 , 0.05 ) / 1e3,
@@ -50,8 +50,7 @@ if(refsize0 %/% 1e3 > 500)
   )))
 }
 
-if(refsize0 %/% 1e3 < 10)
-{
+if(refsize0 %/% 1e3 < 10) {
   bins <- sort(unique(c(
     c(0, 0.01, 0.02 , 0.05 ) / 1e1,
     c(0, 0.01, 0.02 , 0.05 ) / 1e0,

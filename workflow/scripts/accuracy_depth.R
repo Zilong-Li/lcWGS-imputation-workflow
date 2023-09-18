@@ -1,10 +1,11 @@
 
-snakemake@source("common.R")
-
 ## saveRDS(snakemake, snakemake@output[["rds"]])
 ## q()
+
 ## snakemake <- readRDS("/maps/projects/alab/people/rlk420/quilt2/human/HRC_CEU/quilt-rare-common/results/summary/all.accuracy.panelsize0.chr20.rds")
 ## setwd("/maps/projects/alab/people/rlk420/quilt2/human/HRC_CEU/quilt-rare-common/")
+
+snakemake@source("common.R")
 
 groups <- as.numeric(snakemake@config[["downsample"]])
 refsize0 <- 2 * as.integer(system(paste("bcftools query -l", snakemake@params$vcf, "|", "wc", "-l"), intern = TRUE))
@@ -126,6 +127,8 @@ axis(side = 1, at = x, labels = labels)
 axis(side = 2)
 legend("bottomleft", legend = c("QUILT2", "GLIMPSE2", "QUILT1", "GLIMPSE1"), col = mycols, pch = 1, lwd = 1.5, cex = 1.0, xjust = 0, yjust = 1, bty = "n")
 
+dev.off()
+q()
 
 ## chunkfile <- "/maps/projects/alab/people/rlk420/quilt2/human/HRC_CEU/quilt-rare-common/results/refpanels/chr20.glimpse.chunks"
 chunkfile <- snakemake@params[["chunks"]]

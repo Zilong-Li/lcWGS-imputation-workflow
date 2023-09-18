@@ -35,6 +35,26 @@ bins <- sort(unique(c(
   seq(0.1, 0.5, length.out = 5)
 )))
 
+if(refsize0 %/% 1e3 > 500) {
+  bins <- sort(unique(c(
+    c(0, 0.01, 0.02 , 0.05 ) / 1e4,
+    c(0, 0.01, 0.02 , 0.05 ) / 1e3,
+    c(0, 0.01, 0.02 , 0.05 ) / 1e2,
+    c(0, 0.01, 0.02 , 0.05 ) / 1e1,
+    c(0, 0.01, 0.02 , 0.05 ) / 1e0,
+    seq(0.1, 0.5, length.out = 5)
+  )))
+}
+
+if(refsize0 %/% 1e3 < 10) {
+  bins <- sort(unique(c(
+    c(0, 0.01, 0.02 , 0.05 ) / 1e1,
+    c(0, 0.01, 0.02 , 0.05 ) / 1e0,
+    seq(0.1, 0.5, length.out = 5)
+  )))
+}
+
+
 phasing_errors <- lapply(seq(length(groups)), function(i) {
   n <- ncol(dl.single[[i]])
   id <- intersect(rownames(truth), rownames(dl.single[[i]]))
