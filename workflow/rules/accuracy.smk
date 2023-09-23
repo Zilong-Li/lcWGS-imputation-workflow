@@ -136,6 +136,7 @@ rule plot_quilt_regular:
         ),
     params:
         N="plot_quilt_regular",
+        vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
     resources:
         slots=3,
     conda:
@@ -155,6 +156,7 @@ rule plot_quilt_zilong:
         ),
     params:
         N="plot_quilt_zilong",
+        vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
     output:
         pdf=os.path.join(
             OUTDIR_SUMMARY, "quilt.accuracy.zilong.panelsize{size}.{chrom}.rds.pdf"
@@ -183,6 +185,7 @@ rule plot_quilt_mspbwt:
         ),
     params:
         N="plot_quilt_mspbwt",
+        vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
     output:
         pdf=os.path.join(
             OUTDIR_SUMMARY, "quilt.accuracy.mspbwt.panelsize{size}.{chrom}.rds.pdf"
@@ -222,6 +225,7 @@ rule plot_quilt_accuracy:
     params:
         N="plot_quilt_accuracy",
         chunks=lambda wildcards: REFPANEL[wildcards.chrom]["glimpse_chunk"],
+        vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
     output:
         rds=os.path.join(OUTDIR_SUMMARY, "quilt.accuracy.panelsize{size}.{chrom}.rds"),
     log:
@@ -294,6 +298,7 @@ rule plot_glimpse2_accuracy:
         ),
     params:
         N="plot_glimpse_accuracy",
+        vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
     output:
         pdf=os.path.join(
             OUTDIR_SUMMARY, "glimpse2.accuracy.panelsize{size}.{chrom}.rds.pdf"
@@ -322,6 +327,7 @@ rule plot_glimpse_accuracy:
         ),
     params:
         N="plot_glimpse_accuracy",
+        vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
     output:
         pdf=os.path.join(
             OUTDIR_SUMMARY, "glimpse.accuracy.panelsize{size}.{chrom}.rds.pdf"

@@ -250,6 +250,8 @@ F1 <- function(a, b) {
   stopifnot(dim(a)==dim(b))
   sapply(seq_len(ncol(a)), function(i) {
     o <- table(a[,i], b[,i])
+    stopifnot(all.equal(colnames(o), c("0", "1", "2")))
+    stopifnot(all.equal(rownames(o), c("0", "1", "2")))
     TP <- o[2,2] + o[3,3]
     FP <- o[1,2] + o[1, 3] + o[2, 3]
     FN <- o[3,1] + o[3,2]

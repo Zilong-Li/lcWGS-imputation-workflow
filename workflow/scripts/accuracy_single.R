@@ -8,6 +8,7 @@ acc_r2_by_af <- function(d0, d1, af, bins) {
 }
 
 groups <- as.numeric(snakemake@config[["downsample"]])
+refsize0 <- 2 * as.integer(system(paste("bcftools query -l", snakemake@params$vcf, "|", "wc", "-l"), intern = TRUE))
 
 truth <- fread(snakemake@input[["truth"]], data.table = F)
 df.truth <- sapply(seq(1, dim(truth)[2] - 1, 2), function(i) {

@@ -1,3 +1,9 @@
+## saveRDS(snakemake, snakemake@output[["rds"]])
+## q()
+
+## snakemake <- readRDS("/maps/projects/alab/people/rlk420/quilt2/human/Topmed_1KGP_ONT/default5/results/summary/all.accuracy.f1.panelsize0.chr20.rds")
+## setwd("/maps/projects/alab/people/rlk420/quilt2/human/Topmed_1KGP_ONT/default5/")
+
 snakemake@source("common.R")
 
 library(vcfppR)
@@ -11,10 +17,20 @@ chrom <- snakemake@wildcards[["chrom"]]
 
 truth <- tableGT(snakemake@params[["truth"]], chrom, samples)
 truth$id <- paste(truth$chr, truth$pos, truth$ref, truth$alt, sep=":")
+truth$gt <- do.call(rbind, truth$gt)
+n <- ncol(truth$gt)
+truth$gt <- truth$gt[, seq(1, n, 2)] + truth$gt[, seq(2, n, 2)]
+
 ## make sure the truth$samples order is same as samples
-gt.truth <- do.call(rbind, truth$gt)
-n <- ncol(gt.truth)
-truth$gt <- gt.truth[, seq(1, n, 2)] + gt.truth[, seq(2, n, 2)]
+sampleid <- unlist(strsplit(samples, ","))
+ord <- match(sampleid,truth$samples)
+truth$gt <- truth$gt[,ord]
+
+## remove sites with missing genos
+w <- (rowSums(truth$gt < 0) == 0)
+truth$gt <- truth$gt[w,]
+truth$id <- truth$id[w]
+
 
 getGT <- function(vcffile, region, samples) {
   quilt2 <- tableGT(vcffile, region, samples)
@@ -26,12 +42,14 @@ getGT <- function(vcffile, region, samples) {
 }
 
 dl.quilt1 <- mclapply(snakemake@input[["regular"]], getGT, mc.cores = 4, region=chrom, samples=samples)
+
 dl.quilt2 <- mclapply(snakemake@input[["zilong"]], getGT, mc.cores = 4,region=chrom, samples=samples)
 dl.glimpse1 <- mclapply(snakemake@input[["glimpse1"]], getGT,mc.cores = 4, region=chrom, samples=samples)
 dl.glimpse2 <- mclapply(snakemake@input[["glimpse2"]], getGT, mc.cores = 4,region=chrom, samples=samples)
 
 f1.quilt1 <- lapply(dl.quilt1, function(test) acc_f1(truth, test))
 names(f1.quilt1) <- depths
+
 f1.quilt2 <- lapply(dl.quilt2, function(test) acc_f1(truth, test))
 names(f1.quilt2) <- depths
 f1.glimpse1 <- lapply(dl.glimpse1, function(test) acc_f1(truth, test))
@@ -43,8 +61,6 @@ res <- list(f1.quilt1, f1.quilt2, f1.glimpse1, f1.glimpse2)
 names(res) <- c("QUILT1", "QUILT2", "GLIMPSE1", "GLIMPSE2")
 
 saveRDS(res, snakemake@output[["rds"]])
-
-## res <- readRDS("/maps/projects/alab/people/rlk420/quilt2/human/UKBB_GEL_ONT/default5/results/summary/all.accuracy.f1.panelsize0.chr20.rds")
 
 ## depths <- c("0.1x", "0.5x", "1.0x", "2.0x")
 
