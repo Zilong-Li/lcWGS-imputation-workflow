@@ -1,3 +1,4 @@
+
 library(data.table)
 
 
@@ -240,10 +241,11 @@ quilt_r2_by_freq <- function(breaks, af, truthG, testDS, which_snps = NULL, flip
   return(cors_per_af)
 }
 
-##        0      1      2
+## follow hap.py
+## truth\imputed  0      1      2
 ## 0      ignore FP     FP
-## 1      TN     TP     FP
-## 2      FN     FN     TP
+## 1      FN     TP     FP/FN
+## 2      FN     FP/FN     TP
 ## f1 = 2 * TP / (2 * TP + FP + FN)
 
 F1 <- function(a, b) {
@@ -253,11 +255,12 @@ F1 <- function(a, b) {
     stopifnot(all.equal(colnames(o), c("0", "1", "2")))
     stopifnot(all.equal(rownames(o), c("0", "1", "2")))
     TP <- o[2,2] + o[3,3]
-    FP <- o[1,2] + o[1, 3] + o[2, 3]
-    FN <- o[3,1] + o[3,2]
+    FP <- o[1,2] + o[1, 3] + o[2, 3] + o[3,2]
+    FN <- o[2,1] +o[2,3] + o[3,1] + o[3,2]
     2 * TP / (2 * TP + FP + FN)
   })
 }
+
 
 acc_f1 <- function(truth, test) {
   id <- intersect(truth$id, test$id)

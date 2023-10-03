@@ -15,11 +15,8 @@ refsize0 <- 2 * as.integer(system(paste("bcftools query -l", snakemake@params$vc
 samples <- snakemake@params[["samples"]]
 chrom <- snakemake@wildcards[["chrom"]]
 
-truth <- tableGT(snakemake@params[["truth"]], chrom, samples)
+truth <- vcftable(snakemake@params[["truth"]], chrom, samples)
 truth$id <- paste(truth$chr, truth$pos, truth$ref, truth$alt, sep=":")
-truth$gt <- do.call(rbind, truth$gt)
-n <- ncol(truth$gt)
-truth$gt <- truth$gt[, seq(1, n, 2)] + truth$gt[, seq(2, n, 2)]
 
 ## make sure the truth$samples order is same as samples
 sampleid <- unlist(strsplit(samples, ","))
@@ -33,11 +30,8 @@ truth$id <- truth$id[w]
 
 
 getGT <- function(vcffile, region, samples) {
-  quilt2 <- tableGT(vcffile, region, samples)
+  quilt2 <- vcftable(vcffile, region, samples)
   quilt2$id <- paste(quilt2$chr, quilt2$pos, quilt2$ref, quilt2$alt, sep=":")
-  gt.quilt2 <- do.call(rbind, quilt2$gt)
-  n <- ncol(gt.quilt2)
-  quilt2$gt <- gt.quilt2[, seq(1, n, 2)] + gt.quilt2[, seq(2, n, 2)]
   quilt2
 }
 
