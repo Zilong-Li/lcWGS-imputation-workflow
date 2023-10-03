@@ -1,4 +1,3 @@
-
 ## samtools depth -a $bam | awk '{s+=\$3;} END{print s/NR}'
 rule downsample_bam:
     output:

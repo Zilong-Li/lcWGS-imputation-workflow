@@ -43,7 +43,7 @@ def get_all_results():
     elif RUN == "F1":
         return get_accuracy_f1_plots()
     elif RUN == "V2":
-        return get_speed_glimpse2_plots(),get_speed_quilt_mspbwt_plots()
+        return get_speed_glimpse2_plots(), get_speed_quilt_mspbwt_plots()
     elif RUN == "speed":
         return get_speed_all_plots()
     elif RUN == "test":
@@ -149,10 +149,12 @@ def get_accuracy_f1_plots():
         rules.plot_accuracy_f1.output, chrom=config["chroms"], size=config["refsize"]
     )
 
+
 def get_accuracy_v2_plots():
     return expand(
         rules.plot_accuracy_v2.output, chrom=config["chroms"], size=config["refsize"]
     )
+
 
 def get_accuracy_depth_plots():
     return expand(
@@ -257,6 +259,7 @@ def if_exclude_samples_in_refpanel(wildcards):
         return REFPANEL[wildcards.chrom]["exclude_samples"]
     else:
         return "false"
+
 
 def if_use_af_in_refpanel(wildcards):
     if REFPANEL[wildcards.chrom].get("af"):

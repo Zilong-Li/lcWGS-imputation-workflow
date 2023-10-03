@@ -417,6 +417,7 @@ rule plot_accuracy_depth:
     script:
         "../scripts/accuracy_depth.R"
 
+
 rule plot_accuracy_v2:
     input:
         glimpse2=expand(
@@ -441,6 +442,7 @@ rule plot_accuracy_v2:
         "../envs/quilt.yaml"
     script:
         "../scripts/accuracy_version2.R"
+
 
 rule plot_accuracy_f1:
     input:
