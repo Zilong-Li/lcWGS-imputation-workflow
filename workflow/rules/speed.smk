@@ -1,7 +1,7 @@
 
 rule collect_quilt_regular_speed_log:
     input:
-        collect_quilt_log_regular_region2,
+        collect_quilt_regular_logs,
     output:
         os.path.join(
             OUTDIR_SUMMARY,
@@ -24,7 +24,7 @@ rule collect_quilt_regular_speed_log:
 
 rule collect_quilt_mspbwt_speed_log:
     input:
-        collect_quilt_log_mspbwt_region2,
+        collect_quilt_mspbwt_logs,
     output:
         os.path.join(
             OUTDIR_SUMMARY,
@@ -37,29 +37,6 @@ rule collect_quilt_mspbwt_speed_log:
         ),
     params:
         N="collect_quilt_mspbwt_speed_log",
-    conda:
-        "../envs/quilt.yaml"
-    shell:
-        """
-        echo {input} | tr ' ' '\\n' | xargs grep -E 'Elaps|Maximum' | awk '{{print $NF}}' | sed 'N;s/\\n/ /' > {output}
-        """
-
-
-rule collect_quilt_zilong_speed_log:
-    input:
-        collect_quilt_log_zilong_region2,
-    output:
-        os.path.join(
-            OUTDIR_SUMMARY,
-            "speed.quilt.zilong.refsize{size}.down{depth}x.{chrom}.txt",
-        ),
-    log:
-        os.path.join(
-            OUTDIR_SUMMARY,
-            "speed.quilt.zilong.refsize{size}.down{depth}x.{chrom}.txt.log",
-        ),
-    params:
-        N="collect_quilt_zilong_speed_log",
     conda:
         "../envs/quilt.yaml"
     shell:
@@ -134,28 +111,6 @@ rule plot_speed_quilt_regular:
         ),
     params:
         N="plot_speed_qulit_regular",
-    conda:
-        "../envs/quilt.yaml"
-    script:
-        "../scripts/speed_single.R"
-
-
-rule plot_speed_quilt_zilong:
-    input:
-        expand(
-            rules.collect_quilt_zilong_speed_log.output,
-            depth=config["downsample"],
-            allow_missing=True,
-        ),
-    output:
-        pdf=os.path.join(
-            OUTDIR_SUMMARY, "quilt.speed.zilong.refsize{size}.{chrom}.rds.pdf"
-        ),
-        rds=os.path.join(OUTDIR_SUMMARY, "quilt.speed.zilong.refsize{size}.{chrom}.rds"),
-    log:
-        os.path.join(OUTDIR_SUMMARY, "quilt.speed.zilong.refsize{size}.{chrom}.llog"),
-    params:
-        N="plot_speed_qulit_zilong",
     conda:
         "../envs/quilt.yaml"
     script:

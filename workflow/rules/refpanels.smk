@@ -44,45 +44,40 @@ rule subset_refpanel_by_chrom:
         """
 
 
-rule subset_refpanel_by_region2:
+rule subset_refpanel_by_chunkid:
     input:
         rules.subset_sample_list.output.samples,
     output:
         vcf=os.path.join(
-            OUTDIR_PANEL, "refsize{size}", "vcfs", "{chrom}.{start}.{end}.vcf.gz"
+            OUTDIR_PANEL, "refsize{size}", "{chrom}", "chunk_{chunkid}.vcf.gz"
         ),
         csi=os.path.join(
-            OUTDIR_PANEL, "refsize{size}", "vcfs", "{chrom}.{start}.{end}.vcf.gz.csi"
+            OUTDIR_PANEL, "refsize{size}", "{chrom}", "chunk_{chunkid}.vcf.gz.csi"
         ),
         sites=os.path.join(
             OUTDIR_PANEL,
             "refsize{size}",
-            "vcfs",
-            "{chrom}.{start}.{end}.sites.vcf.gz",
+            "{chrom}",
+            "chunk_{chunkid}.sites.vcf.gz",
         ),
         tsv=os.path.join(
-            OUTDIR_PANEL, "refsize{size}", "vcfs", "{chrom}.{start}.{end}.tsv.vcf.gz"
+            OUTDIR_PANEL, "refsize{size}", "{chrom}", "chunk_{chunkid}.tsv.vcf.gz"
         ),
     params:
-        N="subset_refpanel_by_region2",
         prefix=lambda wildcards, output: os.path.splitext(output[0])[0],
         vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
-        start=lambda wildcards: max(
-            1, int(wildcards.start) - int(config["quilt2"]["buffer"])
+        rg=lambda wildcards: get_refpanel_chunk_region(
+            wildcards.chrom, wildcards.chunkid
         ),
-        end=lambda wildcards: int(wildcards.end) + int(config["quilt2"]["buffer"]),
     log:
         os.path.join(
-            OUTDIR_PANEL,
-            "refsize{size}",
-            "vcfs",
-            "{chrom}.{start}.{end}.vcf.gz.llog",
+            OUTDIR_PANEL, "refsize{size}", "{chrom}", "chunk_{chunkid}.vcf.gz.llog"
         ),
     conda:
         "../envs/pandas.yaml"
     shell:
         """
-        bcftools view -v snps -m2 -M2 --samples-file {input} --threads 4 {params.vcf} {wildcards.chrom}:{params.start}-{params.end} | bcftools norm - -d snps -Ob -o {output.vcf} --threads 4 && bcftools index -f {output.vcf} && \
+        bcftools view -v snps -m2 -M2 --samples-file {input} --threads 4 {params.vcf} {params.rg} | bcftools norm - -d snps -Ob -o {output.vcf} --threads 4 && bcftools index -f {output.vcf} && \
         touch -m {output.vcf}.csi && \
         bcftools view -G {output.vcf} -Oz -o {output.sites} --threads 4 && tabix -f {output.sites} && \
         bcftools query -f'%CHROM\t%POS\t%REF,%ALT\n' {output.sites} | bgzip -c > {output.tsv} && \
@@ -90,30 +85,28 @@ rule subset_refpanel_by_region2:
         """
 
 
-def get_sites_subset_refpanel_by_region2(wildcards):
-    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom)
+def get_sites_refpanel_by_chunks(wildcards):
+    d = get_refpanel_chunks(wildcards.chrom)
+    ids = list(map(str, d.keys()))
     return expand(
-        rules.subset_refpanel_by_region2.output.sites,
-        zip,
-        start=starts,
-        end=ends,
+        rules.subset_refpanel_by_chunkid.output.sites,
+        chunkid=ids,
         allow_missing=True,
     )
 
 
-rule concat_refpanel_sites_by_region2:
+rule concat_refpanel_sites_by_chunks:
     input:
-        get_sites_subset_refpanel_by_region2,
+        get_sites_refpanel_by_chunks,
     output:
         sites=os.path.join(
             OUTDIR_PANEL,
             "refsize{size}",
-            "vcfs",
             "{chrom}.sites.vcf.gz",
         ),
-        tsv=os.path.join(OUTDIR_PANEL, "refsize{size}", "vcfs", "{chrom}.tsv.vcf.gz"),
+        tsv=os.path.join(OUTDIR_PANEL, "refsize{size}", "{chrom}.tsv.vcf.gz"),
     log:
-        os.path.join(OUTDIR_PANEL, "refsize{size}", "vcfs", "{chrom}.sites.vcf.gz.llog"),
+        os.path.join(OUTDIR_PANEL, "refsize{size}", "{chrom}.sites.vcf.gz.llog"),
     conda:
         "../envs/pandas.yaml"
     shell:

@@ -1,12 +1,11 @@
-
 rule glimpse2_prepare_panel:
     input:
-        refvcf=rules.subset_refpanel_by_region2.output.vcf,
+        refvcf=rules.subset_refpanel_by_chunkid.output.vcf,
     output:
-        os.path.join(OUTDIR_GLIMPSE2, "binary{size}", "{chrom}.{start}.{end}.spbwt"),
+        os.path.join(OUTDIR_GLIMPSE2, "binary{size}", "{chrom}.chunk_{chunkid}.spbwt"),
     log:
         os.path.join(
-            OUTDIR_GLIMPSE2, "binary{size}", "{chrom}.{start}.{end}.spbwt.llog"
+            OUTDIR_GLIMPSE2, "binary{size}", "{chrom}.chunk_{chunkid}.spbwt.llog"
         ),
     params:
         N="glimpse2_prepare_panel",
@@ -52,14 +51,14 @@ rule glimpse2_phase:
             OUTDIR_GLIMPSE2,
             "refsize{size}",
             "{chrom}",
-            "down{depth}x.{chrom}.{start}.{end}.bcf",
+            "down{depth}x.chunk_{chunkid}.bcf",
         ),
     log:
         os.path.join(
             OUTDIR_GLIMPSE2,
             "refsize{size}",
             "{chrom}",
-            "down{depth}x.{chrom}.{start}.{end}.bcf.llog",
+            "down{depth}x.chunk_{chunkid}.bcf.llog",
         ),
     params:
         N="glimpse2_phase",
@@ -97,19 +96,21 @@ rule glimpse2_ligate:
             OUTDIR_GLIMPSE2,
             "refsize{size}",
             "{chrom}",
-            "down{depth}x.{chrom}.bcf.gz",
+            "down{depth}x.{chrom}.bcf",
         ),
         sample=os.path.join(
             OUTDIR_GLIMPSE2,
             "refsize{size}",
             "{chrom}",
-            "down{depth}x.{chrom}.bcf.gz.sample",
+            "down{depth}x.{chrom}.bcf.sample",
         ),
-        tmp=os.path.join(
-            OUTDIR_GLIMPSE2,
-            "refsize{size}",
-            "{chrom}",
-            "stupid.down{depth}x.{chrom}.bcf",
+        tmp=temp(
+            os.path.join(
+                OUTDIR_GLIMPSE2,
+                "refsize{size}",
+                "{chrom}",
+                "stupid.down{depth}x.{chrom}.bcf",
+            )
         ),
         lst=os.path.join(
             OUTDIR_GLIMPSE2,
@@ -122,7 +123,6 @@ rule glimpse2_ligate:
             OUTDIR_GLIMPSE2, "refsize{size}", "{chrom}", "down{depth}x.{chrom}.llog"
         ),
     params:
-        N="glimpse2_ligate",
         sample=config["samples"],
     conda:
         "../envs/pandas.yaml"
@@ -140,24 +140,25 @@ rule glimpse_prepare_glvcf:
     input:
         bams=rules.bamlist.output,
         sites=lambda wildcards: expand(
-            rules.concat_refpanel_sites_by_region2.output.sites,
+            rules.concat_refpanel_sites_by_chunks.output.sites,
             size=config["refsize"],
             allow_missing=True,
         ),
         tsv=lambda wildcards: expand(
-            rules.concat_refpanel_sites_by_region2.output.tsv,
+            rules.concat_refpanel_sites_by_chunks.output.tsv,
             size=config["refsize"],
             allow_missing=True,
         ),
     output:
-        vcf=os.path.join(OUTDIR_GLIMPSE, "glvcf", "{chrom}", "down{depth}x.{chrom}.bcf"),
+        vcf=os.path.join(
+            OUTDIR_GLIMPSE, "glvcf", "{chrom}", "down{depth}x.{chrom}.vcf.gz"
+        ),
         csi=os.path.join(
-            OUTDIR_GLIMPSE, "glvcf", "{chrom}", "down{depth}x.{chrom}.bcf.csi"
+            OUTDIR_GLIMPSE, "glvcf", "{chrom}", "down{depth}x.{chrom}.vcf.gz.csi"
         ),
     log:
-        os.path.join(OUTDIR_GLIMPSE, "glvcf/{chrom}/down{depth}.{chrom}.bcf.llog"),
+        os.path.join(OUTDIR_GLIMPSE, "glvcf/{chrom}/down{depth}.{chrom}.vcf.gz.llog"),
     params:
-        N="glimpse_prepare_glvcf",
         time=config["time"],
         fasta=config["genome"]["fasta"],
         bq=config["glimpse1"]["bq"],
@@ -177,24 +178,23 @@ rule glimpse_prepare_glvcf:
 
 rule glimpse_phase:
     input:
-        refvcf=rules.subset_refpanel_by_region2.output.vcf,
+        refvcf=rules.subset_refpanel_by_chunkid.output.vcf,
         glvcf=rules.glimpse_prepare_glvcf.output.vcf,
     output:
         os.path.join(
             OUTDIR_GLIMPSE,
             "refsize{size}",
             "{chrom}",
-            "down{depth}x.{chrom}.{start}.{end}.bcf",
+            "down{depth}x.chunk_{chunkid}.bcf",
         ),
     log:
         os.path.join(
             OUTDIR_GLIMPSE,
             "refsize{size}",
             "{chrom}",
-            "down{depth}x.{chrom}.{start}.{end}.bcf.llog",
+            "down{depth}x.chunk_{chunkid}.bcf.llog",
         ),
     params:
-        N="glimpse_phase",
         time=config["time"],
         gmap=if_use_glimpse_map_in_refpanel,
         irg=get_glimpse_chunki_irg,

@@ -1,21 +1,19 @@
 
 snakemake@source("common.R")
 
-acc_r2_all <- function(d0, d1, d2, d3) {
-  id <- intersect(intersect(intersect(rownames(d0), rownames(d1)), rownames(d2)), rownames(d3))
+acc_r2_all <- function(d0, d1, d2) {
+  id <- (intersect(intersect(rownames(d0), rownames(d1)), rownames(d2)))
   y1 <- cor(as.vector(d0[id,]), as.vector(d1[id,]), use = "pairwise.complete")**2
   y2 <- cor(as.vector(d0[id,]), as.vector(d2[id,]), use = "pairwise.complete")**2
-  y3 <- cor(as.vector(d0[id,]), as.vector(d3[id,]), use = "pairwise.complete")**2
-  c(y1, y2, y3)
+  c(y1, y2)
 }
 
-local_r2_by_af <- function(d0, d1, d2, d3, af, bins) {
-  id <- intersect(intersect(intersect(rownames(d0), rownames(d1)), rownames(d2)), rownames(d3))
+local_r2_by_af <- function(d0, d1, d2, af, bins) {
+  id <- (intersect(intersect(rownames(d0), rownames(d1)), rownames(d2)))
   id <- intersect(id, names(af))
   res1 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d1, which_snps = id)
   res2 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d2, which_snps = id)
-  res3 <- r2_by_freq(breaks = bins, af, truthG = d0, testDS = d3, which_snps = id)
-  as.data.frame(cbind(bin = bins[-1], regular = res1[, "simple"], mspbwt = res2[, "simple"], zilong = res3[, "simple"]))
+  as.data.frame(cbind(bin = bins[-1], regular = res1[, "simple"], mspbwt = res2[, "simple"]))
 }
 
 groups <- as.numeric(snakemake@config[["downsample"]])
@@ -32,7 +30,6 @@ groups <- as.numeric(snakemake@config[["downsample"]])
 
 dl.regular <- lapply(snakemake@input[["regular"]], parse.quilt.gts)
 dl.mspbwt <- lapply(snakemake@input[["mspbwt"]], parse.quilt.gts)
-dl.zilong <- lapply(snakemake@input[["zilong"]], parse.quilt.gts)
 
 bins <- sort(unique(c(
   c(0, 0.01 / 100, 0.02 / 100, 0.05 / 100),
@@ -42,12 +39,12 @@ bins <- sort(unique(c(
 )))
 
 accuracy <- matrix(sapply(1:length(groups), function(i) {
-  acc_r2_all(df.truth, dl.regular[[i]], dl.mspbwt[[i]], dl.zilong[[i]])
+  acc_r2_all(df.truth, dl.regular[[i]], dl.mspbwt[[i]])
 }), ncol = length(groups))
 
 
 accuracy_by_af <- lapply(1:length(groups), function(i) {
-  d <- local_r2_by_af(df.truth, dl.regular[[i]], dl.mspbwt[[i]], dl.zilong[[i]], af, bins)
+  d <- local_r2_by_af(df.truth, dl.regular[[i]], dl.mspbwt[[i]], af, bins)
   colnames(d) <- c("bin", "regular", "mspbwt", "zilong" )
   d
 })
@@ -64,7 +61,6 @@ par(mfrow = c(1, 2))
 
 plot(groups, accuracy[1, ], type = "b", lwd = 1.0, pch = 1, col = wong[1], ylab = "Aggregated R2 for the chromosome", xlab = "Samples sequencing depth", ylim = c(0.9 * min(accuracy), 1.0))
 lines(groups, accuracy[2, ], type = "b", lwd = 1.0, pch = 1, col = wong[2])
-lines(groups, accuracy[3, ], type = "b", lwd = 1.0, pch = 1, col = wong[3])
 
 a1 <- accuracy_by_af[[1]]
 x <- a1$bin[!sapply(a1[, 2], is.na)] # remove AF bin with NULL results
@@ -85,8 +81,6 @@ for (i in 1:nd) {
   lines(x, y, type = "l", lty = nd - i + 1, pch = 1, col = wong[1])
   y <- rmna(d$mspbwt)
   lines(x, y, type = "l", lty = nd - i + 1, pch = 1, col = wong[2])
-  y <- rmna(d$zilong)
-  lines(x, y, type = "l", lty = nd - i + 1, pch = 1, col = wong[3])
 }
 axis(side = 1, at = x, labels = labels)
 axis(side = 2)
@@ -124,8 +118,6 @@ for(c in 1:length(chunk.names)) {
     lines(x, y, type = "l", lty = nd - i + 1, pch = 1, col = wong[1])
     y <- rmna(d$mspbwt)
     lines(x, y, type = "l", lty = nd - i + 1, pch = 1, col = wong[2])
-    y <- rmna(d$zilong)
-    lines(x, y, type = "l", lty = nd - i + 1, pch = 1, col = wong[3])
   }
   axis(side = 1, at = x, labels = labels)
   axis(side = 2, at = seq(0, 1, 0.2))

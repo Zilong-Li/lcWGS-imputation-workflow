@@ -3,7 +3,7 @@ rule collect_truth_gts:
     """would be better to use sites in subrefs"""
     input:
         sites=lambda wildcards: expand(
-            rules.concat_refpanel_sites_by_region2.output.sites,
+            rules.concat_refpanel_sites_by_chunks.output.sites,
             size=config["refsize"],
             allow_missing=True,
         ),
@@ -90,30 +90,6 @@ rule collect_quilt_mspbwt_imputed_gts:
         """
 
 
-rule collect_quilt_zilong_imputed_gts:
-    input:
-        rules.quilt_ligate_zilong.output.vcf,
-    output:
-        os.path.join(
-            OUTDIR_SUMMARY, "quilt.gts.zilong.panelsize{size}.down{depth}x.{chrom}.txt"
-        ),
-    log:
-        os.path.join(
-            OUTDIR_SUMMARY,
-            "quilt.gts.zilong.panelsize{size}.down{depth}x.{chrom}.llog",
-        ),
-    params:
-        N="collect_quilt_mspbwt_imputed_gts",
-        samples=",".join(SAMPLES.keys()),
-        ql2="%CHROM:%POS:%REF:%ALT[\\t%GT\\t%DS]\\n",
-    conda:
-        "../envs/quilt.yaml"
-    shell:
-        """
-        bcftools query -f '{params.ql2}' -s {params.samples} {input} | sed -E 's/\/|\|/\\t/g' > {output}
-        """
-
-
 rule plot_quilt_regular:
     input:
         truth=rules.collect_truth_gts.output.gt,
@@ -139,35 +115,6 @@ rule plot_quilt_regular:
         vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
     resources:
         slots=3,
-    conda:
-        "../envs/quilt.yaml"
-    script:
-        "../scripts/accuracy_single.R"
-
-
-rule plot_quilt_zilong:
-    input:
-        truth=rules.collect_truth_gts.output.gt,
-        af=rules.collect_truth_gts.output.af,
-        single=expand(
-            rules.collect_quilt_zilong_imputed_gts.output,
-            depth=config["downsample"],
-            allow_missing=True,
-        ),
-    params:
-        N="plot_quilt_zilong",
-        vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
-    output:
-        pdf=os.path.join(
-            OUTDIR_SUMMARY, "quilt.accuracy.zilong.panelsize{size}.{chrom}.rds.pdf"
-        ),
-        rds=os.path.join(
-            OUTDIR_SUMMARY, "quilt.accuracy.zilong.panelsize{size}.{chrom}.rds"
-        ),
-    log:
-        os.path.join(
-            OUTDIR_SUMMARY, "quilt.accuracy.zilong.panelsize{size}.{chrom}.rds.llog"
-        ),
     conda:
         "../envs/quilt.yaml"
     script:
@@ -214,11 +161,6 @@ rule plot_quilt_accuracy:
         ),
         mspbwt=expand(
             rules.collect_quilt_mspbwt_imputed_gts.output,
-            depth=config["downsample"],
-            allow_missing=True,
-        ),
-        zilong=expand(
-            rules.collect_quilt_zilong_imputed_gts.output,
             depth=config["downsample"],
             allow_missing=True,
         ),
