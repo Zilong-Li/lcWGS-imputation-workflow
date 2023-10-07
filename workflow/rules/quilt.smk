@@ -156,14 +156,21 @@ rule quilt_ligate_regular:
         ),
     params:
         N="quilt_ligate_regular",
+        extra=config["extra_buffer_in_quilt"],
     conda:
         "../envs/quilt.yaml"
     shell:
         """
         ( \
+        if [ {params.extra} -gt 0 ];then \
            echo {input} | tr ' ' '\n' > {output.lst} && \
            bcftools concat --ligate --file-list {output.lst} --output-type z --threads 4 -o {output.vcf} && \
            bcftools index -f {output.vcf} \
+        ; else \
+           echo {input} | tr ' ' '\n' > {output.lst} && \
+           bcftools concat --file-list {output.lst} --output-type z --threads 4 -o {output.vcf} && \
+           bcftools index -f {output.vcf} \
+        ; fi \
         ) &> {log}
         """
 
@@ -330,13 +337,20 @@ rule quilt_ligate_mspbwt:
         ),
     params:
         N="quilt_ligate_mspbwt",
+        extra=config["extra_buffer_in_quilt"],
     conda:
         "../envs/quilt.yaml"
     shell:
         """
         ( \
+        if [ {params.extra} -gt 0 ];then \
            echo {input} | tr ' ' '\n' > {output.lst} && \
            bcftools concat --ligate --file-list {output.lst} --output-type z --threads 4 -o {output.vcf} && \
            bcftools index -f {output.vcf} \
+        ; else \
+           echo {input} | tr ' ' '\n' > {output.lst} && \
+           bcftools concat --file-list {output.lst} --output-type z --threads 4 -o {output.vcf} && \
+           bcftools index -f {output.vcf} \
+        ; fi \
         ) &> {log}
         """
