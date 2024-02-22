@@ -274,6 +274,8 @@ rule quilt_run_mspbwt:
         impute_rare_common=config["quilt2"]["impute_rare_common"],
         block_gibbs=config["quilt2"]["small_ref_panel_block_gibbs_iterations"],
         gibbs_iters=config["quilt2"]["small_ref_panel_gibbs_iterations"],
+        mspbwtM=config["quilt2"]["mspbwtM"],
+        mspbwtL=config["quilt2"]["mspbwtL"],
     log:
         os.path.join(
             OUTDIR_QUILT2,
@@ -299,7 +301,8 @@ rule quilt_run_mspbwt:
             --nGen={params.nGen} \
             --zilong=FALSE \
             --use_mspbwt=TRUE \
-            --Ksubset={params.Ksubset} \
+            --mspbwtM={params.mspbwtM} \
+            --mspbwtL={params.mspbwtL} \
             --Knew={params.Ksubset} \
             --nGibbsSamples={params.nGibbsSamples} \
             --n_seek_its={params.n_seek_its} \
