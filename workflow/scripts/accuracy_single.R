@@ -75,7 +75,7 @@ saveRDS(list(accuracy_by_af,phasing_errors), snakemake@output[["rds"]])
 wong <- c("#e69f00", "#d55e00", "#56b4e9", "#cc79a7", "#009e73", "#0072b2", "#f0e442")
 mycols <- wong[1:4]
 
-pdf(snakemake@output[["pdf"]], w = 12, h = 6)
+png(snakemake@output[["pdf"]], w = 12, h = 6, res = 300, units = "in")
 par(mfrow = c(1, 2))
 
 pse <- matrix(sapply(phasing_errors, function(ls) {

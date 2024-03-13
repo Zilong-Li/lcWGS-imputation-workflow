@@ -97,7 +97,7 @@ phasing_errors <- lapply(phasing_errors, function(out) {
 })
 
 
-pdf(paste0(snakemake@output[["rds"]], ".pdf"), w = 12, h = 6)
+png(paste0(snakemake@output[["rds"]], ".png"), w = 12, h = 6, units='in', res=300)
 
 a1 <- r2_dosage_by_af[[1]]
 x <- a1$bin[!sapply(a1[, 2], is.na)]

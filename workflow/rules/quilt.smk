@@ -86,6 +86,7 @@ rule quilt_run_regular:
         start=get_quilt_chunk_region_start,
         end=get_quilt_chunk_region_end,
         Ksubset=config["quilt1"]["Ksubset"],
+        Knew=config["quilt1"]["Knew"],
         nGibbsSamples=config["quilt1"]["nGibbsSamples"],
         lowram=config["quilt1"]["lowram"],
         impute_rare_common=config["quilt1"]["impute_rare_common"],
@@ -117,7 +118,7 @@ rule quilt_run_regular:
             --zilong=FALSE \
             --use_mspbwt=FALSE \
             --Ksubset={params.Ksubset} \
-            --Knew={params.Ksubset} \
+            --Knew={params.Knew} \
             --nGibbsSamples={params.nGibbsSamples} \
             --use_hapMatcherR={params.lowram} \
             --impute_rare_common={params.impute_rare_common} \
@@ -267,6 +268,7 @@ rule quilt_run_mspbwt:
         start=get_quilt_chunk_region_start,
         end=get_quilt_chunk_region_end,
         Ksubset=config["quilt2"]["Ksubset"],
+        Knew=config["quilt2"]["Knew"],
         nGibbsSamples=config["quilt2"]["nGibbsSamples"],
         n_seek_its=config["quilt2"]["n_seek_its"],
         lowram=config["quilt2"]["lowram"],
@@ -303,7 +305,8 @@ rule quilt_run_mspbwt:
             --use_mspbwt=TRUE \
             --mspbwtM={params.mspbwtM} \
             --mspbwtL={params.mspbwtL} \
-            --Knew={params.Ksubset} \
+            --Ksubset={params.Ksubset} \
+            --Knew={params.Knew} \
             --nGibbsSamples={params.nGibbsSamples} \
             --n_seek_its={params.n_seek_its} \
             --rare_af_threshold={params.rare_af_threshold} \

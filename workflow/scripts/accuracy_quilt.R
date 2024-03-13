@@ -55,7 +55,7 @@ saveRDS(accuracy_by_af, snakemake@output[["rds"]])
 
 wong <- c("#e69f00", "#d55e00", "#56b4e9", "#cc79a7", "#009e73", "#0072b2", "#f0e442")
 
-pdf(paste0(snakemake@output[["rds"]], ".pdf"), w = 12, h = 6)
+png(paste0(snakemake@output[["rds"]], ".png"), w = 12, h = 6, res=300, units="in")
 
 par(mfrow = c(1, 2))
 

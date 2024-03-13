@@ -70,7 +70,7 @@ mycols <- c(QUILT2 = "#e69f00", GLIMPSE2 = "#d55e00", QUILT1 = "#56b4e9", GLIMPS
 
 out <- out[order(out$d, out$m),]
 
-pdf(paste0(snakemake@output[["rds"]], ".pdf"), h=7,w=7)
+png(paste0(snakemake@output[["rds"]], ".png"), h=7,w=7, res=300, units="in")
 a <- c(seq(4), seq(6,9), seq(11,14), seq(16,19))
 boxplot(v ~ m + d, data=out, col=mycols[unique(out$m)],
         at = a, cex.lab=2.0, cex.axis = 1.5,

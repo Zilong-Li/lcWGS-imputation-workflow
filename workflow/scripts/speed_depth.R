@@ -51,7 +51,7 @@ names(rams) <- groups
 mycols <- c("#e69f00", "#d55e00", "#56b4e9", "#cc79a7", "#009e73", "#0072b2", "#f0e442")
 palette(mycols)
 
-pdf(paste0(snakemake@output[["rds"]], ".pdf"), w = 12, h = 6)
+png(paste0(snakemake@output[["rds"]], ".png"), w = 12, h = 6, units="in", res=300)
 for(i in 1:length(groups)) {
   par(mfrow = c(1, 2))
   boxplot(times[[i]], col = 1:4, ylab = "Runtime in Minutes", main = paste("Sequencing depth ", groups[i], "x"))

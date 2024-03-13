@@ -76,7 +76,7 @@ names(r2_dosage_by_af) <- paste0(as.character(groups), "x")
 
 saveRDS(r2_dosage_by_af, snakemake@output[["rds"]])
 
-pdf(paste0(snakemake@output[["rds"]], ".pdf"), w = 12, h = 6)
+png(paste0(snakemake@output[["rds"]], ".png"), w = 12, h = 6, res = 300, units = "in")
 
 a1 <- r2_dosage_by_af[[1]]
 x <- a1$bin[!sapply(a1[, 2], is.na)] # remove AF bin with NULL results
