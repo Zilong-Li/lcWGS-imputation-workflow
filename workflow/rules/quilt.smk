@@ -115,7 +115,6 @@ rule quilt_run_regular:
             --regionEnd={params.end} \
             --buffer={params.buffer} \
             --nGen={params.nGen} \
-            --zilong=FALSE \
             --use_mspbwt=FALSE \
             --Ksubset={params.Ksubset} \
             --Knew={params.Knew} \
@@ -140,6 +139,18 @@ rule quilt_ligate_regular:
             "{chrom}",
             "quilt.down{depth}x.regular.{chrom}.vcf.gz",
         ),
+        sample=os.path.join(
+            OUTDIR_QUILT1,
+            "refsize{size}",
+            "{chrom}",
+            "quilt.down{depth}x.regular.{chrom}.bcf.sample",
+        ),
+        tmp=temp(os.path.join(
+            OUTDIR_QUILT1,
+            "refsize{size}",
+            "{chrom}",
+            "quilt.down{depth}x.regular.{chrom}.bcf",
+        )),
         lst=temp(
             os.path.join(
                 OUTDIR_QUILT1,
@@ -158,6 +169,7 @@ rule quilt_ligate_regular:
     params:
         N="quilt_ligate_regular",
         extra=config["extra_buffer_in_quilt"],
+        sample=config["samples"],
     conda:
         "../envs/quilt.yaml"
     shell:
@@ -165,13 +177,14 @@ rule quilt_ligate_regular:
         ( \
         if [ {params.extra} -gt 0 ];then \
            echo {input} | tr ' ' '\n' > {output.lst} && \
-           bcftools concat --ligate --file-list {output.lst} --output-type z --threads 4 -o {output.vcf} && \
-           bcftools index -f {output.vcf} \
+           bcftools concat --ligate --file-list {output.lst} --threads 4 -o {output.tmp} && \
         ; else \
            echo {input} | tr ' ' '\n' > {output.lst} && \
-           bcftools concat --file-list {output.lst} --output-type z --threads 4 -o {output.vcf} && \
-           bcftools index -f {output.vcf} \
-        ; fi \
+           bcftools concat --file-list {output.lst} --threads 4 -o {output.tmp} \
+        ; fi 
+        awk 'NR>1 {{ print $1 }}' {params.sample} > {output.sample} && \
+        bcftools reheader -s {output.sample} -o {output.vcf} {output.tmp} && \
+        bcftools index -f {output.vcf}
         ) &> {log}
         """
 
@@ -301,7 +314,6 @@ rule quilt_run_mspbwt:
             --regionEnd={params.end} \
             --buffer={params.buffer} \
             --nGen={params.nGen} \
-            --zilong=FALSE \
             --use_mspbwt=TRUE \
             --mspbwtM={params.mspbwtM} \
             --mspbwtL={params.mspbwtL} \
@@ -326,6 +338,18 @@ rule quilt_ligate_mspbwt:
             "{chrom}",
             "quilt.down{depth}x.mspbwt.{chrom}.vcf.gz",
         ),
+        sample=os.path.join(
+            OUTDIR_QUILT2,
+            "refsize{size}",
+            "{chrom}",
+            "quilt.down{depth}x.mspbwt.{chrom}.bcf.sample",
+        ),
+        tmp=temp(os.path.join(
+            OUTDIR_QUILT2,
+            "refsize{size}",
+            "{chrom}",
+            "quilt.down{depth}x.mspbwt.{chrom}.bcf",
+        )),
         lst=temp(
             os.path.join(
                 OUTDIR_QUILT2,
@@ -344,6 +368,7 @@ rule quilt_ligate_mspbwt:
     params:
         N="quilt_ligate_mspbwt",
         extra=config["extra_buffer_in_quilt"],
+        sample=config["samples"],
     conda:
         "../envs/quilt.yaml"
     shell:
@@ -351,12 +376,13 @@ rule quilt_ligate_mspbwt:
         ( \
         if [ {params.extra} -gt 0 ];then \
            echo {input} | tr ' ' '\n' > {output.lst} && \
-           bcftools concat --ligate --file-list {output.lst} --output-type z --threads 4 -o {output.vcf} && \
-           bcftools index -f {output.vcf} \
+           bcftools concat --ligate --file-list {output.lst} --threads 4 -o {output.tmp} \
         ; else \
            echo {input} | tr ' ' '\n' > {output.lst} && \
-           bcftools concat --file-list {output.lst} --output-type z --threads 4 -o {output.vcf} && \
-           bcftools index -f {output.vcf} \
-        ; fi \
+           bcftools concat --file-list {output.lst} --threads 4 -o {output.tmp} \
+        ; fi 
+        awk 'NR>1 {{ print $1 }}' {params.sample} > {output.sample} && \
+        bcftools reheader -s {output.sample} -o {output.vcf} {output.tmp} && \
+        bcftools index -f {output.vcf}
         ) &> {log}
         """

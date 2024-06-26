@@ -45,7 +45,12 @@ def get_all_results():
     elif RUN == "F1":
         return get_accuracy_f1_plots()
     elif RUN == "V2":
-        return get_speed_glimpse2_plots(), get_speed_quilt_mspbwt_plots()
+        return (
+            get_quilt_mspbwt_accuracy(),
+            get_speed_quilt_mspbwt_plots(),
+            get_glimpse2_accuracy(),
+            get_speed_glimpse2_plots(),
+        )
     elif RUN == "speed":
         return get_speed_all_plots()
     elif RUN == "test":
