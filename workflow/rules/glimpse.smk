@@ -1,12 +1,11 @@
-
 rule glimpse2_prepare_panel:
     input:
-        refvcf=rules.subset_refpanel_by_region2.output.vcf,
+        refvcf=rules.subset_refpanel_by_chunkid.output.vcf,
     output:
-        os.path.join(OUTDIR_GLIMPSE2, "binary{size}", "{chrom}.{start}.{end}.spbwt"),
+        os.path.join(OUTDIR_GLIMPSE2, "binary{size}", "{chrom}.chunk_{chunkid}.spbwt"),
     log:
         os.path.join(
-            OUTDIR_GLIMPSE2, "binary{size}", "{chrom}.{start}.{end}.spbwt.llog"
+            OUTDIR_GLIMPSE2, "binary{size}", "{chrom}.chunk_{chunkid}.spbwt.llog"
         ),
     params:
         N="glimpse2_prepare_panel",
@@ -48,31 +47,29 @@ rule glimpse2_phase:
         refbin=rules.glimpse2_prepare_panel.output,
         bams=rules.bamlist.output,
     output:
-        temp(
-            os.path.join(
-                OUTDIR_GLIMPSE2,
-                "refsize{size}",
-                "{chrom}",
-                "down{depth}x.{chrom}.{start}.{end}.bcf",
-            )
+        os.path.join(
+            OUTDIR_GLIMPSE2,
+            "refsize{size}",
+            "{chrom}",
+            "down{depth}x.chunk_{chunkid}.bcf",
         ),
     log:
         os.path.join(
             OUTDIR_GLIMPSE2,
             "refsize{size}",
             "{chrom}",
-            "down{depth}x.{chrom}.{start}.{end}.bcf.llog",
+            "down{depth}x.chunk_{chunkid}.bcf.llog",
         ),
     params:
         N="glimpse2_phase",
         time=config["time"],
         irg=get_glimpse_chunki_irg,
         org=get_glimpse_chunki_org,
-        burnin=config["glimpse"]["burnin"],
-        main=config["glimpse"]["main"],
-        pbwtL=config["glimpse"]["pbwt-depth"],
-        pbwtS=config["glimpse"]["pbwt-modulo"],
-        ne=config["glimpse"]["ne"],
+        burnin=config["glimpse2"]["burnin"],
+        main=config["glimpse2"]["main"],
+        pbwtL=config["glimpse2"]["pbwt-depth"],
+        pbwtS=config["glimpse2"]["pbwt-modulo-cm"],
+        ne=config["glimpse2"]["ne"],
     conda:
         "../envs/pandas.yaml"
     shell:
@@ -84,7 +81,7 @@ rule glimpse2_phase:
             --burnin {params.burnin} \
             --main {params.main} \
             --pbwt-depth {params.pbwtL} \
-            --pbwt-modulo {params.pbwtS} \
+            --pbwt-modulo-cm {params.pbwtS} \
             --ne {params.ne} \
             --output {output} \
         ) &> {log}
@@ -99,13 +96,13 @@ rule glimpse2_ligate:
             OUTDIR_GLIMPSE2,
             "refsize{size}",
             "{chrom}",
-            "down{depth}x.{chrom}.vcf.gz",
+            "down{depth}x.{chrom}.bcf",
         ),
         sample=os.path.join(
             OUTDIR_GLIMPSE2,
             "refsize{size}",
             "{chrom}",
-            "down{depth}x.{chrom}.vcf.gz.sample",
+            "down{depth}x.{chrom}.bcf.sample",
         ),
         tmp=temp(
             os.path.join(
@@ -115,20 +112,17 @@ rule glimpse2_ligate:
                 "stupid.down{depth}x.{chrom}.bcf",
             )
         ),
-        lst=temp(
-            os.path.join(
-                OUTDIR_GLIMPSE2,
-                "refsize{size}",
-                "{chrom}",
-                "down{depth}x.{chrom}.vcf.list",
-            ),
+        lst=os.path.join(
+            OUTDIR_GLIMPSE2,
+            "refsize{size}",
+            "{chrom}",
+            "down{depth}x.{chrom}.vcf.list",
         ),
     log:
         os.path.join(
             OUTDIR_GLIMPSE2, "refsize{size}", "{chrom}", "down{depth}x.{chrom}.llog"
         ),
     params:
-        N="glimpse2_ligate",
         sample=config["samples"],
     conda:
         "../envs/pandas.yaml"
@@ -146,70 +140,70 @@ rule glimpse_prepare_glvcf:
     input:
         bams=rules.bamlist.output,
         sites=lambda wildcards: expand(
-            rules.concat_refpanel_sites_by_region2.output.sites,
+            rules.concat_refpanel_sites_by_chunks.output.sites,
             size=config["refsize"],
             allow_missing=True,
         ),
         tsv=lambda wildcards: expand(
-            rules.concat_refpanel_sites_by_region2.output.tsv,
+            rules.concat_refpanel_sites_by_chunks.output.tsv,
             size=config["refsize"],
             allow_missing=True,
         ),
     output:
-        vcf=os.path.join(OUTDIR_GLIMPSE, "glvcf", "{chrom}", "down{depth}x.{chrom}.bcf"),
+        vcf=os.path.join(
+            OUTDIR_GLIMPSE, "glvcf", "{chrom}", "down{depth}x.{chrom}.vcf.gz"
+        ),
         csi=os.path.join(
-            OUTDIR_GLIMPSE, "glvcf", "{chrom}", "down{depth}x.{chrom}.bcf.csi"
+            OUTDIR_GLIMPSE, "glvcf", "{chrom}", "down{depth}x.{chrom}.vcf.gz.csi"
         ),
     log:
-        os.path.join(OUTDIR_GLIMPSE, "glvcf/{chrom}/down{depth}.{chrom}.bcf.llog"),
+        os.path.join(OUTDIR_GLIMPSE, "glvcf/{chrom}/down{depth}.{chrom}.vcf.gz.llog"),
     params:
-        N="glimpse_prepare_glvcf",
         time=config["time"],
         fasta=config["genome"]["fasta"],
-        bq=config["glimpse"]["bq"],
-        mq=config["glimpse"]["mq"],
+        bq=config["glimpse1"]["bq"],
+        mq=config["glimpse1"]["mq"],
     conda:
         "../envs/pandas.yaml"
     shell:
         """
-        (
-        {params.time} -v bcftools mpileup -q {params.bq} -Q {params.mq} -f {params.fasta} -I -E -A -a 'FORMAT/DP' -r {wildcards.chrom} -T {input.sites[0]} -b {input.bams} -Ou | \
-            bcftools call -Aim -C alleles -T {input.tsv[0]} -Ob -o {output.vcf} && bcftools index -f {output.vcf} \
+        ( \
+        {params.time} -v bcftools mpileup -q {params.bq} -Q {params.mq} -f {params.fasta} \
+            -I -E -A -a 'FORMAT/DP' -r {wildcards.chrom} -T {input.sites[0]} \
+            -b {input.bams} -Ou | bcftools call -Aim -C alleles \
+            -T {input.tsv[0]} -Ob -o {output.vcf} && bcftools index -f {output.vcf} \
         ) &> {log}
         """
 
 
 rule glimpse_phase:
     input:
-        refvcf=rules.subset_refpanel_by_region2.output.vcf,
+        refvcf=rules.subset_refpanel_by_chunkid.output.vcf,
         glvcf=rules.glimpse_prepare_glvcf.output.vcf,
     output:
-        temp(
-            os.path.join(
-                OUTDIR_GLIMPSE,
-                "refsize{size}",
-                "{chrom}",
-                "down{depth}x.{chrom}.{start}.{end}.bcf",
-            )
+        os.path.join(
+            OUTDIR_GLIMPSE,
+            "refsize{size}",
+            "{chrom}",
+            "down{depth}x.chunk_{chunkid}.bcf",
         ),
     log:
         os.path.join(
             OUTDIR_GLIMPSE,
             "refsize{size}",
             "{chrom}",
-            "down{depth}x.{chrom}.{start}.{end}.bcf.llog",
+            "down{depth}x.chunk_{chunkid}.bcf.llog",
         ),
     params:
-        N="glimpse_phase",
         time=config["time"],
         gmap=if_use_glimpse_map_in_refpanel,
         irg=get_glimpse_chunki_irg,
         org=get_glimpse_chunki_org,
-        burnin=config["glimpse"]["burnin"],
-        main=config["glimpse"]["main"],
-        pbwtL=config["glimpse"]["pbwt-depth"],
-        pbwtS=config["glimpse"]["pbwt-modulo"],
-        ne=config["glimpse"]["ne"],
+        burnin=config["glimpse1"]["burnin"],
+        main=config["glimpse1"]["main"],
+        pbwtL=config["glimpse1"]["pbwt-depth"],
+        pbwtS=config["glimpse1"]["pbwt-modulo"],
+        ne=config["glimpse1"]["ne"],
     conda:
         "../envs/pandas.yaml"
     shell:
@@ -254,13 +248,11 @@ rule glimpse_ligate:
         vcf=os.path.join(
             OUTDIR_GLIMPSE, "refsize{size}", "{chrom}", "down{depth}x.{chrom}.bcf"
         ),
-        lst=temp(
-            os.path.join(
-                OUTDIR_GLIMPSE,
-                "refsize{size}",
-                "{chrom}",
-                "down{depth}x.{chrom}.vcf.list",
-            ),
+        lst=os.path.join(
+            OUTDIR_GLIMPSE,
+            "refsize{size}",
+            "{chrom}",
+            "down{depth}x.{chrom}.vcf.list",
         ),
     log:
         os.path.join(
@@ -273,5 +265,6 @@ rule glimpse_ligate:
     shell:
         """
         echo {input} | tr ' ' '\\n' > {output.lst}
-        GLIMPSE_ligate --input {output.lst} --output {output.vcf} && bcftools index -f {output.vcf}
+        GLIMPSE_ligate --input {output.lst} --output {output.vcf}.bcf && bcftools index -f {output.vcf}.bcf
+        GLIMPSE_sample --input {output.vcf}.bcf --solve --output {output.vcf} && bcftools index -f {output.vcf}
         """

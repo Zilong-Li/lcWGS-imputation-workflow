@@ -1,4 +1,3 @@
-
 ## samtools depth -a $bam | awk '{s+=\$3;} END{print s/NR}'
 rule downsample_bam:
     output:
@@ -20,6 +19,12 @@ rule downsample_bam:
         ;else\
             FRAC=$(echo "scale=4 ; {wildcards.depth} / {params.depth}" | bc -l) && \
             samtools view -s $FRAC -o {output} {params.bam} {wildcards.chrom} && samtools index {output} \
+        ; fi
+        if samtools view -H {output} | grep "^@RG" | grep SM > /dev/null; then \
+            echo sm exists \
+        ;else
+            samtools addreplacerg -@ 2 -r '@RG\tID:{wildcards.sample}\tSM:{wildcards.sample}' -o {output}.tmp.bam {output} && \
+            mv {output}.tmp.bam {output} && samtools index {output} \
         ; fi
         ) &> {log}
         """

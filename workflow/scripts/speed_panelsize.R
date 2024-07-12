@@ -36,7 +36,7 @@ dl.zilong <- lapply(snakemake@input[["zilong"]], read.table)
 dl.glimpse1 <- lapply(snakemake@input[["glimpse1"]], read.table)
 dl.glimpse2 <- lapply(snakemake@input[["glimpse2"]], read.table)
 rds <- list(QUILT2 = dl.zilong, GLIMPSE2 = dl.glimpse2, QUILT1 = dl.regular, GLIMPSE1 = dl.glimpse1)
-rds <- lapply(rds,function(l) {names(l) <- paste0("size=",groups); l} )
+rds <- lapply(rds,function(l) {names(l) <- paste0("N=",groups); l} )
 
 saveRDS(rds, snakemake@output[["rds"]])
 rds <- readRDS(snakemake@output[["rds"]])
@@ -50,7 +50,7 @@ wong <- c("#e69f00", "#d55e00", "#56b4e9", "#cc79a7", "#009e73", "#0072b2", "#f0
 mycols <- wong
 
 
-pdf(paste0(snakemake@output[["rds"]], ".pdf"), w = 12, h = 6)
+png(paste0(snakemake@output[["rds"]], ".png"), w = 12, h = 6, units="in", res=300)
 par(mfrow = c(1, 2))
 plot(groups, times[, 1], type = "b", lwd = 1.0, pch = 1, col = mycols[1], ylab = "Runtime in Minutes", xlab = "Reference panel size", ylim = c(min(times) * 0.9, max(times) * 1.1), log = 'y')
 lines(groups, times[, 2], type = "b", lwd = 1.0, pch = 1, col = mycols[2])

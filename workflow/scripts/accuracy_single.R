@@ -1,31 +1,33 @@
 
 snakemake@source("common.R")
 
-acc_r2_all <- function(d0, d1) {
-  id <- intersect(rownames(d0), rownames(d1))
-  y1 <- cor(as.vector(d0[id,]), as.vector(d1[id,]), use = "pairwise.complete")**2
-}
-
 acc_r2_by_af <- function(d0, d1, af, bins) {
-  id <- intersect(rownames(d0), rownames(d1))
-  res <- r2_by_freq(breaks = bins, af[id], truthG = d0[id,], testDS = d1[id,])
+  id <- intersect(intersect(rownames(d0), rownames(d1)), names(af))
+  res <- r2_by_freq(bins, af, d0, d1, which_snps = id, flip = TRUE)
   as.data.frame(cbind(bin = bins[-1], single = res[, "simple"], orphan = res[, "simple"]))
 }
 
 groups <- as.numeric(snakemake@config[["downsample"]])
+refsize0 <- 2 * as.integer(system(paste("bcftools query -l", snakemake@params$vcf, "|", "wc", "-l"), intern = TRUE))
 
-df.truth <- read.table(snakemake@input[["truth"]])
-df.truth <- sapply(seq(1, dim(df.truth)[2] - 1, 2), function(i) {
-  rowSums(df.truth[, (i + 1):(i + 2)])
-}) # matrix: nsnps x nsamples
-rownames(df.truth) <- read.table(snakemake@input[["truth"]])[,1]
-af <- as.numeric(read.table(snakemake@input[["af"]])[, 2])
-names(af) <- read.table(snakemake@input[["af"]])[, 1]
+truth <- fread(snakemake@input[["truth"]], data.table = F)
+df.truth <- sapply(seq(1, dim(truth)[2] - 1, 2), function(i) {
+  rowSums(truth[, (i + 1):(i + 2)])
+}) # dosage matrix: nsnps x nsamples
+rownames(df.truth) <- truth[,1]
+truth <- truth[,-1] ## remove first id column
+rownames(truth) <- rownames(df.truth)
+
+d.af <- fread(snakemake@input[["af"]], data.table = F)
+af <- as.numeric(d.af[, 2])
+names(af) <- d.af[, 1]
+rm(d.af)
+af <- af[!is.na(af)]
 
 ## SNPs with (1-af) > 0.0005 & (1-af) < 0.001 are all imputed hom ALT and truth hom ALT. but those are stupidly easy to impute and don’t tell you anything
 ## af <- ifelse(af>0.5, 1-af, af)
 
-dl.single <- lapply(snakemake@input[["single"]], parse.quilt.gts)
+dl.single <- lapply(snakemake@input[["single"]], parse.imputed.gts2)
 
 bins <- sort(unique(c(
   c(0, 0.01 / 100, 0.02 / 100, 0.05 / 100),
@@ -34,22 +36,59 @@ bins <- sort(unique(c(
   seq(0.1, 0.5, length.out = 5)
 )))
 
-accuracy <- matrix(sapply(1:length(groups), function(i) {
-  acc_r2_all(df.truth, dl.single[[i]])
-}), ncol = length(groups))
+if(refsize0 %/% 1e3 > 500) {
+  bins <- sort(unique(c(
+    c(0, 0.01, 0.02 , 0.05 ) / 1e4,
+    c(0, 0.01, 0.02 , 0.05 ) / 1e3,
+    c(0, 0.01, 0.02 , 0.05 ) / 1e2,
+    c(0, 0.01, 0.02 , 0.05 ) / 1e1,
+    c(0, 0.01, 0.02 , 0.05 ) / 1e0,
+    seq(0.1, 0.5, length.out = 5)
+  )))
+}
+
+if(refsize0 %/% 1e3 < 10) {
+  bins <- sort(unique(c(
+    c(0, 0.01, 0.02 , 0.05 ) / 1e1,
+    c(0, 0.01, 0.02 , 0.05 ) / 1e0,
+    seq(0.1, 0.5, length.out = 5)
+  )))
+}
+
+
+phasing_errors <- lapply(seq(length(groups)), function(i) {
+  n <- ncol(dl.single[[i]])
+  id <- intersect(rownames(truth), rownames(dl.single[[i]]))
+  single <- dl.single[[i]][,-seq(3, n, by = 3 )] # get phased genotypes
+  ll <- acc_phasing_single_matrix(truth, single, id)
+  ll
+})
 
 accuracy_by_af <- lapply(1:length(groups), function(i) {
-  acc_r2_by_af(df.truth, dl.single[[i]], af, bins)
+  n <- ncol(dl.single[[i]])
+  single <- dl.single[[i]][,seq(3, n, by = 3 )] # get dosages
+  acc_r2_by_af(df.truth, single, af, bins)
 })
-saveRDS(accuracy_by_af, snakemake@output[["rds"]])
+
+saveRDS(list(accuracy_by_af,phasing_errors), snakemake@output[["rds"]])
 
 wong <- c("#e69f00", "#d55e00", "#56b4e9", "#cc79a7", "#009e73", "#0072b2", "#f0e442")
 mycols <- wong[1:4]
 
-pdf(snakemake@output[["pdf"]], w = 12, h = 6)
+png(snakemake@output[["pdf"]], w = 12, h = 6, res = 300, units = "in")
 par(mfrow = c(1, 2))
-plot(groups, accuracy[1, ], type = "b", lwd = 1.0, pch = 1, col = mycols[1], ylab = "Aggregated R2 for the chromosome", xlab = "Samples sequencing depth", ylim = c(0.9 * min(accuracy), 1.0))
-legend("bottomright", legend = c(snakemake@params[["N"]]), col = mycols, pch = 1, lwd = 1.5, cex = 1.1, xjust = 0, yjust = 1, bty = "n")
+
+pse <- matrix(sapply(phasing_errors, function(ls) {
+  as.numeric(sapply(ls, "[[", "pse"))
+}))
+
+boxplot(pse, ylab = "PSE %", main = paste("rule=", snakemake@params[["N"]]))
+nsamples <- nrow(pse)
+for(i in 1:ncol(pse)) {
+  vals <- pse[,i]
+  j <- jitter(rep(i, nsamples), amount=1/4)
+  points(j,  vals,  col = mycols[i],pch = 20)
+}
 
 a1 <- accuracy_by_af[[1]]
 x <- a1$bin[!sapply(a1[, 2], is.na)] # remove AF bin with NA results

@@ -3,15 +3,15 @@ rule collect_truth_gts:
     """would be better to use sites in subrefs"""
     input:
         sites=lambda wildcards: expand(
-            rules.concat_refpanel_sites_by_region2.output.sites,
+            rules.concat_refpanel_sites_by_chunks.output.sites,
             size=config["refsize"],
             allow_missing=True,
         ),
     output:
-        gt=os.path.join(OUTDIR_PANEL, "truth.gts.{chrom}.txt"),
-        af=os.path.join(OUTDIR_PANEL, "af.input.panel.{chrom}.txt"),
-        tmp=temp(os.path.join(OUTDIR_PANEL, "af.input.panel.{chrom}.txt.tmp")),
-        tmp2=temp(os.path.join(OUTDIR_PANEL, "truth.gts.{chrom}.txt.tmp")),
+        gt=os.path.join(OUTDIR_TRUTH, "truth.gts.{chrom}.txt"),
+        af=os.path.join(OUTDIR_TRUTH, "af.input.panel.{chrom}.txt"),
+        tmp=temp(os.path.join(OUTDIR_TRUTH, "af.input.panel.{chrom}.txt.tmp")),
+        tmp2=temp(os.path.join(OUTDIR_TRUTH, "truth.gts.{chrom}.txt.tmp")),
     log:
         os.path.join(OUTDIR_PANEL, "truth.gts.{chrom}.log"),
     params:
@@ -35,7 +35,7 @@ rule collect_truth_gts:
             bcftools +fill-tags {input.sites[0]} -- -t AF |  bcftools query -f '{params.ql1}' > {output.tmp}; \
         fi
         awk '{params.awk}' <(bcftools query -f '{params.ql0}' {input.sites[0]}) {output.tmp} >{output.af}
-        bcftools view -s {params.samples} {params.truth} | bcftools query -f '{params.ql2}' | sed -E 's/\/|\|/\\t/g' > {output.tmp2}
+        bcftools view -s {params.samples} {params.truth} | bcftools view -g ^miss | bcftools query -f '{params.ql2}' | sed -E 's/\/|\|/\\t/g' > {output.tmp2}
         awk '{params.awk2}' <(bcftools query -f '{params.ql0}' {input.sites[0]}) {output.tmp2} >{output.gt}
         ) &> {log}
         """
@@ -90,30 +90,6 @@ rule collect_quilt_mspbwt_imputed_gts:
         """
 
 
-rule collect_quilt_zilong_imputed_gts:
-    input:
-        rules.quilt_ligate_zilong.output.vcf,
-    output:
-        os.path.join(
-            OUTDIR_SUMMARY, "quilt.gts.zilong.panelsize{size}.down{depth}x.{chrom}.txt"
-        ),
-    log:
-        os.path.join(
-            OUTDIR_SUMMARY,
-            "quilt.gts.zilong.panelsize{size}.down{depth}x.{chrom}.llog",
-        ),
-    params:
-        N="collect_quilt_mspbwt_imputed_gts",
-        samples=",".join(SAMPLES.keys()),
-        ql2="%CHROM:%POS:%REF:%ALT[\\t%GT\\t%DS]\\n",
-    conda:
-        "../envs/quilt.yaml"
-    shell:
-        """
-        bcftools query -f '{params.ql2}' -s {params.samples} {input} | sed -E 's/\/|\|/\\t/g' > {output}
-        """
-
-
 rule plot_quilt_regular:
     input:
         truth=rules.collect_truth_gts.output.gt,
@@ -125,47 +101,20 @@ rule plot_quilt_regular:
         ),
     output:
         pdf=os.path.join(
-            OUTDIR_SUMMARY, "quilt.accuracy.regular.panelsize{size}.{chrom}.pdf"
+            OUTDIR_SUMMARY, "quilt.accuracy.regular.panelsize{size}.{chrom}.rds.pdf"
         ),
         rds=os.path.join(
             OUTDIR_SUMMARY, "quilt.accuracy.regular.panelsize{size}.{chrom}.rds"
         ),
     log:
         os.path.join(
-            OUTDIR_SUMMARY, "quilt.accuracy.regular.panelsize{size}.{chrom}.pdf.llog"
+            OUTDIR_SUMMARY, "quilt.accuracy.regular.panelsize{size}.{chrom}.rds.llog"
         ),
     params:
         N="plot_quilt_regular",
+        vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
     resources:
         slots=3,
-    conda:
-        "../envs/quilt.yaml"
-    script:
-        "../scripts/accuracy_single.R"
-
-
-rule plot_quilt_zilong:
-    input:
-        truth=rules.collect_truth_gts.output.gt,
-        af=rules.collect_truth_gts.output.af,
-        single=expand(
-            rules.collect_quilt_zilong_imputed_gts.output,
-            depth=config["downsample"],
-            allow_missing=True,
-        ),
-    params:
-        N="plot_quilt_zilong",
-    output:
-        pdf=os.path.join(
-            OUTDIR_SUMMARY, "quilt.accuracy.zilong.panelsize{size}.{chrom}.pdf"
-        ),
-        rds=os.path.join(
-            OUTDIR_SUMMARY, "quilt.accuracy.zilong.panelsize{size}.{chrom}.rds"
-        ),
-    log:
-        os.path.join(
-            OUTDIR_SUMMARY, "quilt.accuracy.zilong.panelsize{size}.{chrom}.rds.llog"
-        ),
     conda:
         "../envs/quilt.yaml"
     script:
@@ -183,9 +132,10 @@ rule plot_quilt_mspbwt:
         ),
     params:
         N="plot_quilt_mspbwt",
+        vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
     output:
         pdf=os.path.join(
-            OUTDIR_SUMMARY, "quilt.accuracy.mspbwt.panelsize{size}.{chrom}.pdf"
+            OUTDIR_SUMMARY, "quilt.accuracy.mspbwt.panelsize{size}.{chrom}.rds.pdf"
         ),
         rds=os.path.join(
             OUTDIR_SUMMARY, "quilt.accuracy.mspbwt.panelsize{size}.{chrom}.rds"
@@ -214,13 +164,10 @@ rule plot_quilt_accuracy:
             depth=config["downsample"],
             allow_missing=True,
         ),
-        zilong=expand(
-            rules.collect_quilt_zilong_imputed_gts.output,
-            depth=config["downsample"],
-            allow_missing=True,
-        ),
     params:
         N="plot_quilt_accuracy",
+        chunks=lambda wildcards: REFPANEL[wildcards.chrom]["glimpse_chunk"],
+        vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
     output:
         rds=os.path.join(OUTDIR_SUMMARY, "quilt.accuracy.panelsize{size}.{chrom}.rds"),
     log:
@@ -251,7 +198,10 @@ rule collect_glimpse_imputed_gts:
         "../envs/quilt.yaml"
     shell:
         """
-        bcftools query -f '{params.ql2}' -s {params.samples} {input} | sed -E 's/\/|\|/\\t/g' > {output}
+        bcftools query -f '{params.ql2}' -s {params.samples} {input}.bcf | sed -E 's/\/|\|/\\t/g' > {output}.ds
+        bcftools query -f '{params.ql2}' -s {params.samples} {input} | sed -E 's/\/|\|/\\t/g' > {output}.phase
+        Rscript -e "args=commandArgs(trailingOnly=TRUE);library(data.table);d1=fread(args[1],data.table=F);d2=fread(args[2],data.table=F);n=ncol(d1);c=seq(1,n,3)[-1];d1[d1[,1]%in%d2[,1], c]=d2[,c];write.table(d1,args[3],quote=F,row.names=F,col.names=F);" {output}.phase {output}.ds {output}
+        rm -f {output}.ds {output}.phase
         """
 
 
@@ -290,9 +240,10 @@ rule plot_glimpse2_accuracy:
         ),
     params:
         N="plot_glimpse_accuracy",
+        vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
     output:
         pdf=os.path.join(
-            OUTDIR_SUMMARY, "glimpse2.accuracy.panelsize{size}.{chrom}.pdf"
+            OUTDIR_SUMMARY, "glimpse2.accuracy.panelsize{size}.{chrom}.rds.pdf"
         ),
         rds=os.path.join(
             OUTDIR_SUMMARY, "glimpse2.accuracy.panelsize{size}.{chrom}.rds"
@@ -318,8 +269,11 @@ rule plot_glimpse_accuracy:
         ),
     params:
         N="plot_glimpse_accuracy",
+        vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
     output:
-        pdf=os.path.join(OUTDIR_SUMMARY, "glimpse.accuracy.panelsize{size}.{chrom}.pdf"),
+        pdf=os.path.join(
+            OUTDIR_SUMMARY, "glimpse.accuracy.panelsize{size}.{chrom}.rds.pdf"
+        ),
         rds=os.path.join(OUTDIR_SUMMARY, "glimpse.accuracy.panelsize{size}.{chrom}.rds"),
     log:
         os.path.join(
@@ -351,7 +305,7 @@ rule plot_accuracy_panelsize:
             allow_missing=True,
         ),
         zilong=expand(
-            rules.collect_quilt_zilong_imputed_gts.output,
+            rules.collect_quilt_mspbwt_imputed_gts.output,
             size=config["refsize"],
             allow_missing=True,
         ),
@@ -388,7 +342,7 @@ rule plot_accuracy_depth:
             allow_missing=True,
         ),
         zilong=expand(
-            rules.collect_quilt_zilong_imputed_gts.output,
+            rules.collect_quilt_mspbwt_imputed_gts.output,
             depth=config["downsample"],
             allow_missing=True,
         ),
@@ -399,7 +353,72 @@ rule plot_accuracy_depth:
     params:
         N="plot_accuracy_depth",
         chunks=lambda wildcards: REFPANEL[wildcards.chrom]["glimpse_chunk"],
+        vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
     conda:
         "../envs/quilt.yaml"
     script:
         "../scripts/accuracy_depth.R"
+
+
+rule plot_accuracy_v2:
+    input:
+        glimpse2=expand(
+            rules.glimpse2_ligate.output.vcf,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+        zilong=expand(
+            rules.quilt_ligate_mspbwt.output.vcf,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+    output:
+        rds=os.path.join(OUTDIR_SUMMARY, "all.accuracy.v2.panelsize{size}.{chrom}.rds"),
+    log:
+        os.path.join(OUTDIR_SUMMARY, "all.accuracy.v2.panelsize{size}.{chrom}.rds.llog"),
+    params:
+        samples=",".join(SAMPLES.keys()),
+        vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
+        truth=lambda wildcards: REFPANEL[wildcards.chrom]["truth"],
+    conda:
+        "../envs/quilt.yaml"
+    script:
+        "../scripts/accuracy_version2.R"
+
+
+rule plot_accuracy_f1:
+    input:
+        glimpse1=expand(
+            rules.glimpse_ligate.output.vcf,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+        glimpse2=expand(
+            rules.glimpse2_ligate.output.vcf,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+        regular=expand(
+            rules.quilt_ligate_regular.output.vcf,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+        zilong=expand(
+            rules.quilt_ligate_mspbwt.output.vcf,
+            depth=config["downsample"],
+            allow_missing=True,
+        ),
+    output:
+        rds=os.path.join(OUTDIR_SUMMARY, "all.accuracy.f1.panelsize{size}.{chrom}.rds"),
+    log:
+        os.path.join(OUTDIR_SUMMARY, "all.accuracy.f1.panelsize{size}.{chrom}.rds.llog"),
+    params:
+        N="plot_accuracy_f1",
+        samples=",".join(SAMPLES.keys()),
+        vcf=lambda wildcards: REFPANEL[wildcards.chrom]["vcf"],
+        truth=lambda wildcards: REFPANEL[wildcards.chrom]["truth"],
+    conda:
+        "../envs/quilt.yaml"
+    threads: 4
+    script:
+        "../scripts/accuracy_f1score.R"

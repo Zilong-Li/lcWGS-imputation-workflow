@@ -1,2 +1,2 @@
-chr	vcf	start	end	truth	region	af	quilt_map	glimpse_map
-chr20	data/refpanel/chr20.vcf.gz	82590	64283878	data/refpanel/chr20.vcf.gz	10000000-15000000	data/refpanel/af.txt	data/refpanel/quilt_genetic_map.txt	data/refpanel/glimpse_genetic_map.txt
+chr	vcf	start	end
+chr20	data/chr20.vcf.gz	82590	64283878
