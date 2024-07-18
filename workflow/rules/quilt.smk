@@ -145,12 +145,14 @@ rule quilt_ligate_regular:
             "{chrom}",
             "quilt.down{depth}x.regular.{chrom}.bcf.sample",
         ),
-        tmp=temp(os.path.join(
-            OUTDIR_QUILT1,
-            "refsize{size}",
-            "{chrom}",
-            "quilt.down{depth}x.regular.{chrom}.bcf",
-        )),
+        tmp=temp(
+            os.path.join(
+                OUTDIR_QUILT1,
+                "refsize{size}",
+                "{chrom}",
+                "quilt.down{depth}x.regular.{chrom}.bcf",
+            )
+        ),
         lst=temp(
             os.path.join(
                 OUTDIR_QUILT1,
@@ -344,12 +346,14 @@ rule quilt_ligate_mspbwt:
             "{chrom}",
             "quilt.down{depth}x.mspbwt.{chrom}.bcf.sample",
         ),
-        tmp=temp(os.path.join(
-            OUTDIR_QUILT2,
-            "refsize{size}",
-            "{chrom}",
-            "quilt.down{depth}x.mspbwt.{chrom}.bcf",
-        )),
+        tmp=temp(
+            os.path.join(
+                OUTDIR_QUILT2,
+                "refsize{size}",
+                "{chrom}",
+                "quilt.down{depth}x.mspbwt.{chrom}.bcf",
+            )
+        ),
         lst=temp(
             os.path.join(
                 OUTDIR_QUILT2,

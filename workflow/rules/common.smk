@@ -364,14 +364,13 @@ def collect_quilt_mspbwt_logs(wildcards):
 
 
 def get_refpanel_chunks(chrom):
-    """use GLIMPSE_chunk if defined, otherwise split the chromosome by chunks"""
-    extra_buffer_in_panel = 1000000
-    d = dict()
-    if REFPANEL[chrom].get("glimpse_chunk"):
-        d = get_glimpse_chunks_in(REFPANEL[chrom]["glimpse_chunk"])
+    """use quilt_chunk or glimpse_chunk if defined, otherwise split the chromosome by chunks"""
+    if REFPANEL[chrom].get("quilt_chunk"):
+        return get_glimpse_chunks_in(REFPANEL[chrom]["quilt_chunk"])
+    elif REFPANEL[chrom].get("glimpse_chunk"):
+        return get_glimpse_chunks_in(REFPANEL[chrom]["glimpse_chunk"])
     else:
-        d = get_chunks_by_chrom(chrom)
-    return d
+        return get_chunks_by_chrom(chrom)
 
 
 def get_refpanel_chunk_region(chrom, chunkid):

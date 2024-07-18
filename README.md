@@ -3,15 +3,16 @@
 [![Snakemake](https://img.shields.io/badge/snakemake-≥6.3.0-brightgreen.svg)](https://snakemake.github.io)
 
 
-This workflow is for imputation using low coverage whole genome sequencing data with *QUILT*. Also, it can perform benchmarking for both *QUILT* and *GLIMPSE* given different scenarios.
+This workflow is for imputation using low coverage whole genome sequencing data with *QUILT*. Also, it can perform benchmarking for both *QUILTs* and *GLIMPSEs* given different scenarios.
 
 ## Dependencies
 
-- QUILT (QUILT_prepare_reference.R, QUILT.R)
+- [QUILT2](https://github.com/rwdavies/QUILT) (QUILT_prepare_reference.R, QUILT.R)
 - GLIMPSE v2.0 (GLIMPSE2_split_reference, GLIMPSE2_phase, GLIMPSE2_ligate)
 - GLIMPSE v1.1.1 (GLIMPSE_chunk, GLIMPSE_phase, GLIMPSE_ligate)
 - samtools
 - bcftools
+- [vcfppR](https://github.com/Zilong-Li/vcfppR)
 
 ## Usage
 
