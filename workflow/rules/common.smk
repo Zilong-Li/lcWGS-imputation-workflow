@@ -44,8 +44,16 @@ def get_all_results():
         return get_refpanel_sites()
     elif RUN == "accuracy":
         return get_accuracy_panelsize_plots(), get_accuracy_depth_plots()
-    elif RUN == "F1":
-        return get_accuracy_f1_plots()
+    elif RUN == "speed":
+        return get_speed_all_plots()
+    elif RUN == "quilt1":
+        return get_quilt_regular_results()
+    elif RUN == "quilt2":
+        return get_quilt_mspbwt_results()
+    elif RUN == "glimpse1":
+        return get_glimpse_results()
+    elif RUN == "glimpse2":
+        return get_glimpse2_results()
     elif RUN == "V2":
         return (
             get_quilt_mspbwt_accuracy(),
@@ -53,34 +61,13 @@ def get_all_results():
             get_glimpse2_accuracy(),
             get_speed_glimpse2_plots(),
         )
-    elif RUN == "speed":
-        return get_speed_all_plots()
-    elif RUN == "test":
-        return get_quilt_accuracy()
-    elif RUN == "quilt":
+    elif RUN == "quilt_all":
         return (
             get_quilt_regular_accuracy(),
             get_speed_quilt_regular_plots(),
             get_quilt_mspbwt_accuracy(),
             get_speed_quilt_mspbwt_plots(),
         )
-    elif RUN == "fast":
-        return (
-            get_quilt_regular_accuracy(),
-            get_speed_quilt_regular_plots(),
-            get_quilt_mspbwt_accuracy(),
-            get_speed_quilt_mspbwt_plots(),
-            get_glimpse2_accuracy(),
-            get_speed_glimpse2_plots(),
-        )
-    elif RUN == "quilt1":
-        return get_quilt_regular_accuracy(), get_speed_quilt_regular_plots()
-    elif RUN == "quilt2":
-        return get_speed_quilt_mspbwt_plots()
-    elif RUN == "glimpse1":
-        return get_glimpse_accuracy(), get_speed_glimpse_plots()
-    elif RUN == "glimpse2":
-        return get_glimpse2_accuracy(), get_speed_glimpse2_plots()
     else:
         raise RuntimeError("this is an invalid scenario!")
 
@@ -232,6 +219,15 @@ def get_quilt_mspbwt_results():
 def get_glimpse_results():
     return expand(
         rules.glimpse_ligate.output,
+        chrom=config["chroms"],
+        size=config["refsize"],
+        depth=config["downsample"],
+    )
+
+
+def get_glimpse2_results():
+    return expand(
+        rules.glimpse2_ligate.output,
         chrom=config["chroms"],
         size=config["refsize"],
         depth=config["downsample"],

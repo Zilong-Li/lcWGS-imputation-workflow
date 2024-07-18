@@ -14,6 +14,14 @@ This workflow is for imputation using low coverage whole genome sequencing data 
 - bcftools
 - [vcfppR](https://github.com/Zilong-Li/vcfppR)
 
+## Quick start
+
+```
+git clone https://github.com/Zilong-Li/lcWGS-imputation-workflow
+cd .test && ln -s ../workflow
+snakemake -j10 -n
+```
+
 ## Usage
 
 The usage of this workflow is described in the [Snakemake Workflow Catalog](https://snakemake.github.io/snakemake-workflow-catalog/?usage=Zilong-Li%2FlcWGS-imputation-workflow).

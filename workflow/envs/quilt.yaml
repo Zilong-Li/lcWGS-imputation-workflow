@@ -1,6 +1,7 @@
 channels:
-  - bioconda
-  - conda-forge
+ - r
 dependencies:
-  - r-stitch =1.6.6
-  - r-quilt =1.0.3
+ - r=4.2.2
+ - r-stitch=1.7.0
+ - r-mspbwt=0.1.0
+ - r-quilt=2.0.0

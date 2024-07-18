@@ -14,8 +14,8 @@ refsize: [0]
 
 chroms: ['chr20']
 
-#'all', 'speed', 'accuracy', 'quilt','glimpse','quilt1', 'quilt2', 'glimpse1',  'glimpse2'
-scenario: 'all'
+#'all', 'speed', 'accuracy', 'quilt1', 'quilt2', 'glimpse1',  'glimpse2'
+scenario: 'quilt2'
 
 # global programs
 time: "/usr/bin/time"

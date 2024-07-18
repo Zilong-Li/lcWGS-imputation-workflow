@@ -20,3 +20,10 @@ Modify the list of `refsize` in `config/config.yaml`. In default `refsize=[0]`, 
 # Different scenario run
 
 Modify the variable `scenario` in `config/config.yaml` to decide what analyses to run.
+
+- `all` : run all comparisions across all programs and settings. requires `truth` to be configured.
+- `speed`: run only speed comparisons across all programs and settings. 
+- `quilt1`: run only `QUILT`.
+- `quilt2`: run only `QUILT2`, which is the default.
+- `glimpse1`: run only `GLIMPSE`.
+- `glimpse2`: run only `GLIMPSE2`.
