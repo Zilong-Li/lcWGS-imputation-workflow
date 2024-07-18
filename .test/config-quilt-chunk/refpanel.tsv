@@ -1,0 +1,2 @@
+chr	vcf	start	end	quilt_map	quilt_chunk
+chr20	data/refpanel.bcf	82590	64283878	data/CEU-chr20-final.b38.txt.gz	data/quilt2_chunks.chr20.txt

@@ -85,15 +85,6 @@ rule subset_refpanel_by_chunkid:
         """
 
 
-def get_sites_refpanel_by_chunks(wildcards):
-    d = get_refpanel_chunks(wildcards.chrom)
-    ids = list(map(str, d.keys()))
-    return expand(
-        rules.subset_refpanel_by_chunkid.output.sites,
-        chunkid=ids,
-        allow_missing=True,
-    )
-
 
 rule concat_refpanel_sites_by_chunks:
     input:

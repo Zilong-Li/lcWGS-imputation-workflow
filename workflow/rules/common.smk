@@ -21,7 +21,9 @@ OUTDIR_DOWNSAMPLE = os.path.join(OUTDIR, "downsample", "")
 OUTDIR_PANEL = os.path.join(OUTDIR, "refpanels", "")
 OUTDIR_TRUTH = os.path.join(OUTDIR, "truth", "")
 OUTDIR_QUILT1 = os.path.join(OUTDIR, "quilt1", "")
+OUTDIR_QUILT1_REF = os.path.join(OUTDIR, "quilt1_prepare", "")
 OUTDIR_QUILT2 = os.path.join(OUTDIR, "quilt2", "")
+OUTDIR_QUILT2_REF = os.path.join(OUTDIR, "quilt2_prepare", "")
 OUTDIR_GLIMPSE = os.path.join(OUTDIR, "glimpse1", "")
 OUTDIR_GLIMPSE2 = os.path.join(OUTDIR, "glimpse2", "")
 OUTDIR_SUMMARY = os.path.join(OUTDIR, "summary", "")
@@ -74,7 +76,7 @@ def get_all_results():
     elif RUN == "quilt1":
         return get_quilt_regular_accuracy(), get_speed_quilt_regular_plots()
     elif RUN == "quilt2":
-        return get_quilt_mspbwt_accuracy(), get_speed_quilt_mspbwt_plots()
+        return get_speed_quilt_mspbwt_plots()
     elif RUN == "glimpse1":
         return get_glimpse_accuracy(), get_speed_glimpse_plots()
     elif RUN == "glimpse2":
@@ -306,61 +308,14 @@ def get_glimpse_chunks_in(fn):
     return d
 
 
-def get_quilt_chunks(chrom):
-    """use GLIMPSE_chunk if defined, otherwise split the chromosome by chunks"""
-    d = dict()
-    if REFPANEL[chrom].get("glimpse_chunk"):
-        d = get_glimpse_chunks_out(REFPANEL[chrom]["glimpse_chunk"])
-    else:
-        d = get_chunks_by_chrom(chrom)
-    return d
-
-
-def get_quilt_chunk_region(chrom, chunkid):
-    d = get_quilt_chunks(chrom)
-    tmp2 = d[int(chunkid)].split(":")
-    rg = tmp2[1].split("-")
-    ps = max(int(rg[0]) - int(config["extra_buffer_in_quilt"]), 1)
-    pe = int(rg[1]) + int(config["extra_buffer_in_quilt"])
-    return f"{chrom}:{ps}-{pe}"
-
-
-def get_quilt_chunk_region_start(wildcards):
-    tmp = get_quilt_chunk_region(wildcards.chrom, wildcards.chunkid)
-    tmp2 = tmp.split(":")
-    rg = tmp2[1].split("-")
-    return rg[0]
-
-
-def get_quilt_chunk_region_end(wildcards):
-    tmp = get_quilt_chunk_region(wildcards.chrom, wildcards.chunkid)
-    tmp2 = tmp.split(":")
-    rg = tmp2[1].split("-")
-    return rg[1]
-
-
-def get_quilt_regular_outputs(wildcards):
-    d = get_quilt_chunks(wildcards.chrom)
+def get_sites_refpanel_by_chunks(wildcards):
+    d = get_refpanel_chunks(wildcards.chrom)
     ids = list(map(str, d.keys()))
-    return expand(rules.quilt_run_regular.output, chunkid=ids, allow_missing=True)
-
-
-def get_quilt_mspbwt_outputs(wildcards):
-    d = get_quilt_chunks(wildcards.chrom)
-    ids = list(map(str, d.keys()))
-    return expand(rules.quilt_run_mspbwt.output, chunkid=ids, allow_missing=True)
-
-
-def collect_quilt_regular_logs(wildcards):
-    d = get_quilt_chunks(wildcards.chrom)
-    ids = list(map(str, d.keys()))
-    return expand(rules.quilt_run_regular.log, chunkid=ids, allow_missing=True)
-
-
-def collect_quilt_mspbwt_logs(wildcards):
-    d = get_quilt_chunks(wildcards.chrom)
-    ids = list(map(str, d.keys()))
-    return expand(rules.quilt_run_mspbwt.log, chunkid=ids, allow_missing=True)
+    return expand(
+        rules.subset_refpanel_by_chunkid.output.sites,
+        chunkid=ids,
+        allow_missing=True,
+    )
 
 
 def get_refpanel_chunks(chrom):
@@ -384,13 +339,51 @@ def get_refpanel_chunk_region(chrom, chunkid):
     return f"{chrom}:{ps}-{pe}"
 
 
-def get_quilt_output_mspbwt_region1(wildcards):
-    starts, ends = get_regions_list_per_chrom(
-        wildcards.chrom, config["quilt2"]["chunksize"]
-    )
-    return expand(
-        rules.quilt_run_mspbwt.output, zip, start=starts, end=ends, allow_missing=True
-    )
+def get_quilt_chunk_region(chrom, chunkid):
+    d = get_refpanel_chunks(chrom)
+    tmp2 = d[int(chunkid)].split(":")
+    rg = tmp2[1].split("-")
+    ps = max(int(rg[0]) - int(config["extra_buffer_in_quilt"]), 1)
+    pe = int(rg[1]) + int(config["extra_buffer_in_quilt"])
+    return f"{chrom}:{ps}-{pe}"
+
+
+def get_quilt_chunk_region_start(wildcards):
+    tmp = get_quilt_chunk_region(wildcards.chrom, wildcards.chunkid)
+    tmp2 = tmp.split(":")
+    rg = tmp2[1].split("-")
+    return rg[0]
+
+
+def get_quilt_chunk_region_end(wildcards):
+    tmp = get_quilt_chunk_region(wildcards.chrom, wildcards.chunkid)
+    tmp2 = tmp.split(":")
+    rg = tmp2[1].split("-")
+    return rg[1]
+
+
+def get_quilt_regular_outputs(wildcards):
+    d = get_refpanel_chunks(wildcards.chrom)
+    ids = list(map(str, d.keys()))
+    return expand(rules.quilt_run_regular.output, chunkid=ids, allow_missing=True)
+
+
+def get_quilt_mspbwt_outputs(wildcards):
+    d = get_refpanel_chunks(wildcards.chrom)
+    ids = list(map(str, d.keys()))
+    return expand(rules.quilt_run_mspbwt.output, chunkid=ids, allow_missing=True)
+
+
+def collect_quilt_regular_logs(wildcards):
+    d = get_refpanel_chunks(wildcards.chrom)
+    ids = list(map(str, d.keys()))
+    return expand(rules.quilt_run_regular.log, chunkid=ids, allow_missing=True)
+
+
+def collect_quilt_mspbwt_logs(wildcards):
+    d = get_refpanel_chunks(wildcards.chrom)
+    ids = list(map(str, d.keys()))
+    return expand(rules.quilt_run_mspbwt.log, chunkid=ids, allow_missing=True)
 
 
 def get_glimpse_chunks_in_and_out(chrom):
@@ -452,42 +445,3 @@ def collect_glimpse2_log(wildcards):
     d = get_glimpse_chunks_in_and_out(wildcards.chrom)
     ids = list(map(str, d.keys()))
     return expand(rules.glimpse2_phase.log, chunkid=ids, allow_missing=True)
-
-
-def collect_quilt_log_regular_region2(wildcards):
-    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom, True)
-    return expand(
-        rules.quilt_run_regular.log, zip, start=starts, end=ends, allow_missing=True
-    )
-
-
-def collect_quilt_log_mspbwt_region1(wildcards):
-    starts, ends = get_regions_list_per_chrom(
-        wildcards.chrom, config["quilt2"]["chunksize"]
-    )
-    return expand(
-        rules.quilt_run_mspbwt.log, zip, start=starts, end=ends, allow_missing=True
-    )
-
-
-def collect_quilt_log_mspbwt_region2(wildcards):
-    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom, True)
-    return expand(
-        rules.quilt_run_mspbwt.log, zip, start=starts, end=ends, allow_missing=True
-    )
-
-
-def collect_quilt_log_zilong_region1(wildcards):
-    starts, ends = get_regions_list_per_chrom(
-        wildcards.chrom, config["quilt2"]["chunksize"]
-    )
-    return expand(
-        rules.quilt_run_zilong.log, zip, start=starts, end=ends, allow_missing=True
-    )
-
-
-def collect_quilt_log_zilong_region2(wildcards):
-    starts, ends = get_regions_list_from_glimpse_chunk(wildcards.chrom, True)
-    return expand(
-        rules.quilt_run_zilong.log, zip, start=starts, end=ends, allow_missing=True
-    )

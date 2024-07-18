@@ -4,9 +4,8 @@ rule quilt_prepare_regular:
         vcf=rules.subset_refpanel_by_chunkid.output.vcf,
     output:
         os.path.join(
-            OUTDIR_QUILT1,
+            OUTDIR_QUILT1_REF,
             "refsize{size}",
-            "prep_regular",
             "QUILT_prepared_reference.{chrom}.chunk_{chunkid}.RData",
         ),
     params:
@@ -22,9 +21,8 @@ rule quilt_prepare_regular:
         gmap=if_use_quilt_map_in_refpanel,
     log:
         os.path.join(
-            OUTDIR_QUILT1,
+            OUTDIR_QUILT1_REF,
             "refsize{size}",
-            "prep_regular",
             "QUILT_prepared_reference.{chrom}.chunk_{chunkid}.RData.llog",
         ),
     conda:
@@ -76,7 +74,7 @@ rule quilt_run_regular:
         os.path.join(
             OUTDIR_QUILT1,
             "refsize{size}",
-            "output",
+            "{chrom}",
             "quilt.down{depth}x.regular.{chrom}.chunk_{chunkid}.vcf.gz",
         ),
     params:
@@ -98,7 +96,7 @@ rule quilt_run_regular:
         os.path.join(
             OUTDIR_QUILT1,
             "refsize{size}",
-            "output",
+            "{chrom}",
             "quilt.down{depth}x.regular.{chrom}.chunk_{chunkid}.vcf.gz.llog",
         ),
     conda:
@@ -196,9 +194,8 @@ rule quilt_prepare_mspbwt:
         vcf=rules.subset_refpanel_by_chunkid.output.vcf,
     output:
         os.path.join(
-            OUTDIR_QUILT2,
+            OUTDIR_QUILT2_REF,
             "refsize{size}",
-            "prep_mspbwt",
             "QUILT_prepared_reference.{chrom}.chunk_{chunkid}.RData",
         ),
     params:
@@ -216,9 +213,8 @@ rule quilt_prepare_mspbwt:
         nindices=config["quilt2"]["mspbwt-nindices"],
     log:
         os.path.join(
-            OUTDIR_QUILT2,
+            OUTDIR_QUILT2_REF,
             "refsize{size}",
-            "prep_mspbwt",
             "QUILT_prepared_reference.{chrom}.chunk_{chunkid}.RData.llog",
         ),
     conda:
@@ -272,7 +268,7 @@ rule quilt_run_mspbwt:
         os.path.join(
             OUTDIR_QUILT2,
             "refsize{size}",
-            "output",
+            "{chrom}",
             "quilt.down{depth}x.mspbwt.{chrom}.chunk_{chunkid}.vcf.gz",
         ),
     params:
@@ -297,7 +293,7 @@ rule quilt_run_mspbwt:
         os.path.join(
             OUTDIR_QUILT2,
             "refsize{size}",
-            "output",
+            "{chrom}",
             "quilt.down{depth}x.mspbwt.{chrom}.chunk_{chunkid}.vcf.gz.llog",
         ),
     conda:

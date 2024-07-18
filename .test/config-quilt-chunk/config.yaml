@@ -1,0 +1,75 @@
+
+samples: config/samples.tsv
+
+genome:
+  fasta: data/hg38.fa
+  species: human
+  build: GRCh38
+  refpanel: config/refpanel.tsv
+
+
+chroms: ['chr20']
+downsample: [0.25, 0.5]
+refsize: [0]
+
+#'all', 'speed', 'accuracy', 'quilt','glimpse','quilt1', 'quilt2', 'glimpse1',  'glimpse2'
+scenario: 'quilt2'
+
+# global programs
+time: "/usr/bin/time"
+
+## we wanna output some extra variants in buffer for ligation
+extra_buffer_in_quilt: 100000
+chunksize: 2000000
+
+quilt2:
+  nGen: 100
+  buffer: 500000
+  Ksubset: 600
+  Knew: 600
+  nGibbsSamples: 7
+  n_seek_its: 3
+  small_ref_panel_block_gibbs_iterations: c(3,6,9)
+  small_ref_panel_gibbs_iterations: 20
+  lowram: 'TRUE'
+  impute_rare_common: 'TRUE'
+  rare_af_threshold: 0.001
+  mspbwtM: 1
+  mspbwtL: 3
+  mspbwtB: 32
+  mspbwt-nindices: 4
+
+quilt1:
+  nGen: 100
+  buffer: 500000
+  Ksubset: 600
+  Knew: 600
+  nGibbsSamples: 7
+  n_seek_its: 3
+  small_ref_panel_block_gibbs_iterations: c(3,6,9)
+  small_ref_panel_gibbs_iterations: 20
+  lowram: 'TRUE'
+  impute_rare_common: 'FALSE'
+  rare_af_threshold: 0
+
+glimpse2:
+  buffer: 500000
+  bq: 20
+  mq: 20
+  burnin: 5
+  main: 15
+  pbwt-depth: 12
+  pbwt-modulo-cm: 0.1
+  ne: 100000
+
+
+glimpse1:
+  buffer: 500000
+  bq: 20
+  mq: 20
+  burnin: 10
+  main: 10
+  pbwt-depth: 2
+  pbwt-modulo: 8
+  ne: 20000
+
